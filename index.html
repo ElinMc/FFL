@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dinner Roulette</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --pink: #FFB5C2;
+    --mint: #B8E8D0;
+    --lavender: #C5B9F2;
+    --peach: #FFDAB3;
+    --blue: #B3D9FF;
+    --bg: #FFF5F7;
+    --card-bg: #FFFFFF;
+    --text: #5A4E6B;
+    --text-light: #8B7FA3;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 100px;
+  }
+
+  /* NAV */
+  .nav {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+    border-bottom: 2px solid #f0e0e8;
+  }
+  .nav button {
+    background: var(--card-bg);
+    border: 2px solid #f0e0e8;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nav button.active {
+    background: var(--pink);
+    border-color: var(--pink);
+    color: white;
+  }
+  .nav button:hover { transform: scale(1.05); }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    padding: 30px 20px 10px;
+  }
+  .header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--pink), var(--lavender), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header p {
+    color: var(--text-light);
+    font-size: 15px;
+    margin-top: 4px;
+  }
+
+  /* PAGES */
+  .page { display: none; padding: 20px; max-width: 500px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* CARDS */
+  .recipe-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    position: relative;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .recipe-card:hover { border-color: var(--pink); }
+  .recipe-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .recipe-card .ingredients {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .recipe-card .ingredient-tag {
+    background: var(--bg);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    color: var(--text-light);
+  }
+  .recipe-card .delete-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+  .recipe-card .delete-btn:hover { opacity: 1; }
+
+  .card-color-0 { border-left: 4px solid var(--pink); }
+  .card-color-1 { border-left: 4px solid var(--mint); }
+  .card-color-2 { border-left: 4px solid var(--lavender); }
+  .card-color-3 { border-left: 4px solid var(--peach); }
+  .card-color-4 { border-left: 4px solid var(--blue); }
+
+  /* FORM */
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    font-weight: 700;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 6px;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #f0e0e8;
+    border-radius: 16px;
+    font-family: inherit;
+    font-size: 16px;
+    background: var(--card-bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--lavender); }
+
+  /* SUGGESTED INGREDIENTS */
+  .suggested-ingredients {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .suggested-ingredients .chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid #f0e0e8;
+    background: var(--card-bg);
+    color: var(--text);
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .suggested-ingredients .chip.selected {
+    background: var(--mint);
+    border-color: var(--mint);
+    color: white;
+  }
+  .suggested-ingredients .chip:hover { transform: scale(1.05); }
+
+  .add-custom-ingredient {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .add-custom-ingredient input { flex: 1; }
+  .add-custom-ingredient button {
+    padding: 10px 18px;
+    border-radius: 16px;
+    border: none;
+    background: var(--lavender);
+    color: white;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 12px;
+  }
+  .btn:hover { transform: scale(1.02); }
+  .btn-pink { background: var(--pink); color: white; }
+  .btn-mint { background: var(--mint); color: white; }
+  .btn-lavender { background: var(--lavender); color: white; }
+  .btn-peach { background: var(--peach); color: white; }
+
+  /* SPIN PAGE */
+  .spin-area {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .spin-button {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink), var(--lavender));
+    border: none;
+    font-family: inherit;
+    font-size: 28px;
+    font-weight: 800;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 8px 30px rgba(197,185,242,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  .spin-button:hover { transform: scale(1.08); box-shadow: 0 12px 40px rgba(197,185,242,0.5); }
+  .spin-button:active { transform: scale(0.95); }
+  .spin-button.spinning {
+    animation: pulse 0.3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  /* ROULETTE DISPLAY */
+  .roulette-display {
+    margin: 30px 0;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .roulette-card {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 20px 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    font-size: 22px;
+    font-weight: 800;
+    text-align: center;
+    border: 3px solid var(--pink);
+    transition: all 0.15s;
+  }
+  .roulette-card.shuffling {
+    animation: shuffle 0.15s ease-in-out;
+  }
+  @keyframes shuffle {
+    0% { transform: translateY(-20px) scale(0.9); opacity: 0.3; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  /* 6-7 CELEBRATION */
+  .celebration-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1000;
+    background: rgba(255,245,247,0.95);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .celebration-overlay.active {
+    display: flex;
+  }
+  .winner-text {
+    font-size: 42px;
+    font-weight: 800;
+    text-align: center;
+    animation: sixSeven 0.4s ease-in-out infinite alternate;
+    background: linear-gradient(135deg, var(--pink), var(--lavender));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .winner-sub {
+    font-size: 20px;
+    color: var(--text-light);
+    margin-top: 10px;
+    animation: sixSeven 0.4s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes sixSeven {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-15px) scale(1.1); }
+    100% { transform: translateY(-25px) scale(1.15); }
+  }
+  .six-seven-hands {
+    font-size: 60px;
+    animation: handsUp 0.3s ease-in-out infinite alternate;
+    margin-top: 20px;
+  }
+  @keyframes handsUp {
+    0% { transform: translateY(0) rotate(-5deg); }
+    100% { transform: translateY(-20px) rotate(5deg); }
+  }
+  .close-celebration {
+    margin-top: 40px;
+    padding: 14px 40px;
+    border-radius: 20px;
+    border: none;
+    background: var(--pink);
+    color: white;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* CONFETTI */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    z-index: 1001;
+    pointer-events: none;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* GROCERY LIST */
+  .grocery-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--card-bg);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .grocery-item:hover { background: #fdf0f3; }
+  .grocery-item.checked {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+  .grocery-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    border: 2px solid var(--pink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+  .grocery-item.checked .grocery-check {
+    background: var(--pink);
+    color: white;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-light);
+  }
+  .empty-state .emoji { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 16px; }
+
+  /* WEEK PICKER */
+  .week-picker {
+    margin-bottom: 20px;
+  }
+  .week-picker h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .week-recipe {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--card-bg);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+  }
+  .week-recipe:hover { background: #fdf0f3; }
+  .week-recipe.selected { background: var(--mint); color: white; }
+  .week-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    border: 2px solid var(--mint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+  .week-recipe.selected .week-check {
+    background: white;
+    color: var(--mint);
+    border-color: white;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 400px) {
+    .header h1 { font-size: 26px; }
+    .spin-button { width: 160px; height: 160px; font-size: 22px; }
+    .winner-text { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="active" onclick="showPage('recipes')">Recipes</button>
+  <button onclick="showPage('spin')">Spin!</button>
+  <button onclick="showPage('grocery')">Groceries</button>
+</nav>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Dinner Roulette</h1>
+  <p>What's for dinner tonight?</p>
+</div>
+
+<!-- RECIPES PAGE -->
+<div id="page-recipes" class="page active">
+  <div class="form-group">
+    <label>Recipe Name</label>
+    <input type="text" id="recipe-name" placeholder="e.g. Pasta Bolognese" oninput="suggestIngredients()">
+  </div>
+
+  <div id="suggestions-area" style="display:none">
+    <div class="form-group">
+      <label>Suggested Ingredients (tap to select)</label>
+      <div id="suggested-chips" class="suggested-ingredients"></div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Add Your Own Ingredient</label>
+    <div class="add-custom-ingredient">
+      <input type="text" id="custom-ingredient" placeholder="e.g. garlic">
+      <button onclick="addCustomIngredient()">+ Add</button>
+    </div>
+  </div>
+
+  <div id="selected-ingredients" class="suggested-ingredients" style="margin-bottom: 16px;"></div>
+
+  <button class="btn btn-pink" onclick="saveRecipe()">Save Recipe</button>
+
+  <div style="margin-top: 30px;">
+    <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 14px;">Your Recipes</h2>
+    <div id="recipes-list"></div>
+  </div>
+</div>
+
+<!-- SPIN PAGE -->
+<div id="page-spin" class="page">
+  <div class="spin-area">
+    <button class="spin-button" id="spin-btn" onclick="spinRoulette()">
+      SPIN!
+    </button>
+  </div>
+  <div class="roulette-display" id="roulette-display"></div>
+  <div id="spin-actions" style="display:none;">
+    <button class="btn btn-mint" onclick="addToWeek()">Add to This Week</button>
+  </div>
+</div>
+
+<!-- GROCERY PAGE -->
+<div id="page-grocery" class="page">
+  <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 6px;">Pick Meals for the Week</h2>
+  <p style="color: var(--text-light); font-size: 14px; margin-bottom: 14px;">Tap recipes to include in your grocery list</p>
+  <div id="week-recipes"></div>
+  <button class="btn btn-lavender" onclick="generateGroceryList()">Make Grocery List</button>
+  <div style="margin-top: 24px;">
+    <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 14px;">Shopping List</h2>
+    <div id="grocery-list"></div>
+  </div>
+</div>
+
+<!-- CELEBRATION OVERLAY -->
+<div class="celebration-overlay" id="celebration">
+  <div class="six-seven-hands">&#x1F64C;</div>
+  <div class="winner-text" id="winner-text"></div>
+  <div class="winner-sub">Tonight's dinner!</div>
+  <div class="six-seven-hands">&#x1F64C;</div>
+  <button class="close-celebration" onclick="closeCelebration()">Let's go!</button>
+</div>
+
+<script>
+  // ======= DATA =======
+  let recipes = JSON.parse(localStorage.getItem('mealRoulette_recipes') || '[]');
+  let weekMeals = JSON.parse(localStorage.getItem('mealRoulette_week') || '[]');
+  let groceryChecked = JSON.parse(localStorage.getItem('mealRoulette_groceryChecked') || '[]');
+  let currentIngredients = [];
+  let lastWinner = null;
+
+  function save() {
+    localStorage.setItem('mealRoulette_recipes', JSON.stringify(recipes));
+    localStorage.setItem('mealRoulette_week', JSON.stringify(weekMeals));
+    localStorage.setItem('mealRoulette_groceryChecked', JSON.stringify(groceryChecked));
+  }
+
+  // ======= INGREDIENT SUGGESTIONS =======
+  const recipeDatabase = {
+    'pasta bolognese': ['pasta', 'minced beef', 'tomato sauce', 'onion', 'garlic', 'olive oil', 'salt', 'pepper', 'parmesan'],
+    'pasta': ['pasta', 'tomato sauce', 'garlic', 'olive oil', 'salt', 'pepper', 'parmesan'],
+    'mac and cheese': ['macaroni', 'cheddar cheese', 'butter', 'milk', 'flour', 'salt', 'pepper'],
+    'pizza': ['pizza dough', 'tomato sauce', 'mozzarella', 'olive oil', 'basil'],
+    'burger': ['burger buns', 'minced beef', 'lettuce', 'tomato', 'onion', 'ketchup', 'cheese'],
+    'chicken nuggets': ['chicken breast', 'breadcrumbs', 'egg', 'flour', 'salt', 'pepper', 'oil'],
+    'tacos': ['taco shells', 'minced beef', 'lettuce', 'tomato', 'cheese', 'sour cream', 'salsa'],
+    'fried rice': ['rice', 'egg', 'soy sauce', 'peas', 'carrots', 'spring onion', 'sesame oil'],
+    'pancakes': ['flour', 'egg', 'milk', 'sugar', 'butter', 'baking powder'],
+    'omelette': ['eggs', 'cheese', 'ham', 'mushrooms', 'pepper', 'butter', 'salt'],
+    'chicken stir fry': ['chicken breast', 'broccoli', 'soy sauce', 'garlic', 'ginger', 'bell pepper', 'oil', 'rice'],
+    'spaghetti': ['spaghetti', 'tomato sauce', 'garlic', 'olive oil', 'basil', 'parmesan', 'salt'],
+    'fish fingers': ['fish fillets', 'breadcrumbs', 'egg', 'flour', 'lemon', 'salt'],
+    'grilled cheese': ['bread', 'butter', 'cheddar cheese'],
+    'soup': ['onion', 'garlic', 'carrots', 'celery', 'stock', 'salt', 'pepper'],
+    'chicken soup': ['chicken', 'onion', 'garlic', 'carrots', 'celery', 'noodles', 'chicken stock', 'salt', 'pepper'],
+    'tomato soup': ['tomatoes', 'onion', 'garlic', 'cream', 'basil', 'stock', 'butter', 'salt'],
+    'salad': ['lettuce', 'tomato', 'cucumber', 'olive oil', 'lemon', 'salt', 'pepper'],
+    'sandwich': ['bread', 'butter', 'ham', 'cheese', 'lettuce', 'tomato'],
+    'quesadilla': ['tortilla', 'cheese', 'chicken', 'bell pepper', 'salsa', 'sour cream'],
+    'curry': ['chicken', 'onion', 'garlic', 'curry paste', 'coconut milk', 'rice', 'salt'],
+    'shepherds pie': ['minced lamb', 'potatoes', 'onion', 'carrots', 'peas', 'gravy', 'butter'],
+    'fish and chips': ['fish fillets', 'potatoes', 'flour', 'baking powder', 'oil', 'salt', 'peas'],
+    'lasagna': ['lasagna sheets', 'minced beef', 'tomato sauce', 'mozzarella', 'ricotta', 'onion', 'garlic'],
+    'baked potato': ['potatoes', 'butter', 'cheese', 'beans', 'salt'],
+    'wraps': ['tortilla wraps', 'chicken', 'lettuce', 'tomato', 'mayo', 'cheese'],
+    'noodles': ['noodles', 'soy sauce', 'vegetables', 'garlic', 'sesame oil', 'spring onion'],
+    'risotto': ['rice', 'onion', 'garlic', 'stock', 'parmesan', 'butter', 'white wine', 'salt'],
+    'chili': ['minced beef', 'kidney beans', 'tomatoes', 'onion', 'garlic', 'chili powder', 'cumin', 'rice'],
+    'sausages and mash': ['sausages', 'potatoes', 'butter', 'milk', 'onion', 'gravy', 'peas'],
+    'roast chicken': ['whole chicken', 'potatoes', 'carrots', 'onion', 'garlic', 'olive oil', 'rosemary', 'salt'],
+    'banana bread': ['bananas', 'flour', 'sugar', 'butter', 'eggs', 'baking soda', 'vanilla'],
+    'french toast': ['bread', 'eggs', 'milk', 'cinnamon', 'sugar', 'butter', 'maple syrup'],
+    'smoothie bowl': ['banana', 'berries', 'yogurt', 'granola', 'honey'],
+  };
+
+  function suggestIngredients() {
+    const name = document.getElementById('recipe-name').value.toLowerCase().trim();
+    const sugArea = document.getElementById('suggestions-area');
+    const chips = document.getElementById('suggested-chips');
+
+    if (name.length < 2) { sugArea.style.display = 'none'; return; }
+
+    let bestMatch = null;
+    let bestScore = 0;
+
+    for (const [key, ingredients] of Object.entries(recipeDatabase)) {
+      const words = name.split(' ');
+      let score = 0;
+      for (const w of words) {
+        if (key.includes(w)) score++;
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = ingredients;
+      }
+    }
+
+    if (bestMatch && bestScore > 0) {
+      sugArea.style.display = 'block';
+      chips.innerHTML = '';
+      for (const ing of bestMatch) {
+        const chip = document.createElement('div');
+        chip.className = 'chip' + (currentIngredients.includes(ing) ? ' selected' : '');
+        chip.textContent = ing;
+        chip.onclick = () => toggleIngredient(ing);
+        chips.appendChild(chip);
+      }
+    } else {
+      sugArea.style.display = 'none';
+    }
+  }
+
+  function toggleIngredient(name) {
+    const idx = currentIngredients.indexOf(name);
+    if (idx >= 0) {
+      currentIngredients.splice(idx, 1);
+    } else {
+      currentIngredients.push(name);
+    }
+    suggestIngredients();
+    renderSelectedIngredients();
+  }
+
+  function addCustomIngredient() {
+    const input = document.getElementById('custom-ingredient');
+    const val = input.value.trim().toLowerCase();
+    if (!val || currentIngredients.includes(val)) return;
+    currentIngredients.push(val);
+    input.value = '';
+    suggestIngredients();
+    renderSelectedIngredients();
+  }
+
+  function renderSelectedIngredients() {
+    const container = document.getElementById('selected-ingredients');
+    container.innerHTML = '';
+    for (const ing of currentIngredients) {
+      const chip = document.createElement('div');
+      chip.className = 'chip selected';
+      chip.textContent = ing + ' x';
+      chip.onclick = () => toggleIngredient(ing);
+      container.appendChild(chip);
+    }
+  }
+
+  // ======= SAVE RECIPE =======
+  function saveRecipe() {
+    const name = document.getElementById('recipe-name').value.trim();
+    if (!name) { alert('Give your recipe a name!'); return; }
+    if (currentIngredients.length === 0) { alert('Add at least one ingredient!'); return; }
+
+    recipes.push({ name, ingredients: [...currentIngredients], id: Date.now() });
+    save();
+
+    document.getElementById('recipe-name').value = '';
+    currentIngredients = [];
+    document.getElementById('suggestions-area').style.display = 'none';
+    document.getElementById('selected-ingredients').innerHTML = '';
+    renderRecipes();
+  }
+
+  function deleteRecipe(id) {
+    recipes = recipes.filter(r => r.id !== id);
+    weekMeals = weekMeals.filter(wid => recipes.some(r => r.id === wid));
+    save();
+    renderRecipes();
+  }
+
+  function renderRecipes() {
+    const list = document.getElementById('recipes-list');
+    if (recipes.length === 0) {
+      list.innerHTML = '<div class="empty-state"><div class="emoji">&#x1F373;</div><p>No recipes yet! Add your first one above.</p></div>';
+      return;
+    }
+    list.innerHTML = '';
+    for (let i = 0; i < recipes.length; i++) {
+      const r = recipes[i];
+      const card = document.createElement('div');
+      card.className = 'recipe-card card-color-' + (i % 5);
+      card.innerHTML = `
+        <button class="delete-btn" onclick="deleteRecipe(${r.id})">&#x2715;</button>
+        <h3>${escHtml(r.name)}</h3>
+        <div class="ingredients">
+          ${r.ingredients.map(ing => `<span class="ingredient-tag">${escHtml(ing)}</span>`).join('')}
+        </div>
+      `;
+      list.appendChild(card);
+    }
+  }
+
+  // ======= SPIN =======
+  let spinning = false;
+
+  function spinRoulette() {
+    if (spinning) return;
+    if (recipes.length < 2) {
+      alert('Add at least 2 recipes first!');
+      return;
+    }
+
+    spinning = true;
+    const btn = document.getElementById('spin-btn');
+    const display = document.getElementById('roulette-display');
+    const actions = document.getElementById('spin-actions');
+    btn.classList.add('spinning');
+    actions.style.display = 'none';
+
+    let count = 0;
+    const totalFlips = 20 + Math.floor(Math.random() * 10);
+    let delay = 80;
+
+    function flip() {
+      const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)];
+      display.innerHTML = `<div class="roulette-card shuffling">${escHtml(randomRecipe.name)}</div>`;
+      count++;
+
+      if (count < totalFlips) {
+        delay += count * 3;
+        setTimeout(flip, delay);
+      } else {
+        // Winner!
+        const winner = recipes[Math.floor(Math.random() * recipes.length)];
+        lastWinner = winner;
+        display.innerHTML = `<div class="roulette-card">${escHtml(winner.name)}</div>`;
+        btn.classList.remove('spinning');
+        spinning = false;
+        actions.style.display = 'block';
+
+        // 6-7 celebration!
+        setTimeout(() => showCelebration(winner.name), 300);
+      }
+    }
+
+    flip();
+  }
+
+  // ======= CELEBRATION =======
+  function showCelebration(name) {
+    const overlay = document.getElementById('celebration');
+    document.getElementById('winner-text').textContent = name;
+    overlay.classList.add('active');
+    spawnConfetti();
+  }
+
+  function closeCelebration() {
+    document.getElementById('celebration').classList.remove('active');
+    document.querySelectorAll('.confetti-piece').forEach(el => el.remove());
+  }
+
+  function spawnConfetti() {
+    const colors = ['#FFB5C2', '#B8E8D0', '#C5B9F2', '#FFDAB3', '#B3D9FF', '#FFD6E0', '#D4F0E7'];
+    for (let i = 0; i < 60; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.top = '-10px';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.width = (6 + Math.random() * 8) + 'px';
+      piece.style.height = (6 + Math.random() * 8) + 'px';
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      piece.style.animation = `confettiFall ${1.5 + Math.random() * 2}s ease-out ${Math.random() * 0.5}s forwards`;
+      document.body.appendChild(piece);
+    }
+    setTimeout(() => document.querySelectorAll('.confetti-piece').forEach(el => el.remove()), 4000);
+  }
+
+  function addToWeek() {
+    if (!lastWinner) return;
+    if (!weekMeals.includes(lastWinner.id)) {
+      weekMeals.push(lastWinner.id);
+      save();
+    }
+    alert(lastWinner.name + ' added to this week!');
+  }
+
+  // ======= GROCERY =======
+  function renderWeekPicker() {
+    const container = document.getElementById('week-recipes');
+    if (recipes.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="emoji">&#x1F4DD;</div><p>Add some recipes first!</p></div>';
+      return;
+    }
+    container.innerHTML = '';
+    for (const r of recipes) {
+      const div = document.createElement('div');
+      div.className = 'week-recipe' + (weekMeals.includes(r.id) ? ' selected' : '');
+      div.innerHTML = `<div class="week-check">${weekMeals.includes(r.id) ? '&#x2713;' : ''}</div>${escHtml(r.name)}`;
+      div.onclick = () => {
+        const idx = weekMeals.indexOf(r.id);
+        if (idx >= 0) weekMeals.splice(idx, 1);
+        else weekMeals.push(r.id);
+        save();
+        renderWeekPicker();
+      };
+      container.appendChild(div);
+    }
+  }
+
+  function generateGroceryList() {
+    if (weekMeals.length === 0) {
+      alert('Pick at least one meal first!');
+      return;
+    }
+
+    const allIngredients = {};
+    for (const id of weekMeals) {
+      const recipe = recipes.find(r => r.id === id);
+      if (!recipe) continue;
+      for (const ing of recipe.ingredients) {
+        allIngredients[ing.toLowerCase()] = true;
+      }
+    }
+
+    const sorted = Object.keys(allIngredients).sort();
+    groceryChecked = groceryChecked.filter(g => sorted.includes(g));
+    save();
+
+    const list = document.getElementById('grocery-list');
+    list.innerHTML = '';
+    for (const ing of sorted) {
+      const item = document.createElement('div');
+      item.className = 'grocery-item' + (groceryChecked.includes(ing) ? ' checked' : '');
+      item.innerHTML = `<div class="grocery-check">${groceryChecked.includes(ing) ? '&#x2713;' : ''}</div>${escHtml(ing)}`;
+      item.onclick = () => {
+        const idx = groceryChecked.indexOf(ing);
+        if (idx >= 0) groceryChecked.splice(idx, 1);
+        else groceryChecked.push(ing);
+        save();
+        generateGroceryList();
+      };
+      list.appendChild(item);
+    }
+  }
+
+  // ======= NAV =======
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    document.querySelectorAll('.nav button').forEach((b, i) => {
+      b.classList.toggle('active', ['recipes', 'spin', 'grocery'][i] === name);
+    });
+    if (name === 'grocery') renderWeekPicker();
+  }
+
+  // ======= UTILS =======
+  function escHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  // Enter key support
+  document.getElementById('recipe-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('custom-ingredient').focus();
+  });
+  document.getElementById('custom-ingredient').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addCustomIngredient();
+  });
+
+  // Init
+  renderRecipes();
+</script>
+</body>
+</html>
