@@ -663,6 +663,9 @@
   <div class="form-group">
     <label>Recipe Name</label>
     <input type="text" id="recipe-name" placeholder="e.g. Pasta Bolognese" oninput="activeRecipeMatch = null; suggestIngredients()">
+    <button type="button" id="web-search-btn" onclick="doWebSearch()" style="margin-top: 8px; padding: 10px 16px; border-radius: 14px; border: 2px solid var(--blue); background: var(--card-bg); color: var(--text); font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; width: 100%;">
+      &#x1F30D; Search the web
+    </button>
   </div>
 
   <div id="match-bar" class="suggested-ingredients" style="display:none; margin-bottom: 12px;"></div>
@@ -999,6 +1002,85 @@
   const stopWords = new Set(['and', 'with', 'the', 'a', 'of', 'in', 'on', 'for', 'to', 'my', 'our', 'some', 'homemade', 'easy', 'quick']);
 
   let activeRecipeMatch = null; // which recipe key we're currently suggesting from
+  let webResults = {};          // cached web search results by search term
+  let lastWebSearch = '';       // last term we searched for
+
+  // TheMealDB free API - no key needed.
+  async function searchWebRecipes(term) {
+    const key = term.toLowerCase().trim();
+    if (!key) return [];
+    if (webResults[key]) return webResults[key];
+    try {
+      const res = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=' + encodeURIComponent(key));
+      const data = await res.json();
+      const meals = data.meals || [];
+      // Transform into our format
+      const mapped = meals.map(m => {
+        const ings = {};
+        for (let i = 1; i <= 20; i++) {
+          const ing = (m['strIngredient' + i] || '').trim().toLowerCase();
+          const measure = (m['strMeasure' + i] || '').trim();
+          if (ing) {
+            const [amount, unit] = parseMeasure(measure);
+            ings[ing] = [amount, unit];
+          }
+        }
+        return {
+          key: m.strMeal.toLowerCase(),
+          displayName: m.strMeal,
+          data: { emoji: guessEmoji(m.strMeal), ingredients: ings },
+          fromWeb: true
+        };
+      });
+      webResults[key] = mapped;
+      return mapped;
+    } catch (e) {
+      console.warn('Web search failed:', e);
+      return [];
+    }
+  }
+
+  // Parse "2 tbsp", "1/2 cup", "200g" etc. -> [amount, unit]
+  function parseMeasure(s) {
+    if (!s) return [1, ''];
+    s = s.trim();
+    // Handle fractions like "1/2"
+    const fracMatch = s.match(/^(\d+)?\s*(\d+)\/(\d+)\s*(.*)$/);
+    if (fracMatch) {
+      const whole = parseInt(fracMatch[1] || '0');
+      const num = parseInt(fracMatch[2]);
+      const den = parseInt(fracMatch[3]);
+      const rest = fracMatch[4].trim();
+      return [whole + num/den, cleanUnit(rest)];
+    }
+    const m = s.match(/^([\d.]+)\s*(.*)$/);
+    if (m) return [parseFloat(m[1]) || 1, cleanUnit(m[2])];
+    return [1, cleanUnit(s)];
+  }
+
+  function cleanUnit(u) {
+    return (u || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  }
+
+  async function doWebSearch() {
+    const input = document.getElementById('recipe-name');
+    const term = input.value.trim();
+    if (term.length < 3) { alert('Type a recipe name first!'); return; }
+    const btn = document.getElementById('web-search-btn');
+    btn.disabled = true;
+    btn.textContent = 'Searching...';
+    mascotSay('Looking it up... \u{1F50D}');
+    const results = await searchWebRecipes(term);
+    btn.disabled = false;
+    btn.innerHTML = '\u{1F30D} Search the web';
+    lastWebSearch = term.toLowerCase();
+    if (results.length === 0) {
+      mascotSay("Didn't find that one \u{1F615}");
+    } else {
+      mascotSay(`Found ${results.length}! \u2728`);
+    }
+    suggestIngredients();
+  }
 
   function suggestIngredients() {
     const name = document.getElementById('recipe-name').value.toLowerCase().trim();
@@ -1021,9 +1103,9 @@
       return;
     }
 
-    // Score every recipe
+    // Score every recipe (local + web results if any)
     const scored = [];
-    for (const [key, data] of Object.entries(recipeDatabase)) {
+    const scoreRecipe = (key, data, fromWeb = false, displayName = null) => {
       const keyWords = key.split(' ').filter(w => w.length >= 3);
       let score = 0;
       for (const nw of nameWords) {
@@ -1034,8 +1116,17 @@
       }
       if (key === name) score += 100;
       else if (key.split(' ').every(w => nameWords.includes(w))) score += 5;
+      if (score >= 10) scored.push({ key, data, score, fromWeb, displayName: displayName || key });
+    };
 
-      if (score >= 10) scored.push({ key, data, score });
+    for (const [key, data] of Object.entries(recipeDatabase)) {
+      scoreRecipe(key, data, false);
+    }
+    // Include web results if we've searched
+    if (lastWebSearch && webResults[lastWebSearch]) {
+      for (const w of webResults[lastWebSearch]) {
+        scoreRecipe(w.key, w.data, true, w.displayName);
+      }
     }
 
     // Sort best first
@@ -1059,11 +1150,12 @@
       if (scored.length > 1) {
         matchBar.style.display = 'flex';
         matchBar.innerHTML = '';
-        const top = scored.slice(0, 5); // show top 5
+        const top = scored.slice(0, 6);
         for (const s of top) {
           const chip = document.createElement('div');
           chip.className = 'chip' + (s.key === activeRecipeMatch ? ' selected' : '');
-          chip.textContent = (s.data.emoji || '') + ' ' + s.key;
+          const webTag = s.fromWeb ? ' \u{1F30D}' : '';
+          chip.textContent = (s.data.emoji || '') + ' ' + s.displayName + webTag;
           chip.onclick = () => { activeRecipeMatch = s.key; suggestIngredients(); };
           matchBar.appendChild(chip);
         }
@@ -1076,7 +1168,10 @@
     sugArea.style.display = 'block';
     chips.innerHTML = '';
     const label = document.querySelector('#suggestions-area label');
-    if (label) label.textContent = `Suggested for "${active.key}" (tap to select)`;
+    if (label) {
+      const src = active.fromWeb ? ' (from the web \u{1F30D})' : '';
+      label.textContent = `Suggested for "${active.displayName || active.key}"${src} (tap to select)`;
+    }
     for (const ing of Object.keys(active.data.ingredients)) {
       const chip = document.createElement('div');
       const sel = currentIngredients.find(i => i.name === ing);
