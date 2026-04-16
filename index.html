@@ -865,35 +865,50 @@
     return '\u{1F37D}\uFE0F';
   }
 
+  // Stop words that shouldn't match anything
+  const stopWords = new Set(['and', 'with', 'the', 'a', 'of', 'in', 'on', 'for', 'to', 'my', 'our', 'some', 'homemade', 'easy', 'quick']);
+
   function suggestIngredients() {
     const name = document.getElementById('recipe-name').value.toLowerCase().trim();
     const sugArea = document.getElementById('suggestions-area');
     const chips = document.getElementById('suggested-chips');
 
-    if (name.length < 2) { sugArea.style.display = 'none'; return; }
+    if (name.length < 3) { sugArea.style.display = 'none'; return; }
+
+    // Only use words that are 3+ chars and not stop words
+    const nameWords = name.split(/\s+/).filter(w => w.length >= 3 && !stopWords.has(w));
+    if (nameWords.length === 0) { sugArea.style.display = 'none'; return; }
 
     let bestMatch = null;
     let bestScore = 0;
+    let bestKey = null;
 
     for (const [key, data] of Object.entries(recipeDatabase)) {
-      const nameWords = name.split(' ').filter(w => w.length > 1);
-      const keyWords = key.split(' ');
+      const keyWords = key.split(' ').filter(w => w.length >= 3);
       let score = 0;
       for (const nw of nameWords) {
         for (const kw of keyWords) {
-          if (kw === nw) score += 2;
-          else if (kw.includes(nw) || nw.includes(kw)) score += 1;
+          if (kw === nw) score += 10; // exact word match
+          else if (kw.length >= 4 && nw.length >= 4 && (kw.startsWith(nw) || nw.startsWith(kw))) score += 3; // prefix match
         }
       }
+      // Bonus: whole input string matches a key exactly or is inside it
+      if (key === name) score += 100;
+      else if (key.split(' ').every(w => nameWords.includes(w))) score += 5;
+
       if (score > bestScore) {
         bestScore = score;
         bestMatch = data.ingredients;
+        bestKey = key;
       }
     }
 
-    if (bestMatch && bestScore > 0) {
+    // Only show if we have a real match (score 10+ = at least one exact word match)
+    if (bestMatch && bestScore >= 10) {
       sugArea.style.display = 'block';
       chips.innerHTML = '';
+      const label = document.querySelector('#suggestions-area label');
+      if (label) label.textContent = `Suggested for "${bestKey}" (tap to select)`;
       for (const ing of Object.keys(bestMatch)) {
         const chip = document.createElement('div');
         const sel = currentIngredients.find(i => i.name === ing);
