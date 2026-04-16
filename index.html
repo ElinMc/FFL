@@ -662,8 +662,10 @@
 <div id="page-recipes" class="page active">
   <div class="form-group">
     <label>Recipe Name</label>
-    <input type="text" id="recipe-name" placeholder="e.g. Pasta Bolognese" oninput="suggestIngredients()">
+    <input type="text" id="recipe-name" placeholder="e.g. Pasta Bolognese" oninput="activeRecipeMatch = null; suggestIngredients()">
   </div>
+
+  <div id="match-bar" class="suggested-ingredients" style="display:none; margin-bottom: 12px;"></div>
 
   <div id="suggestions-area" style="display:none">
     <div class="form-group">
@@ -801,6 +803,22 @@
     'spaghetti bolognese': { emoji: '\u{1F35D}', ingredients: { 'spaghetti': [100, 'g'], 'minced beef': [125, 'g'], 'tomato sauce': [100, 'ml'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'olive oil': [1, 'tbsp'], 'parmesan': [20, 'g'] } },
     'pasta': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tomato sauce': [100, 'ml'], 'garlic': [1, 'clove'], 'olive oil': [1, 'tbsp'], 'parmesan': [20, 'g'] } },
     'carbonara': { emoji: '\u{1F35D}', ingredients: { 'spaghetti': [100, 'g'], 'bacon': [50, 'g'], 'eggs': [1, 'whole'], 'parmesan': [25, 'g'], 'black pepper': [0.5, 'tsp'] } },
+    'pasta carbonara': { emoji: '\u{1F35D}', ingredients: { 'spaghetti': [100, 'g'], 'bacon': [50, 'g'], 'eggs': [1, 'whole'], 'parmesan': [25, 'g'], 'black pepper': [0.5, 'tsp'] } },
+    'pasta pesto': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'pesto': [30, 'g'], 'parmesan': [20, 'g'], 'pine nuts': [10, 'g'], 'cherry tomatoes': [40, 'g'] } },
+    'pesto pasta': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'pesto': [30, 'g'], 'parmesan': [20, 'g'], 'pine nuts': [10, 'g'], 'cherry tomatoes': [40, 'g'] } },
+    'pasta alfredo': { emoji: '\u{1F35D}', ingredients: { 'fettuccine': [100, 'g'], 'butter': [30, 'g'], 'cream': [100, 'ml'], 'parmesan': [40, 'g'], 'garlic': [1, 'clove'], 'black pepper': [0.25, 'tsp'] } },
+    'fettuccine alfredo': { emoji: '\u{1F35D}', ingredients: { 'fettuccine': [100, 'g'], 'butter': [30, 'g'], 'cream': [100, 'ml'], 'parmesan': [40, 'g'], 'garlic': [1, 'clove'] } },
+    'pasta arrabbiata': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tomato sauce': [120, 'ml'], 'garlic': [2, 'cloves'], 'chili flakes': [0.5, 'tsp'], 'olive oil': [1, 'tbsp'], 'parsley': [1, 'tbsp'] } },
+    'pasta arrabiata': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tomato sauce': [120, 'ml'], 'garlic': [2, 'cloves'], 'chili flakes': [0.5, 'tsp'], 'olive oil': [1, 'tbsp'], 'parsley': [1, 'tbsp'] } },
+    'pasta primavera': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'bell pepper': [0.5, 'medium'], 'broccoli': [50, 'g'], 'courgette': [0.5, 'medium'], 'peas': [30, 'g'], 'olive oil': [1, 'tbsp'], 'parmesan': [20, 'g'], 'garlic': [1, 'clove'] } },
+    'tuna pasta': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tuna': [50, 'g'], 'sweetcorn': [40, 'g'], 'mayo': [1.5, 'tbsp'], 'onion': [0.25, 'medium'] } },
+    'pasta bake': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tomato sauce': [120, 'ml'], 'mozzarella': [50, 'g'], 'cheddar cheese': [30, 'g'], 'onion': [0.25, 'medium'], 'garlic': [1, 'clove'] } },
+    'tomato pasta': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tomato sauce': [120, 'ml'], 'garlic': [1, 'clove'], 'basil': [3, 'leaves'], 'olive oil': [1, 'tbsp'], 'parmesan': [20, 'g'] } },
+    'cheese pasta': { emoji: '\u{1F9C0}', ingredients: { 'pasta': [100, 'g'], 'cheddar cheese': [60, 'g'], 'butter': [15, 'g'], 'milk': [80, 'ml'], 'flour': [10, 'g'] } },
+    'ravioli': { emoji: '\u{1F35D}', ingredients: { 'ravioli': [150, 'g'], 'butter': [15, 'g'], 'sage': [3, 'leaves'], 'parmesan': [20, 'g'] } },
+    'tortellini': { emoji: '\u{1F35D}', ingredients: { 'tortellini': [150, 'g'], 'tomato sauce': [80, 'ml'], 'parmesan': [20, 'g'], 'basil': [3, 'leaves'] } },
+    'gnocchi': { emoji: '\u{1F954}', ingredients: { 'gnocchi': [150, 'g'], 'tomato sauce': [100, 'ml'], 'mozzarella': [40, 'g'], 'basil': [3, 'leaves'], 'parmesan': [15, 'g'] } },
+    'pasta salad': { emoji: '\u{1F957}', ingredients: { 'pasta': [80, 'g'], 'tomato': [0.5, 'medium'], 'cucumber': [0.25, 'medium'], 'olives': [5, 'olives'], 'feta': [30, 'g'], 'olive oil': [1, 'tbsp'] } },
     'mac and cheese': { emoji: '\u{1F9C0}', ingredients: { 'macaroni': [100, 'g'], 'cheddar cheese': [50, 'g'], 'butter': [15, 'g'], 'milk': [150, 'ml'], 'flour': [10, 'g'] } },
     'pizza': { emoji: '\u{1F355}', ingredients: { 'pizza dough': [150, 'g'], 'tomato sauce': [60, 'ml'], 'mozzarella': [60, 'g'], 'olive oil': [1, 'tsp'], 'basil': [2, 'leaves'] } },
     'margherita pizza': { emoji: '\u{1F355}', ingredients: { 'pizza dough': [150, 'g'], 'tomato sauce': [60, 'ml'], 'mozzarella': [60, 'g'], 'basil': [3, 'leaves'] } },
@@ -868,57 +886,92 @@
   // Stop words that shouldn't match anything
   const stopWords = new Set(['and', 'with', 'the', 'a', 'of', 'in', 'on', 'for', 'to', 'my', 'our', 'some', 'homemade', 'easy', 'quick']);
 
+  let activeRecipeMatch = null; // which recipe key we're currently suggesting from
+
   function suggestIngredients() {
     const name = document.getElementById('recipe-name').value.toLowerCase().trim();
     const sugArea = document.getElementById('suggestions-area');
     const chips = document.getElementById('suggested-chips');
+    const matchBar = document.getElementById('match-bar');
 
-    if (name.length < 3) { sugArea.style.display = 'none'; return; }
+    if (name.length < 3) {
+      sugArea.style.display = 'none';
+      if (matchBar) matchBar.style.display = 'none';
+      activeRecipeMatch = null;
+      return;
+    }
 
-    // Only use words that are 3+ chars and not stop words
     const nameWords = name.split(/\s+/).filter(w => w.length >= 3 && !stopWords.has(w));
-    if (nameWords.length === 0) { sugArea.style.display = 'none'; return; }
+    if (nameWords.length === 0) {
+      sugArea.style.display = 'none';
+      if (matchBar) matchBar.style.display = 'none';
+      activeRecipeMatch = null;
+      return;
+    }
 
-    let bestMatch = null;
-    let bestScore = 0;
-    let bestKey = null;
-
+    // Score every recipe
+    const scored = [];
     for (const [key, data] of Object.entries(recipeDatabase)) {
       const keyWords = key.split(' ').filter(w => w.length >= 3);
       let score = 0;
       for (const nw of nameWords) {
         for (const kw of keyWords) {
-          if (kw === nw) score += 10; // exact word match
-          else if (kw.length >= 4 && nw.length >= 4 && (kw.startsWith(nw) || nw.startsWith(kw))) score += 3; // prefix match
+          if (kw === nw) score += 10;
+          else if (kw.length >= 4 && nw.length >= 4 && (kw.startsWith(nw) || nw.startsWith(kw))) score += 3;
         }
       }
-      // Bonus: whole input string matches a key exactly or is inside it
       if (key === name) score += 100;
       else if (key.split(' ').every(w => nameWords.includes(w))) score += 5;
 
-      if (score > bestScore) {
-        bestScore = score;
-        bestMatch = data.ingredients;
-        bestKey = key;
+      if (score >= 10) scored.push({ key, data, score });
+    }
+
+    // Sort best first
+    scored.sort((a, b) => b.score - a.score);
+
+    if (scored.length === 0) {
+      sugArea.style.display = 'none';
+      if (matchBar) matchBar.style.display = 'none';
+      activeRecipeMatch = null;
+      return;
+    }
+
+    // If we haven't locked onto a match yet, pick the top one
+    if (!activeRecipeMatch || !scored.some(s => s.key === activeRecipeMatch)) {
+      activeRecipeMatch = scored[0].key;
+    }
+    const active = scored.find(s => s.key === activeRecipeMatch) || scored[0];
+
+    // Build match bar - let user pick between the top matches
+    if (matchBar) {
+      if (scored.length > 1) {
+        matchBar.style.display = 'flex';
+        matchBar.innerHTML = '';
+        const top = scored.slice(0, 5); // show top 5
+        for (const s of top) {
+          const chip = document.createElement('div');
+          chip.className = 'chip' + (s.key === activeRecipeMatch ? ' selected' : '');
+          chip.textContent = (s.data.emoji || '') + ' ' + s.key;
+          chip.onclick = () => { activeRecipeMatch = s.key; suggestIngredients(); };
+          matchBar.appendChild(chip);
+        }
+      } else {
+        matchBar.style.display = 'none';
       }
     }
 
-    // Only show if we have a real match (score 10+ = at least one exact word match)
-    if (bestMatch && bestScore >= 10) {
-      sugArea.style.display = 'block';
-      chips.innerHTML = '';
-      const label = document.querySelector('#suggestions-area label');
-      if (label) label.textContent = `Suggested for "${bestKey}" (tap to select)`;
-      for (const ing of Object.keys(bestMatch)) {
-        const chip = document.createElement('div');
-        const sel = currentIngredients.find(i => i.name === ing);
-        chip.className = 'chip' + (sel ? ' selected' : '');
-        chip.textContent = ing;
-        chip.onclick = () => toggleIngredient(ing, bestMatch[ing]);
-        chips.appendChild(chip);
-      }
-    } else {
-      sugArea.style.display = 'none';
+    // Show ingredients for active match
+    sugArea.style.display = 'block';
+    chips.innerHTML = '';
+    const label = document.querySelector('#suggestions-area label');
+    if (label) label.textContent = `Suggested for "${active.key}" (tap to select)`;
+    for (const ing of Object.keys(active.data.ingredients)) {
+      const chip = document.createElement('div');
+      const sel = currentIngredients.find(i => i.name === ing);
+      chip.className = 'chip' + (sel ? ' selected' : '');
+      chip.textContent = ing;
+      chip.onclick = () => toggleIngredient(ing, active.data.ingredients[ing]);
+      chips.appendChild(chip);
     }
   }
 
