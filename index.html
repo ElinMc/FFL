@@ -1268,6 +1268,154 @@
     }
   }
 
+  // ============ SMART INGREDIENT NORMALIZATION ============
+  // Maps many ways of saying the same thing to ONE canonical name.
+  const ingredientAliases = {
+    // Tomatoes
+    'tomato': 'tomato', 'tomatoes': 'tomato', 'tomatos': 'tomato', 'cherry tomato': 'tomato', 'cherry tomatoes': 'tomato',
+    // Onion
+    'onion': 'onion', 'onions': 'onion', 'red onion': 'onion', 'white onion': 'onion', 'yellow onion': 'onion', 'brown onion': 'onion',
+    // Garlic
+    'garlic': 'garlic', 'garlic clove': 'garlic', 'garlic cloves': 'garlic', 'cloves of garlic': 'garlic',
+    // Beef
+    'minced beef': 'minced beef', 'beef mince': 'minced beef', 'ground beef': 'minced beef', 'mince': 'minced beef', 'beef': 'minced beef',
+    // Lamb
+    'minced lamb': 'minced lamb', 'lamb mince': 'minced lamb', 'ground lamb': 'minced lamb',
+    // Pork
+    'minced pork': 'minced pork', 'pork mince': 'minced pork', 'ground pork': 'minced pork',
+    // Chicken
+    'chicken': 'chicken', 'chicken breast': 'chicken breast', 'chicken breasts': 'chicken breast',
+    'chicken thigh': 'chicken thigh', 'chicken thighs': 'chicken thigh',
+    'whole chicken': 'whole chicken',
+    // Cheese
+    'cheese': 'cheese', 'cheddar': 'cheddar cheese', 'cheddar cheese': 'cheddar cheese',
+    'mozzarella': 'mozzarella', 'parmesan': 'parmesan', 'parmigiano': 'parmesan',
+    'cheese slice': 'cheese slices', 'cheese slices': 'cheese slices',
+    'ricotta': 'ricotta',
+    // Pasta
+    'pasta': 'pasta', 'spaghetti': 'spaghetti', 'macaroni': 'macaroni', 'lasagna sheets': 'lasagna sheets',
+    'penne': 'pasta', 'fusilli': 'pasta',
+    // Rice
+    'rice': 'rice', 'white rice': 'rice', 'brown rice': 'rice', 'sushi rice': 'sushi rice',
+    // Noodles
+    'noodles': 'noodles', 'ramen noodles': 'ramen noodles',
+    // Potato
+    'potato': 'potato', 'potatoes': 'potato',
+    // Eggs
+    'egg': 'egg', 'eggs': 'egg',
+    // Milk
+    'milk': 'milk', 'whole milk': 'milk', 'semi-skimmed milk': 'milk',
+    // Butter
+    'butter': 'butter', 'unsalted butter': 'butter', 'salted butter': 'butter',
+    // Bread
+    'bread': 'bread', 'bread slice': 'bread', 'bread slices': 'bread', 'slice of bread': 'bread',
+    // Carrot
+    'carrot': 'carrot', 'carrots': 'carrot',
+    // Pepper (veg)
+    'bell pepper': 'bell pepper', 'bell peppers': 'bell pepper', 'capsicum': 'bell pepper', 'pepper': 'bell pepper',
+    // Pepper (spice)
+    'black pepper': 'black pepper', 'ground pepper': 'black pepper',
+    // Oils
+    'olive oil': 'olive oil', 'oil': 'oil', 'vegetable oil': 'oil', 'sunflower oil': 'oil', 'sesame oil': 'sesame oil',
+    // Others
+    'flour': 'flour', 'plain flour': 'flour', 'all purpose flour': 'flour', 'all-purpose flour': 'flour',
+    'sugar': 'sugar', 'white sugar': 'sugar', 'caster sugar': 'sugar',
+    'salt': 'salt', 'sea salt': 'salt', 'table salt': 'salt',
+    'lemon': 'lemon', 'lemons': 'lemon',
+    'lettuce': 'lettuce', 'iceberg lettuce': 'lettuce', 'romaine': 'lettuce',
+    'cucumber': 'cucumber', 'cucumbers': 'cucumber',
+    'mushroom': 'mushroom', 'mushrooms': 'mushroom',
+    'spring onion': 'spring onion', 'spring onions': 'spring onion', 'scallion': 'spring onion', 'scallions': 'spring onion', 'green onion': 'spring onion',
+    'pea': 'peas', 'peas': 'peas',
+    'bean': 'beans', 'beans': 'beans',
+    'kidney bean': 'kidney beans', 'kidney beans': 'kidney beans',
+    'tomato sauce': 'tomato sauce', 'passata': 'tomato sauce', 'marinara': 'tomato sauce',
+    'soy sauce': 'soy sauce',
+    'stock': 'stock', 'chicken stock': 'chicken stock', 'beef stock': 'beef stock', 'vegetable stock': 'vegetable stock', 'broth': 'stock',
+    'basil': 'basil', 'basil leaves': 'basil',
+    'parsley': 'parsley',
+    'rosemary': 'rosemary',
+    'ginger': 'ginger', 'fresh ginger': 'ginger',
+    'coconut milk': 'coconut milk',
+    'cream': 'cream', 'heavy cream': 'cream', 'double cream': 'cream',
+    'salmon': 'salmon',
+    'bacon': 'bacon',
+    'ham': 'ham',
+    'sausage': 'sausages', 'sausages': 'sausages', 'hot dog sausages': 'hot dog sausages',
+    'tortilla': 'tortilla', 'tortillas': 'tortilla', 'tortilla wraps': 'tortilla',
+    'breadcrumbs': 'breadcrumbs', 'bread crumbs': 'breadcrumbs', 'panko': 'breadcrumbs',
+    'ketchup': 'ketchup',
+    'mayo': 'mayo', 'mayonnaise': 'mayo',
+    'mustard': 'mustard',
+    'salsa': 'salsa',
+    'sour cream': 'sour cream',
+    'avocado': 'avocado', 'avocados': 'avocado',
+    'broccoli': 'broccoli',
+    'cabbage': 'cabbage',
+    'celery': 'celery',
+    'fish': 'fish fillets', 'fish fillet': 'fish fillets', 'fish fillets': 'fish fillets',
+  };
+
+  // Normalize ingredient name -> canonical form
+  function normalizeIngredient(rawName) {
+    if (!rawName) return '';
+    let n = rawName.toLowerCase().trim();
+    // Strip simple plurals/extras
+    n = n.replace(/\s+/g, ' ');
+    if (ingredientAliases[n]) return ingredientAliases[n];
+    // Try stripping trailing 's' for naive plurals
+    if (n.endsWith('s') && ingredientAliases[n.slice(0, -1)]) return ingredientAliases[n.slice(0, -1)];
+    // Try stripping 'es' (tomatoes -> tomato)
+    if (n.endsWith('es') && ingredientAliases[n.slice(0, -2)]) return ingredientAliases[n.slice(0, -2)];
+    // Substring match (e.g. "crushed tomatoes" -> tomato)
+    for (const [alias, canon] of Object.entries(ingredientAliases)) {
+      if (n.includes(alias)) return canon;
+    }
+    return n;
+  }
+
+  // ============ SMART UNIT CONVERSIONS ============
+  // Convert every unit to a "base unit" so we can add them up.
+  // Returns [amountInBase, baseUnit] or null if we can't convert.
+  function toBase(amount, unit) {
+    const u = (unit || '').toLowerCase().trim();
+    // Weight -> grams
+    if (u === 'g' || u === 'gram' || u === 'grams') return [amount, 'g'];
+    if (u === 'kg' || u === 'kilo' || u === 'kilos' || u === 'kilogram' || u === 'kilograms') return [amount * 1000, 'g'];
+    // Volume -> ml
+    if (u === 'ml' || u === 'milliliter' || u === 'millilitre') return [amount, 'ml'];
+    if (u === 'l' || u === 'liter' || u === 'litre' || u === 'liters' || u === 'litres') return [amount * 1000, 'ml'];
+    // Spoons -> ml (approx)
+    if (u === 'tsp' || u === 'teaspoon' || u === 'teaspoons') return [amount * 5, 'ml-spoon'];
+    if (u === 'tbsp' || u === 'tablespoon' || u === 'tablespoons') return [amount * 15, 'ml-spoon'];
+    // Counted items keep their unit
+    return null;
+  }
+
+  // Convert from base back to the "best" display unit
+  function fromBase(amount, baseUnit) {
+    if (baseUnit === 'g') {
+      if (amount >= 1000) return [+(amount / 1000).toFixed(2), 'kg'];
+      return [Math.round(amount), 'g'];
+    }
+    if (baseUnit === 'ml') {
+      if (amount >= 1000) return [+(amount / 1000).toFixed(2), 'L'];
+      return [Math.round(amount), 'ml'];
+    }
+    if (baseUnit === 'ml-spoon') {
+      // Convert back to tbsp/tsp nicely
+      if (amount >= 45) { // 3+ tbsp -> use tbsp
+        const tbsp = amount / 15;
+        return [Math.round(tbsp * 2) / 2, 'tbsp'];
+      }
+      if (amount >= 15) {
+        return [Math.round((amount / 15) * 2) / 2, 'tbsp'];
+      }
+      return [Math.round((amount / 5) * 2) / 2, 'tsp'];
+    }
+    return [amount, baseUnit];
+  }
+
   function generateGroceryList() {
     const mealIds = Object.values(week).filter(x => x);
     if (mealIds.length === 0) {
@@ -1275,25 +1423,40 @@
       return;
     }
 
+    // combined[canonicalName] = { name, buckets: { baseUnit: amount, ... }, countedUnits: { unit: amount } }
     const combined = {};
     for (const id of mealIds) {
       const recipe = recipes.find(r => r.id === id);
       if (!recipe) continue;
       for (const ing of recipe.ingredients) {
-        const name = typeof ing === 'string' ? ing : ing.name;
+        const rawName = typeof ing === 'string' ? ing : ing.name;
         const amount = typeof ing === 'string' ? null : ing.amount;
         const unit = typeof ing === 'string' ? '' : ing.unit;
-        const key = name.toLowerCase();
-        if (!combined[key]) {
-          combined[key] = { name, amount: 0, unit: unit || '', hasAmount: amount != null };
+        const canonName = normalizeIngredient(rawName);
+
+        if (!combined[canonName]) {
+          combined[canonName] = { name: canonName, buckets: {}, countedUnits: {}, hasAmount: false };
         }
-        if (amount != null) {
-          combined[key].amount += amount * settings.familySize;
-          combined[key].hasAmount = true;
+        const entry = combined[canonName];
+
+        if (amount == null) continue;
+        const scaledAmount = amount * settings.familySize;
+        entry.hasAmount = true;
+
+        const base = toBase(scaledAmount, unit);
+        if (base) {
+          // Mergeable unit (g, ml, spoons)
+          const [amt, bUnit] = base;
+          entry.buckets[bUnit] = (entry.buckets[bUnit] || 0) + amt;
+        } else {
+          // Counted (e.g. "2 slices", "3 cloves") - add by unit
+          const u = unit || 'whole';
+          entry.countedUnits[u] = (entry.countedUnits[u] || 0) + scaledAmount;
         }
       }
     }
 
+    // Sort names alphabetically
     const sorted = Object.keys(combined).sort();
     groceryChecked = groceryChecked.filter(g => sorted.includes(g));
     save();
@@ -1301,11 +1464,29 @@
     const list = document.getElementById('grocery-list');
     list.innerHTML = '';
     document.getElementById('people-count').textContent = settings.familySize;
+
+    if (sorted.length === 0) {
+      list.innerHTML = '<div class="empty-state"><div class="emoji">\u{1F6D2}</div><p>Add some meals to your week first!</p></div>';
+      return;
+    }
+
     for (const key of sorted) {
       const item = combined[key];
       const div = document.createElement('div');
       div.className = 'grocery-item' + (groceryChecked.includes(key) ? ' checked' : '');
-      const amountStr = item.hasAmount ? formatAmount(item.amount, item.unit) : '';
+
+      // Build amount string from buckets + countedUnits
+      const parts = [];
+      for (const [baseUnit, amt] of Object.entries(item.buckets)) {
+        const [displayAmt, displayUnit] = fromBase(amt, baseUnit);
+        parts.push(displayAmt + (displayUnit ? ' ' + displayUnit : ''));
+      }
+      for (const [u, amt] of Object.entries(item.countedUnits)) {
+        const prettyAmt = Math.ceil(amt * 2) / 2;
+        parts.push(prettyAmt + (u && u !== 'whole' ? ' ' + u : ''));
+      }
+      const amountStr = item.hasAmount ? parts.join(' + ') : '';
+
       div.innerHTML = `
         <div class="grocery-check">${groceryChecked.includes(key) ? '\u2713' : ''}</div>
         <span>${escHtml(item.name)}</span>
