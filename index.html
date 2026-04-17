@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dinner Roulette</title>
+<title>Dinner Roulette - What's for dinner?</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
@@ -11,2824 +11,562 @@
 
   :root {
     --pink: #FFB5C2;
+    --pink-dark: #F2B8C6;
     --mint: #B8E8D0;
     --lavender: #C5B9F2;
     --peach: #FFDAB3;
     --blue: #B3D9FF;
     --yellow: #FFF2B3;
     --bg: #FFF5F7;
-    --card-bg: #FFFFFF;
+    --card: #FFFFFF;
     --text: #5A4E6B;
     --text-light: #8B7FA3;
-    --border: #f0e0e8;
   }
 
-  [data-theme="dark"] {
-    --pink: #E89AB0;
-    --mint: #8FC9B0;
-    --lavender: #A89AD6;
-    --peach: #E8B888;
-    --blue: #8FB8E0;
-    --yellow: #E8D888;
-    --bg: #2B2438;
-    --card-bg: #3D3450;
-    --text: #F5EDF7;
-    --text-light: #C5B9D0;
-    --border: #4A3F5E;
-  }
-
+  html { scroll-behavior: smooth; }
   body {
     font-family: 'Nunito', sans-serif;
     background: var(--bg);
     color: var(--text);
+    overflow-x: hidden;
     min-height: 100vh;
-    padding-bottom: 100px;
-    transition: background 0.3s, color 0.3s;
   }
 
-  .nav {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    padding: 14px 10px;
-    position: sticky;
-    top: 0;
-    background: var(--bg);
-    z-index: 100;
-    border-bottom: 2px solid var(--border);
-    flex-wrap: wrap;
-  }
-  .nav button {
-    background: var(--card-bg);
-    border: 2px solid var(--border);
-    border-radius: 20px;
-    padding: 9px 16px;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .nav button.active {
-    background: var(--pink);
-    border-color: var(--pink);
-    color: white;
-  }
-  .nav button:hover { transform: scale(1.05); }
-
-  .theme-toggle {
+  /* ========= FLOATING BACKGROUND BLOBS ========= */
+  .bg-blob {
     position: fixed;
-    top: 14px;
-    right: 14px;
-    width: 40px;
-    height: 40px;
     border-radius: 50%;
-    border: 2px solid var(--border);
-    background: var(--card-bg);
-    cursor: pointer;
-    font-size: 18px;
-    z-index: 200;
+    filter: blur(60px);
+    opacity: 0.5;
+    z-index: -1;
+    animation: float 20s ease-in-out infinite;
+  }
+  .blob-1 { background: var(--pink); width: 400px; height: 400px; top: -100px; left: -100px; }
+  .blob-2 { background: var(--lavender); width: 350px; height: 350px; bottom: -80px; right: -80px; animation-delay: -5s; }
+  .blob-3 { background: var(--mint); width: 300px; height: 300px; top: 40%; left: 60%; animation-delay: -10s; opacity: 0.4; }
+  .blob-4 { background: var(--peach); width: 280px; height: 280px; top: 60%; left: 10%; animation-delay: -15s; opacity: 0.4; }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(40px, -30px) scale(1.08); }
+    66% { transform: translate(-30px, 40px) scale(0.95); }
   }
 
-  .header {
-    text-align: center;
-    padding: 26px 20px 6px;
-  }
-  /* ========== MASCOT: Spinny the Chef ========== */
-  .mascot-wrap {
-    display: inline-flex;
+  /* ========= HERO ========= */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    user-select: none;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
   }
-  .mascot {
-    width: 80px;
-    height: 80px;
-    display: inline-block;
-    animation: mascot-bob 2.8s ease-in-out infinite;
-    transform-origin: center bottom;
-    filter: drop-shadow(0 4px 8px rgba(255, 181, 194, 0.35));
+
+  .mascot-hero {
+    width: 180px;
+    height: 180px;
+    animation: mascot-bob 3s ease-in-out infinite;
+    filter: drop-shadow(0 10px 30px rgba(255, 181, 194, 0.5));
+    margin-bottom: 20px;
   }
   @keyframes mascot-bob {
-    0%, 100% { transform: translateY(0) rotate(-2deg); }
-    50% { transform: translateY(-6px) rotate(2deg); }
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-15px) rotate(3deg); }
   }
-  .mascot.excited { animation: mascot-excited 0.35s ease-in-out infinite; }
-  @keyframes mascot-excited {
-    0%, 100% { transform: translateY(-4px) rotate(-8deg) scale(1.08); }
-    50% { transform: translateY(-14px) rotate(8deg) scale(1.12); }
-  }
-  .mascot.thinking { animation: mascot-bob 1.4s ease-in-out infinite; }
-  .mascot.sleepy { animation: mascot-sleepy 4s ease-in-out infinite; }
-  @keyframes mascot-sleepy {
-    0%, 100% { transform: translateY(0) rotate(-1deg); }
-    50% { transform: translateY(-2px) rotate(1deg); }
-  }
-
-  /* Blinking eyes */
-  .mascot .eye-lid {
-    animation: blink 4s infinite;
-    transform-origin: center;
-  }
+  .mascot-hero .eye-lid { animation: blink 4s infinite; transform-origin: center; }
   @keyframes blink {
     0%, 48%, 52%, 98%, 100% { transform: scaleY(0); }
     50% { transform: scaleY(1); }
   }
-  .mascot.sleepy .eye-lid { animation: blink-slow 2.5s infinite; }
-  @keyframes blink-slow {
-    0%, 100% { transform: scaleY(0.7); }
-    50% { transform: scaleY(0.9); }
-  }
-
-  /* Chef hat wobble */
-  .mascot .hat {
-    transform-origin: 50px 40px;
-    animation: hat-wobble 3s ease-in-out infinite;
-  }
+  .mascot-hero .hat { transform-origin: 50px 32px; animation: hat-wobble 4s ease-in-out infinite; }
   @keyframes hat-wobble {
     0%, 100% { transform: rotate(-3deg); }
     50% { transform: rotate(3deg); }
   }
 
-  /* Star sparkles when excited */
-  .mascot .sparkle {
-    opacity: 0;
-    transform-origin: center;
-  }
-  .mascot.excited .sparkle {
-    animation: sparkle-pop 0.6s ease-in-out infinite;
-  }
-  .mascot.excited .sparkle:nth-child(2) { animation-delay: 0.2s; }
-  .mascot.excited .sparkle:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes sparkle-pop {
-    0%, 100% { opacity: 0; transform: scale(0.3); }
-    50% { opacity: 1; transform: scale(1.2); }
-  }
-
-  /* Thinking dots */
-  .mascot .thought-dot { opacity: 0; }
-  .mascot.thinking .thought-dot { animation: thought 1.2s ease-in-out infinite; }
-  .mascot.thinking .thought-dot:nth-child(2) { animation-delay: 0.2s; }
-  .mascot.thinking .thought-dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes thought {
-    0%, 100% { opacity: 0; transform: translateY(4px); }
-    50% { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Zzz when sleepy */
-  .mascot .zzz { opacity: 0; }
-  .mascot.sleepy .zzz { animation: zzz-fade 3s ease-in-out infinite; }
-  @keyframes zzz-fade {
-    0%, 100% { opacity: 0; transform: translate(0, 0); }
-    50% { opacity: 1; transform: translate(6px, -8px); }
-  }
-
-  /* Mouth swap */
-  .mascot .mouth-happy,
-  .mascot .mouth-wow,
-  .mascot .mouth-smile { display: none; }
-  .mascot[data-mood="idle"] .mouth-smile { display: block; }
-  .mascot[data-mood="happy"] .mouth-happy { display: block; }
-  .mascot[data-mood="excited"] .mouth-wow { display: block; }
-  .mascot[data-mood="thinking"] .mouth-smile { display: block; }
-  .mascot[data-mood="sleepy"] .mouth-smile { display: block; }
-
-  .mascot-speech {
-    background: var(--card-bg);
-    border: 2px solid var(--border);
-    border-radius: 20px;
-    padding: 10px 18px;
-    display: inline-block;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-    position: relative;
-    vertical-align: middle;
-    max-width: 200px;
-    animation: speech-pop 0.3s ease-out;
-  }
-  @keyframes speech-pop {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-  .mascot-speech::before {
-    content: '';
-    position: absolute;
-    left: -10px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: 7px solid transparent;
-    border-right-color: var(--border);
-  }
-  .mascot-speech::after {
-    content: '';
-    position: absolute;
-    left: -7px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: 6px solid transparent;
-    border-right-color: var(--card-bg);
-  }
-  .header h1 {
-    font-size: 32px;
+  .hero h1 {
+    font-size: clamp(48px, 8vw, 90px);
     font-weight: 900;
-    margin-top: 6px;
-    background: linear-gradient(135deg, var(--pink), var(--lavender), var(--blue));
+    line-height: 1;
+    background: linear-gradient(135deg, var(--pink), var(--lavender) 50%, var(--blue));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    margin-bottom: 16px;
+    letter-spacing: -2px;
+    animation: slide-up 0.8s ease-out;
+  }
+  .hero .tagline {
+    font-size: clamp(18px, 2.5vw, 24px);
+    color: var(--text-light);
+    font-weight: 600;
+    max-width: 600px;
+    margin-bottom: 40px;
+    animation: slide-up 0.8s ease-out 0.1s backwards;
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  .page { display: none; padding: 20px; max-width: 560px; margin: 0 auto; }
-  .page.active { display: block; }
-
-  .recipe-card {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 18px;
-    margin-bottom: 14px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    border: 2px solid transparent;
+  .hero-cta {
+    background: linear-gradient(135deg, var(--pink), var(--lavender));
+    color: white;
+    border: none;
+    padding: 20px 48px;
+    font-size: 20px;
+    font-weight: 900;
+    font-family: inherit;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(197,185,242,0.5);
     transition: all 0.2s;
-  }
-  .recipe-card:hover { border-color: var(--pink); }
-  .recipe-card-header {
-    display: flex;
+    text-decoration: none;
+    display: inline-flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 8px;
+    animation: slide-up 0.8s ease-out 0.2s backwards, pulse-btn 2s ease-in-out infinite 1s;
   }
-  .recipe-emoji { font-size: 32px; flex-shrink: 0; }
-  .recipe-card h3 { font-size: 18px; font-weight: 800; flex: 1; }
-  .recipe-card .ingredients {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 8px;
+  .hero-cta:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(197,185,242,0.6);
   }
-  .recipe-card .ingredient-tag {
-    background: var(--bg);
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 13px;
+  .hero-cta:active { transform: translateY(0) scale(1); }
+  @keyframes pulse-btn {
+    0%, 100% { box-shadow: 0 10px 30px rgba(197,185,242,0.5); }
+    50% { box-shadow: 0 10px 40px rgba(255,181,194,0.7); }
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
     color: var(--text-light);
-  }
-  .cat-tag {
-    background: linear-gradient(135deg, var(--pink), var(--lavender));
-    color: white;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 700;
-    margin-left: auto;
-    white-space: nowrap;
-  }
-  .cat-picker {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 6px;
-  }
-  .cat-pick-chip {
-    cursor: pointer;
-    user-select: none;
-    display: inline-block;
-  }
-  .cat-pick-chip input { display: none; }
-  .cat-pick-chip span {
-    display: inline-block;
-    padding: 8px 14px;
-    border-radius: 16px;
-    background: var(--card-bg);
-    border: 2px solid #f0e0e8;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-    transition: all 0.15s;
-  }
-  .cat-pick-chip input:checked + span {
-    background: var(--lavender);
-    border-color: var(--lavender);
-    color: white;
-  }
-  .card-actions {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    margin-top: 12px;
-    flex-wrap: wrap;
-  }
-  .star-rating { display: flex; gap: 2px; }
-  .star {
-    cursor: pointer;
-    font-size: 20px;
-    color: #ddd;
-    transition: transform 0.1s;
-    user-select: none;
-  }
-  .star:hover { transform: scale(1.2); }
-  .star.filled { color: #FFC940; }
-  .fav-btn {
-    background: none;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-    padding: 4px;
-    transition: transform 0.1s;
-  }
-  .fav-btn:hover { transform: scale(1.2); }
-  .delete-btn {
-    margin-left: auto;
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    opacity: 0.4;
-    color: var(--text);
-  }
-  .delete-btn:hover { opacity: 1; }
-
-  .card-color-0 { border-left: 4px solid var(--pink); }
-  .card-color-1 { border-left: 4px solid var(--mint); }
-  .card-color-2 { border-left: 4px solid var(--lavender); }
-  .card-color-3 { border-left: 4px solid var(--peach); }
-  .card-color-4 { border-left: 4px solid var(--blue); }
-
-  .form-group { margin-bottom: 16px; }
-  .form-group label {
-    font-weight: 700;
-    font-size: 14px;
-    display: block;
-    margin-bottom: 6px;
-  }
-  input[type="text"], input[type="number"] {
-    width: 100%;
-    padding: 14px 18px;
-    border: 2px solid var(--border);
-    border-radius: 16px;
-    font-family: inherit;
-    font-size: 16px;
-    background: var(--card-bg);
-    color: var(--text);
-    outline: none;
-  }
-  input[type="text"]:focus, input[type="number"]:focus { border-color: var(--lavender); }
-
-  .suggested-ingredients {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
-  }
-  .chip {
-    padding: 8px 16px;
-    border-radius: 20px;
     font-size: 14px;
     font-weight: 600;
-    cursor: pointer;
-    border: 2px solid var(--border);
-    background: var(--card-bg);
-    color: var(--text);
-    user-select: none;
+    opacity: 0.8;
+    animation: bounce-down 2s ease-in-out infinite;
   }
-  .chip.selected {
-    background: var(--mint);
-    border-color: var(--mint);
-    color: white;
-  }
-  .chip:hover { transform: scale(1.05); }
-
-  .add-custom-ingredient {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-  }
-  .add-custom-ingredient input { flex: 1; }
-  .add-custom-ingredient button {
-    padding: 10px 18px;
-    border-radius: 16px;
-    border: none;
-    background: var(--lavender);
-    color: white;
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
+  @keyframes bounce-down {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, 10px); }
   }
 
-  .btn {
-    display: block;
-    width: 100%;
-    padding: 16px;
-    border: none;
-    border-radius: 20px;
-    font-family: inherit;
-    font-size: 17px;
-    font-weight: 800;
-    cursor: pointer;
-    margin-top: 12px;
+  /* ========= FLOATING FOOD EMOJIS ========= */
+  .floating-food {
+    position: absolute;
+    font-size: 36px;
+    pointer-events: none;
+    opacity: 0.7;
+    animation: float-around 15s linear infinite;
   }
-  .btn:hover { transform: scale(1.02); }
-  .btn-pink { background: var(--pink); color: white; }
-  .btn-mint { background: var(--mint); color: white; }
-  .btn-lavender { background: var(--lavender); color: white; }
-  .btn-peach { background: var(--peach); color: white; }
-  .btn-small {
-    display: inline-block;
-    width: auto;
-    padding: 10px 20px;
-    font-size: 14px;
-    margin-top: 0;
+  .food-1 { top: 12%; left: 8%; animation-delay: 0s; }
+  .food-2 { top: 22%; right: 10%; animation-delay: -3s; }
+  .food-3 { bottom: 22%; left: 12%; animation-delay: -6s; }
+  .food-4 { bottom: 30%; right: 8%; animation-delay: -9s; }
+  .food-5 { top: 45%; left: 5%; animation-delay: -12s; }
+  .food-6 { top: 55%; right: 5%; animation-delay: -4s; }
+  @keyframes float-around {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(15px, -20px) rotate(10deg); }
+    50% { transform: translate(-10px, -10px) rotate(-5deg); }
+    75% { transform: translate(10px, 15px) rotate(5deg); }
   }
 
-  .spin-mode-toggle {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
+  /* ========= FEATURES SECTION ========= */
+  .features {
+    padding: 80px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
   }
-  .spin-mode-toggle button {
-    padding: 8px 16px;
-    border-radius: 16px;
-    border: 2px solid var(--border);
-    background: var(--card-bg);
-    color: var(--text);
-    font-family: inherit;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-  }
-  .spin-mode-toggle button.active {
-    background: var(--lavender);
-    border-color: var(--lavender);
-    color: white;
-  }
-  .spin-area { text-align: center; padding: 10px 0 20px; }
-  .spin-button {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--pink), var(--lavender));
-    border: none;
-    font-family: inherit;
-    font-size: 28px;
-    font-weight: 900;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 8px 30px rgba(197,185,242,0.4);
-  }
-  .spin-button:hover { transform: scale(1.08); }
-  .spin-button:active { transform: scale(0.95); }
-  .spin-button.spinning { animation: pulse 0.3s ease-in-out infinite; }
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-  }
-
-  .roulette-display {
-    margin: 30px 0;
-    min-height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .roulette-card {
-    background: var(--card-bg);
-    border-radius: 24px;
-    padding: 20px 30px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    font-size: 22px;
-    font-weight: 800;
-    text-align: center;
-    border: 3px solid var(--pink);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .roulette-card.shuffling {
-    animation: shuffle 0.15s ease-in-out;
-  }
-  @keyframes shuffle {
-    0% { transform: translateY(-20px) scale(0.9); opacity: 0.3; }
-    100% { transform: translateY(0) scale(1); opacity: 1; }
-  }
-
-  .celebration-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 1000;
-    background: var(--bg);
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .celebration-overlay.active { display: flex; }
-  .winner-emoji {
-    font-size: 80px;
-    animation: winnerBounce 0.4s ease-in-out infinite alternate;
-  }
-  @keyframes winnerBounce {
-    0% { transform: translateY(0) scale(1) rotate(-5deg); }
-    100% { transform: translateY(-20px) scale(1.15) rotate(5deg); }
-  }
-  .winner-text {
-    font-size: 42px;
+  .features h2 {
+    font-size: clamp(32px, 5vw, 48px);
     font-weight: 900;
     text-align: center;
-    margin-top: 10px;
-    animation: sixSeven 0.4s ease-in-out infinite alternate;
+    margin-bottom: 50px;
     background: linear-gradient(135deg, var(--pink), var(--lavender));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  .winner-sub {
-    font-size: 18px;
-    color: var(--text-light);
-    margin-top: 10px;
-  }
-  @keyframes sixSeven {
-    0% { transform: translateY(0) scale(1); }
-    100% { transform: translateY(-10px) scale(1.08); }
-  }
-  .six-seven-hands {
-    font-size: 50px;
-    animation: handsUp 0.3s ease-in-out infinite alternate;
-    margin-top: 16px;
-  }
-  @keyframes handsUp {
-    0% { transform: translateY(0) rotate(-10deg); }
-    100% { transform: translateY(-15px) rotate(10deg); }
-  }
-  .close-celebration {
-    margin-top: 30px;
-    padding: 14px 40px;
-    border-radius: 20px;
-    border: none;
-    background: var(--pink);
-    color: white;
-    font-family: inherit;
-    font-size: 18px;
-    font-weight: 800;
-    cursor: pointer;
-  }
 
-  .confetti-piece {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    border-radius: 3px;
-    z-index: 1001;
-    pointer-events: none;
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
   }
-  @keyframes confettiFall {
-    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-  }
-
-  .grocery-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: var(--card-bg);
-    border-radius: 14px;
-    margin-bottom: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .grocery-item.checked {
-    text-decoration: line-through;
-    opacity: 0.5;
-  }
-  .grocery-check {
-    width: 24px;
-    height: 24px;
-    border-radius: 8px;
-    border: 2px solid var(--pink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 14px;
-  }
-  .grocery-item.checked .grocery-check {
-    background: var(--pink);
-    color: white;
-  }
-  .grocery-amount {
-    margin-left: auto;
-    font-weight: 700;
-    color: var(--text-light);
-    font-size: 14px;
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-light);
-  }
-  .empty-state .emoji { font-size: 48px; margin-bottom: 12px; }
-
-  .calendar-day {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 14px 16px;
-    border-left: 4px solid var(--lavender);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    margin-bottom: 10px;
-  }
-  .calendar-day:hover { transform: translateX(3px); }
-  .calendar-day-name {
-    font-weight: 800;
-    font-size: 14px;
-    width: 70px;
-    color: var(--text-light);
-    flex-shrink: 0;
-  }
-  .calendar-day-meal {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .calendar-day-empty {
-    color: var(--text-light);
-    font-style: italic;
-    font-size: 14px;
-  }
-  .calendar-day-emoji { font-size: 22px; }
-  .calendar-clear {
-    background: none;
-    border: none;
-    font-size: 16px;
-    opacity: 0.4;
-    cursor: pointer;
-    color: var(--text);
-  }
-
-  .history-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    background: var(--card-bg);
-    border-radius: 14px;
-    margin-bottom: 8px;
-  }
-  .history-date {
-    color: var(--text-light);
-    font-size: 12px;
-    margin-left: auto;
-  }
-
-  .setting-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
-    background: var(--card-bg);
-    border-radius: 16px;
-    margin-bottom: 10px;
-    gap: 12px;
-  }
-  .setting-row label {
-    font-weight: 700;
-    font-size: 15px;
-    flex: 1;
-  }
-  .setting-row input[type="number"] {
-    width: 80px;
-    text-align: center;
-    padding: 10px;
-  }
-  .toggle-switch {
-    width: 50px;
-    height: 28px;
-    background: var(--border);
-    border-radius: 14px;
+  .feature {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    transition: all 0.3s;
     position: relative;
-    cursor: pointer;
-    flex-shrink: 0;
+    overflow: hidden;
+    border: 2px solid transparent;
   }
-  .toggle-switch.on { background: var(--mint); }
-  .toggle-switch::after {
-    content: '';
-    width: 22px;
-    height: 22px;
-    background: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    transition: left 0.2s;
+  .feature:hover {
+    transform: translateY(-6px);
+    border-color: var(--pink);
+    box-shadow: 0 12px 30px rgba(255,181,194,0.3);
   }
-  .toggle-switch.on::after { left: 25px; }
-
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 500;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .modal-overlay.active { display: flex; }
-  .modal {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 20px;
-    max-width: 400px;
-    width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-  .modal h3 {
-    font-size: 20px;
-    font-weight: 800;
+  .feature .f-emoji {
+    font-size: 48px;
+    display: block;
     margin-bottom: 14px;
   }
-  .modal-recipe-btn {
-    display: block;
-    padding: 12px 14px;
-    background: var(--bg);
-    border-radius: 12px;
-    margin-bottom: 6px;
-    cursor: pointer;
-    border: none;
-    width: 100%;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    text-align: left;
+  .feature h3 {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 8px;
   }
-  .modal-recipe-btn:hover { background: var(--pink); color: white; }
+  .feature p {
+    font-size: 15px;
+    color: var(--text-light);
+    line-height: 1.5;
+  }
+  .feature:nth-child(1) { background: linear-gradient(135deg, #fff 0%, #FFF0F3 100%); }
+  .feature:nth-child(2) { background: linear-gradient(135deg, #fff 0%, #F3ECFF 100%); }
+  .feature:nth-child(3) { background: linear-gradient(135deg, #fff 0%, #EDF9F2 100%); }
+  .feature:nth-child(4) { background: linear-gradient(135deg, #fff 0%, #FFF6E5 100%); }
+  .feature:nth-child(5) { background: linear-gradient(135deg, #fff 0%, #E7F3FF 100%); }
+  .feature:nth-child(6) { background: linear-gradient(135deg, #fff 0%, #FFF9E0 100%); }
 
-  @media (max-width: 400px) {
-    .header h1 { font-size: 26px; }
-    .spin-button { width: 170px; height: 170px; font-size: 24px; }
-    .winner-text { font-size: 32px; }
-    .winner-emoji { font-size: 60px; }
+  /* ========= HOW IT WORKS ========= */
+  .how {
+    padding: 60px 20px 80px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .how h2 {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 50px;
+    color: var(--text);
+  }
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .step {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+  }
+  .step-num {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 900;
+    color: white;
+    flex-shrink: 0;
+  }
+  .step:nth-child(1) .step-num { background: var(--pink); }
+  .step:nth-child(2) .step-num { background: var(--lavender); }
+  .step:nth-child(3) .step-num { background: var(--mint); }
+  .step:nth-child(4) .step-num { background: var(--peach); }
+  .step h4 {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .step p {
+    font-size: 15px;
+    color: var(--text-light);
+    line-height: 1.4;
+  }
+
+  /* ========= LANGUAGES STRIP ========= */
+  .langs {
+    background: linear-gradient(135deg, var(--pink) 0%, var(--lavender) 100%);
+    padding: 50px 20px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .langs h3 {
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+  .langs p {
+    font-size: 16px;
+    opacity: 0.9;
+    margin-bottom: 24px;
+  }
+  .lang-flags {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 32px;
+  }
+  .lang-flags span {
+    transition: transform 0.2s;
+    cursor: default;
+  }
+  .lang-flags span:hover { transform: scale(1.3) rotate(10deg); }
+
+  /* ========= FINAL CTA ========= */
+  .final-cta {
+    padding: 80px 20px 100px;
+    text-align: center;
+  }
+  .final-cta h2 {
+    font-size: clamp(28px, 5vw, 40px);
+    font-weight: 900;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  .final-cta p {
+    font-size: 18px;
+    color: var(--text-light);
+    margin-bottom: 30px;
+  }
+
+  /* ========= FOOTER ========= */
+  footer {
+    background: var(--card);
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 14px;
+    border-top: 2px solid #f0e0e8;
+  }
+  footer .heart { color: var(--pink); animation: heart-beat 1.5s ease-in-out infinite; display: inline-block; }
+  @keyframes heart-beat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  @media (max-width: 500px) {
+    .hero-cta { padding: 16px 36px; font-size: 18px; }
+    .mascot-hero { width: 140px; height: 140px; }
+    .step { padding: 18px 20px; }
+    .step-num { width: 48px; height: 48px; font-size: 20px; }
   }
 </style>
 </head>
 <body>
 
-<button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">&#x1F319;</button>
+<!-- Floating background blobs -->
+<div class="bg-blob blob-1"></div>
+<div class="bg-blob blob-2"></div>
+<div class="bg-blob blob-3"></div>
+<div class="bg-blob blob-4"></div>
 
-<nav class="nav">
-  <button class="active" onclick="showPage('recipes')" data-i18n="nav_recipes">Recipes</button>
-  <button onclick="showPage('spin')" data-i18n="nav_spin">Spin!</button>
-  <button onclick="showPage('calendar')" data-i18n="nav_week">Week</button>
-  <button onclick="showPage('grocery')" data-i18n="nav_groceries">Shop</button>
-  <button onclick="showPage('settings')" data-i18n="nav_settings">Settings</button>
-</nav>
+<!-- HERO SECTION -->
+<section class="hero">
+  <!-- Floating food emojis -->
+  <span class="floating-food food-1">🍕</span>
+  <span class="floating-food food-2">🍝</span>
+  <span class="floating-food food-3">🍔</span>
+  <span class="floating-food food-4">🍰</span>
+  <span class="floating-food food-5">🌮</span>
+  <span class="floating-food food-6">🍩</span>
 
-<div class="header">
-  <span class="mascot-wrap" onclick="mascotPoke()">
-    <svg class="mascot" id="mascot" data-mood="idle" viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
-      <!-- Sparkles (visible when excited) -->
-      <g class="sparkle"><path d="M 8 28 L 11 34 L 17 36 L 11 38 L 8 44 L 5 38 L -1 36 L 5 34 Z" fill="#FFD93D"/></g>
-      <g class="sparkle"><path d="M 90 30 L 93 36 L 99 38 L 93 40 L 90 46 L 87 40 L 81 38 L 87 36 Z" fill="#FFB5C2"/></g>
-      <g class="sparkle"><path d="M 86 80 L 88 84 L 92 86 L 88 88 L 86 92 L 84 88 L 80 86 L 84 84 Z" fill="#C5B9F2"/></g>
+  <!-- Whiskers the mascot -->
+  <svg class="mascot-hero" viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+    <!-- Cat ears -->
+    <g class="ears">
+      <path d="M 26 52 Q 22 30 38 38 Q 40 46 36 52 Z" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M 30 49 Q 28 38 35 42 Q 36 47 34 50 Z" fill="#E5D4F5"/>
+      <path d="M 74 52 Q 78 30 62 38 Q 60 46 64 52 Z" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M 70 49 Q 72 38 65 42 Q 64 47 66 50 Z" fill="#E5D4F5"/>
+    </g>
 
-      <!-- Thinking dots (visible when thinking) -->
-      <circle class="thought-dot" cx="82" cy="26" r="3" fill="#C5B9F2"/>
-      <circle class="thought-dot" cx="90" cy="18" r="4" fill="#C5B9F2"/>
-      <circle class="thought-dot" cx="96" cy="9" r="5" fill="#C5B9F2"/>
+    <!-- Chef hat -->
+    <g class="hat">
+      <rect x="36" y="38" width="28" height="5" rx="2" fill="#FFB5C2" stroke="#F2B8C6" stroke-width="1.2"/>
+      <path d="M 47 37 L 50 40 L 53 37 L 52 44 L 48 44 Z" fill="#C5B9F2" stroke="#A799D6" stroke-width="0.8" stroke-linejoin="round"/>
+      <circle cx="50" cy="41" r="1" fill="#FFF0F5"/>
+      <path d="M 36 40 Q 25 14 44 18 Q 48 6 58 12 Q 70 8 66 22 Q 76 18 64 40 Z" fill="white" stroke="#F2B8C6" stroke-width="1.5" stroke-linejoin="round"/>
+      <ellipse cx="42" cy="22" rx="3" ry="6" fill="#FFFAFC" opacity="0.9"/>
+    </g>
 
-      <!-- Zzz (visible when sleepy) -->
-      <text class="zzz" x="80" y="25" font-family="Nunito" font-size="14" font-weight="800" fill="#C5B9F2">z</text>
-      <text class="zzz" x="87" y="18" font-family="Nunito" font-size="17" font-weight="800" fill="#C5B9F2">z</text>
-      <text class="zzz" x="94" y="9" font-family="Nunito" font-size="20" font-weight="800" fill="#C5B9F2">Z</text>
+    <!-- Head -->
+    <circle cx="50" cy="70" r="34" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="2"/>
+    <circle cx="18" cy="72" r="6" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.8"/>
+    <circle cx="82" cy="72" r="6" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.8"/>
 
-      <!-- Little round ears (soft triangle with rounded tip) -->
-      <g class="ears">
-        <!-- Left ear -->
-        <path d="M 26 52 Q 22 30 38 38 Q 40 46 36 52 Z" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M 30 49 Q 28 38 35 42 Q 36 47 34 50 Z" fill="#E5D4F5"/>
-        <!-- Right ear -->
-        <path d="M 74 52 Q 78 30 62 38 Q 60 46 64 52 Z" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M 70 49 Q 72 38 65 42 Q 64 47 66 50 Z" fill="#E5D4F5"/>
-      </g>
+    <!-- Cheeks -->
+    <ellipse cx="25" cy="76" rx="8" ry="5" fill="#FFB5C2" opacity="0.75"/>
+    <ellipse cx="75" cy="76" rx="8" ry="5" fill="#FFB5C2" opacity="0.75"/>
+    <circle cx="22" cy="74" r="1" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="78" cy="74" r="1" fill="#FFFFFF" opacity="0.9"/>
 
-      <!-- Big round puffy chef hat -->
-      <g class="hat">
-        <!-- Hat band with bow -->
-        <rect x="36" y="38" width="28" height="5" rx="2" fill="#FFB5C2" stroke="#F2B8C6" stroke-width="1.2"/>
-        <!-- Tiny bow on the band -->
-        <path d="M 47 37 L 50 40 L 53 37 L 52 44 L 48 44 Z" fill="#C5B9F2" stroke="#A799D6" stroke-width="0.8" stroke-linejoin="round"/>
-        <circle cx="50" cy="41" r="1" fill="#FFF0F5"/>
-        <!-- Big puffy top -->
-        <path d="M 36 40 Q 25 14 44 18 Q 48 6 58 12 Q 70 8 66 22 Q 76 18 64 40 Z" fill="white" stroke="#F2B8C6" stroke-width="1.5" stroke-linejoin="round"/>
-        <!-- Hat shine -->
-        <ellipse cx="42" cy="22" rx="3" ry="6" fill="#FFFAFC" opacity="0.9"/>
-      </g>
+    <!-- Eyes -->
+    <ellipse cx="38" cy="68" rx="7" ry="9" fill="#3A2E4A"/>
+    <ellipse cx="38" cy="69" rx="6" ry="8" fill="#5B3E6E"/>
+    <ellipse cx="40" cy="64" rx="3" ry="4" fill="white"/>
+    <circle cx="35" cy="72" r="1.8" fill="white"/>
+    <circle cx="41" cy="71" r="0.8" fill="white" opacity="0.8"/>
+    <ellipse cx="62" cy="68" rx="7" ry="9" fill="#3A2E4A"/>
+    <ellipse cx="62" cy="69" rx="6" ry="8" fill="#5B3E6E"/>
+    <ellipse cx="64" cy="64" rx="3" ry="4" fill="white"/>
+    <circle cx="59" cy="72" r="1.8" fill="white"/>
+    <circle cx="65" cy="71" r="0.8" fill="white" opacity="0.8"/>
 
-      <!-- BIG ROUND FLUFFY HEAD (chubby kawaii cat) -->
-      <circle cx="50" cy="70" r="34" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="2"/>
+    <!-- Eyebrows -->
+    <path d="M 35 55 Q 38 53 41 55" stroke="#7D4E6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M 59 55 Q 62 53 65 55" stroke="#7D4E6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
 
-      <!-- Extra soft fluff on sides (like marshmallow cheeks) -->
-      <circle cx="18" cy="72" r="6" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.8"/>
-      <circle cx="82" cy="72" r="6" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.8"/>
+    <!-- Eyelids -->
+    <ellipse class="eye-lid" cx="38" cy="68" rx="7.5" ry="9.5" fill="#FFE4EA"/>
+    <ellipse class="eye-lid" cx="62" cy="68" rx="7.5" ry="9.5" fill="#FFE4EA"/>
 
-      <!-- BIG PINK BLUSH CHEEKS (the key to cuteness!) -->
-      <ellipse cx="25" cy="76" rx="8" ry="5" fill="#FFB5C2" opacity="0.75"/>
-      <ellipse cx="75" cy="76" rx="8" ry="5" fill="#FFB5C2" opacity="0.75"/>
-      <!-- Extra blush sparkle -->
-      <circle cx="22" cy="74" r="1" fill="#FFFFFF" opacity="0.9"/>
-      <circle cx="78" cy="74" r="1" fill="#FFFFFF" opacity="0.9"/>
+    <!-- Nose & mouth -->
+    <path d="M 48 82 L 52 82 L 50 85 Z" fill="#FFB5C2" stroke="#E58FA2" stroke-width="0.8" stroke-linejoin="round"/>
+    <path d="M 46 87 Q 50 92 54 87" fill="none" stroke="#7D4E6A" stroke-width="1.8" stroke-linecap="round"/>
 
-      <!-- HUGE SPARKLY KAWAII EYES -->
-      <!-- Left eye -->
-      <ellipse cx="38" cy="68" rx="7" ry="9" fill="#3A2E4A"/>
-      <ellipse cx="38" cy="69" rx="6" ry="8" fill="#5B3E6E"/>
-      <!-- Big white catchlight -->
-      <ellipse cx="40" cy="64" rx="3" ry="4" fill="white"/>
-      <!-- Small catchlight -->
-      <circle cx="35" cy="72" r="1.8" fill="white"/>
-      <!-- Tiny sparkle catchlight -->
-      <circle cx="41" cy="71" r="0.8" fill="white" opacity="0.8"/>
+    <!-- Whiskers -->
+    <g stroke="#E0B8C7" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.7">
+      <path d="M 44 82 Q 35 82 28 81"/>
+      <path d="M 44 85 Q 35 86 28 87"/>
+      <path d="M 56 82 Q 65 82 72 81"/>
+      <path d="M 56 85 Q 65 86 72 87"/>
+    </g>
 
-      <!-- Right eye -->
-      <ellipse cx="62" cy="68" rx="7" ry="9" fill="#3A2E4A"/>
-      <ellipse cx="62" cy="69" rx="6" ry="8" fill="#5B3E6E"/>
-      <ellipse cx="64" cy="64" rx="3" ry="4" fill="white"/>
-      <circle cx="59" cy="72" r="1.8" fill="white"/>
-      <circle cx="65" cy="71" r="0.8" fill="white" opacity="0.8"/>
+    <!-- Paws -->
+    <ellipse cx="40" cy="101" rx="6" ry="4" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.5"/>
+    <circle cx="38" cy="100" r="1" fill="#FFB5C2"/>
+    <circle cx="40" cy="99.5" r="1" fill="#FFB5C2"/>
+    <circle cx="42" cy="100" r="1" fill="#FFB5C2"/>
+    <ellipse cx="40" cy="102" rx="1.5" ry="1" fill="#FFB5C2"/>
+    <ellipse cx="60" cy="101" rx="6" ry="4" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.5"/>
+    <circle cx="58" cy="100" r="1" fill="#FFB5C2"/>
+    <circle cx="60" cy="99.5" r="1" fill="#FFB5C2"/>
+    <circle cx="62" cy="100" r="1" fill="#FFB5C2"/>
+    <ellipse cx="60" cy="102" rx="1.5" ry="1" fill="#FFB5C2"/>
 
-      <!-- Tiny little eyebrow arches (high and small) -->
-      <path d="M 35 55 Q 38 53 41 55" stroke="#7D4E6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-      <path d="M 59 55 Q 62 53 65 55" stroke="#7D4E6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- Tail -->
+    <path d="M 16 92 Q 4 94 6 84 Q 10 78 14 82" stroke="#F2B8C6" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <circle cx="14" cy="82" r="3" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.2"/>
+  </svg>
 
-      <!-- Eyelids (blink) -->
-      <ellipse class="eye-lid" cx="38" cy="68" rx="7.5" ry="9.5" fill="#FFE4EA"/>
-      <ellipse class="eye-lid" cx="62" cy="68" rx="7.5" ry="9.5" fill="#FFE4EA"/>
+  <h1>Dinner Roulette</h1>
+  <p class="tagline">Never argue about what's for dinner again. Spin the wheel and let Whiskers decide! 🎰🍝</p>
+  <a href="app.html" class="hero-cta">
+    Start Cooking
+    <span>→</span>
+  </a>
 
-      <!-- Tiny cute triangle nose -->
-      <path d="M 48 82 L 52 82 L 50 85 Z" fill="#FFB5C2" stroke="#E58FA2" stroke-width="0.8" stroke-linejoin="round"/>
+  <div class="scroll-hint">↓ Scroll to see more ↓</div>
+</section>
 
-      <!-- Simple cute mouth (tiny smile) -->
-      <g class="mouth-smile">
-        <!-- Soft "u" smile -->
-        <path d="M 46 87 Q 50 92 54 87" fill="none" stroke="#7D4E6A" stroke-width="1.8" stroke-linecap="round"/>
-      </g>
-      <g class="mouth-happy">
-        <!-- Wide happy smile with tongue -->
-        <path d="M 43 87 Q 50 95 57 87 Q 50 92 43 87 Z" fill="#7D4E6A"/>
-        <ellipse cx="50" cy="91" rx="3" ry="1.5" fill="#FFB5C2"/>
-      </g>
-      <g class="mouth-wow">
-        <!-- Little O mouth -->
-        <ellipse cx="50" cy="89" rx="3" ry="3.5" fill="#7D4E6A"/>
-        <ellipse cx="50" cy="90" rx="1.5" ry="2" fill="#FFB5C2"/>
-      </g>
-
-      <!-- Tiny soft whiskers (just 2 on each side, subtle) -->
-      <g stroke="#E0B8C7" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.7">
-        <path d="M 44 82 Q 35 82 28 81"/>
-        <path d="M 44 85 Q 35 86 28 87"/>
-        <path d="M 56 82 Q 65 82 72 81"/>
-        <path d="M 56 85 Q 65 86 72 87"/>
-      </g>
-
-      <!-- Little paws peeking at bottom (SO CUTE) -->
-      <g>
-        <!-- Left paw -->
-        <ellipse cx="40" cy="101" rx="6" ry="4" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.5"/>
-        <circle cx="38" cy="100" r="1" fill="#FFB5C2"/>
-        <circle cx="40" cy="99.5" r="1" fill="#FFB5C2"/>
-        <circle cx="42" cy="100" r="1" fill="#FFB5C2"/>
-        <ellipse cx="40" cy="102" rx="1.5" ry="1" fill="#FFB5C2"/>
-        <!-- Right paw -->
-        <ellipse cx="60" cy="101" rx="6" ry="4" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.5"/>
-        <circle cx="58" cy="100" r="1" fill="#FFB5C2"/>
-        <circle cx="60" cy="99.5" r="1" fill="#FFB5C2"/>
-        <circle cx="62" cy="100" r="1" fill="#FFB5C2"/>
-        <ellipse cx="60" cy="102" rx="1.5" ry="1" fill="#FFB5C2"/>
-      </g>
-
-      <!-- Teeny curly tail peeking out the side -->
-      <path d="M 16 92 Q 4 94 6 84 Q 10 78 14 82" stroke="#F2B8C6" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-      <circle cx="14" cy="82" r="3" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.2"/>
-    </svg>
-    <span class="mascot-speech" id="mascot-speech">What's cooking?</span>
-  </span>
-  <h1 data-i18n="app_title">Dinner Roulette</h1>
-</div>
-
-<div id="page-recipes" class="page active">
-  <div class="form-group">
-    <label data-i18n="form_recipe_name">Recipe Name</label>
-    <input type="text" id="recipe-name" data-i18n-placeholder="form_recipe_placeholder" placeholder="e.g. Pasta Bolognese" oninput="activeRecipeMatch = null; suggestIngredients()">
-    <button type="button" id="web-search-btn" onclick="doWebSearch()" data-i18n="btn_search_web" style="margin-top: 8px; padding: 10px 16px; border-radius: 14px; border: 2px solid var(--blue); background: var(--card-bg); color: var(--text); font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; width: 100%;">
-      &#x1F30D; Search the web
-    </button>
-  </div>
-
-  <div id="match-bar" class="suggested-ingredients" style="display:none; margin-bottom: 12px;"></div>
-
-  <div id="suggestions-area" style="display:none">
-    <div class="form-group">
-      <label data-i18n="form_suggested">Suggested Ingredients (tap to select)</label>
-      <div id="suggested-chips" class="suggested-ingredients"></div>
+<!-- FEATURES -->
+<section class="features">
+  <h2>What makes it special</h2>
+  <div class="feature-grid">
+    <div class="feature">
+      <span class="f-emoji">🎰</span>
+      <h3>Spin the Wheel</h3>
+      <p>Can't decide what to cook? Hit SPIN and let fate decide tonight's dinner with a fun 6-7 celebration!</p>
+    </div>
+    <div class="feature">
+      <span class="f-emoji">🍳</span>
+      <h3>130+ Recipes Built-In</h3>
+      <p>From pasta carbonara to banana bread — plus web search for any recipe you can dream up.</p>
+    </div>
+    <div class="feature">
+      <span class="f-emoji">🛒</span>
+      <h3>Smart Grocery Lists</h3>
+      <p>Pick meals for the week and the app combines ingredients automatically. 2 tbsp + 1 tbsp butter = 3 tbsp. Clever!</p>
+    </div>
+    <div class="feature">
+      <span class="f-emoji">🌍</span>
+      <h3>9 Languages</h3>
+      <p>English, French, German, Spanish, Italian, Flemish, Welsh, Chinese, Arabic — even Whiskers speaks your language.</p>
+    </div>
+    <div class="feature">
+      <span class="f-emoji">🍰</span>
+      <h3>5 Categories</h3>
+      <p>Breakfast, Lunch, Dinner, Snacks, and Sweet Stuff — find exactly the kind of meal you're in the mood for.</p>
+    </div>
+    <div class="feature">
+      <span class="f-emoji">🐱</span>
+      <h3>Meet Whiskers</h3>
+      <p>Your pastel chef kitten mascot. She blinks, sparkles, tells food jokes, and gets sleepy Zzz's when you leave her alone.</p>
     </div>
   </div>
+</section>
 
-  <div class="form-group">
-    <label data-i18n="form_add_own">Add Your Own Ingredient</label>
-    <div class="add-custom-ingredient">
-      <input type="text" id="custom-ingredient" placeholder="e.g. garlic">
-      <button onclick="addCustomIngredient()" data-i18n="btn_add">+ Add</button>
+<!-- HOW IT WORKS -->
+<section class="how">
+  <h2>How it works</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <h4>Add your favorite recipes</h4>
+        <p>Type a name, pick suggested ingredients (or let the app guess), pick a category, save!</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <h4>Spin the roulette</h4>
+        <p>Tap SPIN — cards shuffle, the winner is announced with a 6-7 celebration and confetti.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <h4>Plan your week</h4>
+        <p>Drag meals onto your calendar or auto-fill the whole week with one tap.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div>
+        <h4>Make the shopping list</h4>
+        <p>All ingredients combined, deduplicated, and scaled for your family size. Tick off what you have.</p>
+      </div>
     </div>
   </div>
+</section>
 
-  <div id="selected-ingredients" class="suggested-ingredients" style="margin-bottom: 16px;"></div>
-
-  <div class="form-group">
-    <label data-i18n="form_which_cat">Which category?</label>
-    <div class="cat-picker">
-      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="breakfast"><span>&#x1F373; <span data-i18n="cat_breakfast">Breakfast</span></span></label>
-      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="lunch"><span>&#x1F96A; <span data-i18n="cat_lunch">Lunch</span></span></label>
-      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="dinner"><span>&#x1F35D; <span data-i18n="cat_dinner">Dinner</span></span></label>
-      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="snacks"><span>&#x1F37F; <span data-i18n="cat_snacks">Snacks</span></span></label>
-      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="sweet"><span>&#x1F370; <span data-i18n="cat_sweet">Sweet</span></span></label>
-    </div>
-    <p style="font-size: 12px; color: var(--text-light); margin-top: 6px;" data-i18n="form_cat_hint">Leave blank and I'll guess it for you!</p>
+<!-- LANGUAGES -->
+<section class="langs">
+  <h3>Speaks 9 languages 🗣️</h3>
+  <p>Whiskers can chat with the whole family</p>
+  <div class="lang-flags">
+    <span title="English">🇬🇧</span>
+    <span title="Français">🇫🇷</span>
+    <span title="Deutsch">🇩🇪</span>
+    <span title="Español">🇪🇸</span>
+    <span title="Italiano">🇮🇹</span>
+    <span title="Vlaams">🇧🇪</span>
+    <span title="中文">🇨🇳</span>
+    <span title="العربية">🇸🇦</span>
+    <span title="Cymraeg">🏴󠁧󠁢󠁷󠁬󠁳󠁿</span>
   </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <h2>Ready to end dinner drama?</h2>
+  <p>It's free, it's cute, and Whiskers is waiting 🐾</p>
+  <a href="app.html" class="hero-cta">Let's Get Cooking! 🍳</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  Made with <span class="heart">♥</span> by Elin · <a href="https://github.com/ElinMc/FFL" style="color:var(--lavender); text-decoration:none; font-weight:700;">GitHub</a>
+</footer>
 
-  <button class="btn btn-pink" onclick="saveRecipe()" data-i18n="btn_save">Save Recipe</button>
-
-  <div style="margin-top: 30px;">
-    <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 14px;" data-i18n="form_your_recipes">Your Recipes</h2>
-    <div class="suggested-ingredients" style="margin-bottom: 10px;">
-      <div class="chip selected" onclick="setFilter('all')" id="filter-all" data-i18n="filter_all">All</div>
-      <div class="chip" onclick="setFilter('fav')" id="filter-fav" data-i18n="filter_fav">&#x2764;&#xFE0F; Favorites</div>
-      <div class="chip" onclick="setFilter('top')" id="filter-top" data-i18n="filter_top">&#x2B50; Top Rated</div>
-    </div>
-    <div class="suggested-ingredients" id="category-filter-bar" style="margin-bottom: 14px;"></div>
-    <div id="recipes-list"></div>
-  </div>
-</div>
-
-<div id="page-spin" class="page">
-  <div class="spin-mode-toggle">
-    <button class="active" onclick="setSpinMode('all')" id="mode-all" data-i18n="spin_all">All</button>
-    <button onclick="setSpinMode('surprise')" id="mode-surprise" data-i18n="spin_surprise">&#x2728; Surprise Me</button>
-    <button onclick="setSpinMode('fav')" id="mode-fav" data-i18n="spin_fav">&#x2764;&#xFE0F; Favorites</button>
-  </div>
-  <div class="spin-area">
-    <button class="spin-button" id="spin-btn" onclick="spinRoulette()" data-i18n="btn_spin">SPIN!</button>
-  </div>
-  <div class="roulette-display" id="roulette-display"></div>
-  <div id="spin-actions" style="display:none;">
-    <button class="btn btn-mint" onclick="openCalendarPicker()">Add to Week</button>
-    <button class="btn btn-lavender" onclick="logToHistory()">I ate this tonight!</button>
-  </div>
-</div>
-
-<div id="page-calendar" class="page">
-  <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 14px;">This Week's Dinners</h2>
-  <div id="calendar-grid"></div>
-  <button class="btn btn-lavender" onclick="autoFillWeek()">&#x2728; Auto-fill My Week</button>
-  <button class="btn btn-peach" onclick="clearWeek()">Clear Week</button>
-
-  <div style="margin-top: 30px;">
-    <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 14px;">Meal History</h2>
-    <div id="history-list"></div>
-  </div>
-</div>
-
-<div id="page-grocery" class="page">
-  <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 6px;">Grocery List</h2>
-  <p style="color: var(--text-light); font-size: 14px; margin-bottom: 14px;">
-    Based on meals in your week. Amounts for <span id="people-count">4</span> people.
-  </p>
-  <button class="btn btn-lavender" onclick="generateGroceryList()" data-i18n="btn_make_list">Make Grocery List</button>
-  <div id="grocery-list" style="margin-top: 18px;"></div>
-</div>
-
-<div id="page-settings" class="page">
-  <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 14px;" data-i18n="nav_settings">Settings</h2>
-  <div class="setting-row" style="display:block;">
-    <label style="margin-bottom: 10px;" data-i18n="setting_lang">Language</label>
-    <select id="lang-select" onchange="setLanguage(this.value)" style="width: 100%; padding: 12px 16px; border-radius: 14px; border: 2px solid #f0e0e8; font-family: inherit; font-size: 15px; font-weight: 600; background: var(--card-bg); color: var(--text);">
-      <option value="en">🇬🇧 English</option>
-      <option value="nl">🇧🇪 Vlaams (Flemish)</option>
-      <option value="fr">🇫🇷 Français</option>
-      <option value="it">🇮🇹 Italiano</option>
-      <option value="de">🇩🇪 Deutsch</option>
-      <option value="es">🇪🇸 Español</option>
-      <option value="zh">🇨🇳 中文</option>
-      <option value="ar">🇸🇦 العربية</option>
-      <option value="cy">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Cymraeg</option>
-    </select>
-  </div>
-  <div class="setting-row">
-    <label data-i18n="setting_family">How many people?</label>
-    <input type="number" id="family-size-input" min="1" max="20" onchange="setFamilySize()">
-  </div>
-  <div class="setting-row">
-    <label data-i18n="setting_sound">Sound effects</label>
-    <div class="toggle-switch" id="sound-toggle" onclick="toggleSound()"></div>
-  </div>
-  <div class="setting-row">
-    <label data-i18n="setting_theme">Dark mode</label>
-    <div class="toggle-switch" id="dark-toggle" onclick="toggleTheme()"></div>
-  </div>
-  <div class="setting-row" style="display:block;">
-    <label style="margin-bottom: 10px;">Clear all data</label>
-    <button class="btn btn-peach btn-small" onclick="clearAllData()">Reset Everything</button>
-  </div>
-</div>
-
-<div class="celebration-overlay" id="celebration">
-  <div class="winner-emoji" id="winner-emoji">&#x1F37D;&#xFE0F;</div>
-  <div class="winner-text" id="winner-text"></div>
-  <div class="winner-sub">Tonight's dinner!</div>
-  <div class="six-seven-hands">&#x1F64C; &#x1F64C;</div>
-  <button class="close-celebration" onclick="closeCelebration()">Let's go!</button>
-</div>
-
-<div class="modal-overlay" id="day-modal">
-  <div class="modal">
-    <h3 id="day-modal-title">Pick a day</h3>
-    <div id="day-modal-body"></div>
-    <button class="btn btn-peach btn-small" onclick="closeDayModal()" style="margin-top: 10px;">Cancel</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="recipe-modal">
-  <div class="modal">
-    <h3 id="recipe-modal-title">Pick a recipe</h3>
-    <div id="recipe-modal-body"></div>
-    <button class="btn btn-peach btn-small" onclick="closeRecipeModal()" style="margin-top: 10px;">Cancel</button>
-  </div>
-</div>
-
-<script>
-  let recipes = JSON.parse(localStorage.getItem('dr_recipes') || '[]');
-  let week = JSON.parse(localStorage.getItem('dr_week') || '{"Mon":null,"Tue":null,"Wed":null,"Thu":null,"Fri":null,"Sat":null,"Sun":null}');
-  let history = JSON.parse(localStorage.getItem('dr_history') || '[]');
-  let groceryChecked = JSON.parse(localStorage.getItem('dr_groceryChecked') || '[]');
-  let settings = JSON.parse(localStorage.getItem('dr_settings') || '{"familySize":4,"sound":true,"theme":"light","lang":"en"}');
-  if (!settings.lang) settings.lang = 'en';
-
-  // ============ TRANSLATIONS ============
-  const translations = {
-    en: {
-      app_title: "Dinner Roulette", app_subtitle: "What's for dinner tonight?",
-      nav_recipes: "Recipes", nav_spin: "Spin!", nav_groceries: "Groceries", nav_week: "Week", nav_settings: "Settings",
-      form_recipe_name: "Recipe Name", form_recipe_placeholder: "e.g. Pasta Bolognese",
-      form_suggested: "Suggested Ingredients (tap to select)", form_add_own: "Add Your Own Ingredient",
-      form_your_recipes: "Your Recipes", form_which_cat: "Which category?",
-      form_cat_hint: "Leave blank and I'll guess it for you!",
-      btn_save: "Save Recipe", btn_add: "+ Add", btn_spin: "SPIN!",
-      btn_search_web: "\u{1F30D} Search the web", btn_searching: "\u{1F50D} Searching...",
-      btn_add_to_week: "Add to This Week", btn_make_list: "Make Grocery List",
-      filter_all: "All", filter_fav: "\u2764\uFE0F Favorites", filter_top: "\u2B50 Top Rated",
-      cat_all: "All", cat_breakfast: "Breakfast", cat_lunch: "Lunch",
-      cat_dinner: "Dinner", cat_snacks: "Snacks", cat_sweet: "Sweet Stuff",
-      spin_all: "All", spin_surprise: "\u2728 Surprise Me", spin_fav: "\u2764\uFE0F Favorites",
-      setting_family: "Family Size", setting_sound: "Sound", setting_theme: "Theme", setting_lang: "Language",
-      grocery_pick: "Pick Meals for the Week", grocery_list: "Shopping List",
-      mascot_idle: ["What's cooking?","Hungry yet?","Let's eat!","Yummy yum!","Ready, chef?","Spin to win!","Tap me!"],
-      mascot_saved: "Yum! Saved \u2728", mascot_thinking: "Looking it up... \u{1F50D}",
-      mascot_found: "Found it! \u2728", mascot_guess: "Made a guess for you!",
-      mascot_notfound: "Couldn't find it \u{1F615}", mascot_sixseven: "Six seven! \u{1F64C}",
-      alert_need_name: "Give your recipe a name!", alert_need_ing: "Add at least one ingredient!",
-      alert_need_recipes: "Add at least 2 recipes first!", alert_need_type: "Type a recipe name first!"
-    },
-    nl: {
-      app_title: "Avondeten Roulette", app_subtitle: "Wat eten we vanavond?",
-      nav_recipes: "Recepten", nav_spin: "Draai!", nav_groceries: "Boodschappen", nav_week: "Week", nav_settings: "Instellingen",
-      form_recipe_name: "Recept Naam", form_recipe_placeholder: "bv. Spaghetti Bolognese",
-      form_suggested: "Voorgestelde Ingrediënten (tik om te kiezen)", form_add_own: "Voeg Eigen Ingrediënt Toe",
-      form_your_recipes: "Jouw Recepten", form_which_cat: "Welke categorie?",
-      form_cat_hint: "Laat leeg en ik raad het voor je!",
-      btn_save: "Recept Opslaan", btn_add: "+ Toevoegen", btn_spin: "DRAAI!",
-      btn_search_web: "\u{1F30D} Zoek op het web", btn_searching: "\u{1F50D} Zoeken...",
-      btn_add_to_week: "Voeg Toe Aan Deze Week", btn_make_list: "Maak Boodschappenlijst",
-      filter_all: "Alles", filter_fav: "\u2764\uFE0F Favorieten", filter_top: "\u2B50 Top Beoordeeld",
-      cat_all: "Alles", cat_breakfast: "Ontbijt", cat_lunch: "Middageten",
-      cat_dinner: "Avondeten", cat_snacks: "Tussendoortjes", cat_sweet: "Zoetigheden",
-      spin_all: "Alles", spin_surprise: "\u2728 Verras Me", spin_fav: "\u2764\uFE0F Favorieten",
-      setting_family: "Gezinsgrootte", setting_sound: "Geluid", setting_theme: "Thema", setting_lang: "Taal",
-      grocery_pick: "Kies Maaltijden Voor De Week", grocery_list: "Boodschappenlijst",
-      mascot_idle: ["Wat koken we?","Honger?","Laten we eten!","Mmm, lekker!","Klaar, chef?","Draai mee!","Tik op mij!"],
-      mascot_saved: "Lekker! Bewaard \u2728", mascot_thinking: "Ik zoek het op... \u{1F50D}",
-      mascot_found: "Gevonden! \u2728", mascot_guess: "Ik maak een gok voor je!",
-      mascot_notfound: "Ik kon het niet vinden \u{1F615}", mascot_sixseven: "Zes zeven! \u{1F64C}",
-      alert_need_name: "Geef je recept een naam!", alert_need_ing: "Voeg minstens één ingrediënt toe!",
-      alert_need_recipes: "Voeg eerst minstens 2 recepten toe!", alert_need_type: "Typ eerst een receptnaam!"
-    },
-    fr: {
-      app_title: "Roulette du Dîner", app_subtitle: "Qu'est-ce qu'on mange ce soir ?",
-      nav_recipes: "Recettes", nav_spin: "Tourne !", nav_groceries: "Courses", nav_week: "Semaine", nav_settings: "Réglages",
-      form_recipe_name: "Nom de la Recette", form_recipe_placeholder: "ex : Pâtes Bolognaise",
-      form_suggested: "Ingrédients Suggérés (touche pour sélectionner)", form_add_own: "Ajoute ton Ingrédient",
-      form_your_recipes: "Tes Recettes", form_which_cat: "Quelle catégorie ?",
-      form_cat_hint: "Laisse vide et je devine pour toi !",
-      btn_save: "Enregistrer", btn_add: "+ Ajouter", btn_spin: "TOURNE !",
-      btn_search_web: "\u{1F30D} Chercher sur le web", btn_searching: "\u{1F50D} Recherche...",
-      btn_add_to_week: "Ajouter à cette semaine", btn_make_list: "Faire la liste de courses",
-      filter_all: "Tout", filter_fav: "\u2764\uFE0F Favoris", filter_top: "\u2B50 Mieux Notés",
-      cat_all: "Tout", cat_breakfast: "Petit-déj", cat_lunch: "Déjeuner",
-      cat_dinner: "Dîner", cat_snacks: "Encas", cat_sweet: "Sucreries",
-      spin_all: "Tout", spin_surprise: "\u2728 Surprends-moi", spin_fav: "\u2764\uFE0F Favoris",
-      setting_family: "Taille de la Famille", setting_sound: "Son", setting_theme: "Thème", setting_lang: "Langue",
-      grocery_pick: "Choisis les Repas de la Semaine", grocery_list: "Liste de Courses",
-      mascot_idle: ["On cuisine quoi ?","Tu as faim ?","À table !","Miam miam !","Prêt, chef ?","Fais tourner !","Touche-moi !"],
-      mascot_saved: "Miam ! Enregistré \u2728", mascot_thinking: "Je cherche... \u{1F50D}",
-      mascot_found: "Trouvé ! \u2728", mascot_guess: "J'ai fait une supposition !",
-      mascot_notfound: "Pas trouvé \u{1F615}", mascot_sixseven: "Six sept ! \u{1F64C}",
-      alert_need_name: "Donne un nom à ta recette !", alert_need_ing: "Ajoute au moins un ingrédient !",
-      alert_need_recipes: "Ajoute au moins 2 recettes !", alert_need_type: "Tape un nom de recette !"
-    },
-    it: {
-      app_title: "Roulette della Cena", app_subtitle: "Cosa si mangia stasera?",
-      nav_recipes: "Ricette", nav_spin: "Gira!", nav_groceries: "Spesa", nav_week: "Settimana", nav_settings: "Impostazioni",
-      form_recipe_name: "Nome Ricetta", form_recipe_placeholder: "es. Pasta al Ragù",
-      form_suggested: "Ingredienti Suggeriti (tocca per scegliere)", form_add_own: "Aggiungi il Tuo Ingrediente",
-      form_your_recipes: "Le Tue Ricette", form_which_cat: "Quale categoria?",
-      form_cat_hint: "Lascia vuoto e indovino io!",
-      btn_save: "Salva Ricetta", btn_add: "+ Aggiungi", btn_spin: "GIRA!",
-      btn_search_web: "\u{1F30D} Cerca sul web", btn_searching: "\u{1F50D} Sto cercando...",
-      btn_add_to_week: "Aggiungi a Questa Settimana", btn_make_list: "Crea Lista della Spesa",
-      filter_all: "Tutto", filter_fav: "\u2764\uFE0F Preferiti", filter_top: "\u2B50 Migliori",
-      cat_all: "Tutto", cat_breakfast: "Colazione", cat_lunch: "Pranzo",
-      cat_dinner: "Cena", cat_snacks: "Spuntini", cat_sweet: "Dolci",
-      spin_all: "Tutto", spin_surprise: "\u2728 Sorprendimi", spin_fav: "\u2764\uFE0F Preferiti",
-      setting_family: "Famiglia", setting_sound: "Suono", setting_theme: "Tema", setting_lang: "Lingua",
-      grocery_pick: "Scegli i Pasti della Settimana", grocery_list: "Lista della Spesa",
-      mascot_idle: ["Cosa cuciniamo?","Hai fame?","Mangiamo!","Mmm, buono!","Pronto, chef?","Gira!","Toccami!"],
-      mascot_saved: "Mmm! Salvato \u2728", mascot_thinking: "Sto cercando... \u{1F50D}",
-      mascot_found: "Trovato! \u2728", mascot_guess: "Ho fatto un'ipotesi!",
-      mascot_notfound: "Non l'ho trovato \u{1F615}", mascot_sixseven: "Sei sette! \u{1F64C}",
-      alert_need_name: "Dai un nome alla ricetta!", alert_need_ing: "Aggiungi almeno un ingrediente!",
-      alert_need_recipes: "Aggiungi almeno 2 ricette!", alert_need_type: "Scrivi prima un nome!"
-    },
-    de: {
-      app_title: "Abendessen-Roulette", app_subtitle: "Was gibt's heute Abend?",
-      nav_recipes: "Rezepte", nav_spin: "Drehen!", nav_groceries: "Einkauf", nav_week: "Woche", nav_settings: "Einstellungen",
-      form_recipe_name: "Rezeptname", form_recipe_placeholder: "z.B. Spaghetti Bolognese",
-      form_suggested: "Vorgeschlagene Zutaten (tippen zum Auswählen)", form_add_own: "Eigene Zutat Hinzufügen",
-      form_your_recipes: "Deine Rezepte", form_which_cat: "Welche Kategorie?",
-      form_cat_hint: "Leer lassen und ich rate für dich!",
-      btn_save: "Rezept Speichern", btn_add: "+ Hinzufügen", btn_spin: "DREHEN!",
-      btn_search_web: "\u{1F30D} Im Web suchen", btn_searching: "\u{1F50D} Suche...",
-      btn_add_to_week: "Zu dieser Woche hinzufügen", btn_make_list: "Einkaufsliste Erstellen",
-      filter_all: "Alle", filter_fav: "\u2764\uFE0F Favoriten", filter_top: "\u2B50 Top-Bewertet",
-      cat_all: "Alle", cat_breakfast: "Frühstück", cat_lunch: "Mittagessen",
-      cat_dinner: "Abendessen", cat_snacks: "Snacks", cat_sweet: "Süßes",
-      spin_all: "Alle", spin_surprise: "\u2728 Überrasch mich", spin_fav: "\u2764\uFE0F Favoriten",
-      setting_family: "Familiengröße", setting_sound: "Ton", setting_theme: "Design", setting_lang: "Sprache",
-      grocery_pick: "Mahlzeiten für die Woche wählen", grocery_list: "Einkaufsliste",
-      mascot_idle: ["Was kochen wir?","Hungrig?","Lass uns essen!","Mmm, lecker!","Bereit, Chef?","Dreh mich!","Tipp auf mich!"],
-      mascot_saved: "Lecker! Gespeichert \u2728", mascot_thinking: "Ich suche... \u{1F50D}",
-      mascot_found: "Gefunden! \u2728", mascot_guess: "Ich habe geraten!",
-      mascot_notfound: "Nicht gefunden \u{1F615}", mascot_sixseven: "Sechs sieben! \u{1F64C}",
-      alert_need_name: "Gib deinem Rezept einen Namen!", alert_need_ing: "Füge mindestens eine Zutat hinzu!",
-      alert_need_recipes: "Füge mindestens 2 Rezepte hinzu!", alert_need_type: "Schreib erst einen Namen!"
-    },
-    es: {
-      app_title: "Ruleta de Cena", app_subtitle: "¿Qué hay para cenar hoy?",
-      nav_recipes: "Recetas", nav_spin: "¡Gira!", nav_groceries: "Compras", nav_week: "Semana", nav_settings: "Ajustes",
-      form_recipe_name: "Nombre de Receta", form_recipe_placeholder: "ej: Pasta Boloñesa",
-      form_suggested: "Ingredientes Sugeridos (toca para elegir)", form_add_own: "Añade Tu Ingrediente",
-      form_your_recipes: "Tus Recetas", form_which_cat: "¿Qué categoría?",
-      form_cat_hint: "¡Déjalo vacío y yo adivino!",
-      btn_save: "Guardar Receta", btn_add: "+ Añadir", btn_spin: "¡GIRA!",
-      btn_search_web: "\u{1F30D} Buscar en la web", btn_searching: "\u{1F50D} Buscando...",
-      btn_add_to_week: "Añadir a Esta Semana", btn_make_list: "Crear Lista de Compras",
-      filter_all: "Todo", filter_fav: "\u2764\uFE0F Favoritos", filter_top: "\u2B50 Mejor Valorados",
-      cat_all: "Todo", cat_breakfast: "Desayuno", cat_lunch: "Comida",
-      cat_dinner: "Cena", cat_snacks: "Aperitivos", cat_sweet: "Dulces",
-      spin_all: "Todo", spin_surprise: "\u2728 Sorpréndeme", spin_fav: "\u2764\uFE0F Favoritos",
-      setting_family: "Tamaño Familia", setting_sound: "Sonido", setting_theme: "Tema", setting_lang: "Idioma",
-      grocery_pick: "Elige Comidas para la Semana", grocery_list: "Lista de Compras",
-      mascot_idle: ["¿Qué cocinamos?","¿Tienes hambre?","¡A comer!","¡Qué rico!","¿Listo, chef?","¡Dale!","¡Tócame!"],
-      mascot_saved: "¡Rico! Guardado \u2728", mascot_thinking: "Buscando... \u{1F50D}",
-      mascot_found: "¡Encontrado! \u2728", mascot_guess: "¡Hice una suposición!",
-      mascot_notfound: "No lo encontré \u{1F615}", mascot_sixseven: "¡Seis siete! \u{1F64C}",
-      alert_need_name: "¡Dale un nombre a tu receta!", alert_need_ing: "¡Añade al menos un ingrediente!",
-      alert_need_recipes: "¡Añade al menos 2 recetas!", alert_need_type: "¡Escribe un nombre primero!"
-    },
-    zh: {
-      app_title: "\u665A\u9910\u8F6E\u76D8", app_subtitle: "\u4ECA\u665A\u5403\u4EC0\u4E48\uFF1F",
-      nav_recipes: "\u98DF\u8C31", nav_spin: "\u8F6C\uFF01", nav_groceries: "\u8D2D\u7269", nav_week: "\u4E00\u5468", nav_settings: "\u8BBE\u7F6E",
-      form_recipe_name: "\u98DF\u8C31\u540D\u79F0", form_recipe_placeholder: "\u5982\uFF1A\u610F\u5927\u5229\u8089\u9171\u9762",
-      form_suggested: "\u63A8\u8350\u98DF\u6750\uFF08\u70B9\u51FB\u9009\u62E9\uFF09", form_add_own: "\u6DFB\u52A0\u4F60\u7684\u98DF\u6750",
-      form_your_recipes: "\u4F60\u7684\u98DF\u8C31", form_which_cat: "\u54EA\u4E2A\u5206\u7C7B\uFF1F",
-      form_cat_hint: "\u7559\u7A7A\u6211\u4F1A\u731C\u7684\uFF01",
-      btn_save: "\u4FDD\u5B58\u98DF\u8C31", btn_add: "+ \u6DFB\u52A0", btn_spin: "\u8F6C\uFF01",
-      btn_search_web: "\u{1F30D} \u641C\u7D22\u7F51\u9875", btn_searching: "\u{1F50D} \u641C\u7D22\u4E2D...",
-      btn_add_to_week: "\u52A0\u5230\u672C\u5468", btn_make_list: "\u751F\u6210\u8D2D\u7269\u6E05\u5355",
-      filter_all: "\u5168\u90E8", filter_fav: "\u2764\uFE0F \u6536\u85CF", filter_top: "\u2B50 \u9AD8\u8BC4\u5206",
-      cat_all: "\u5168\u90E8", cat_breakfast: "\u65E9\u9910", cat_lunch: "\u5348\u9910",
-      cat_dinner: "\u665A\u9910", cat_snacks: "\u96F6\u98DF", cat_sweet: "\u751C\u70B9",
-      spin_all: "\u5168\u90E8", spin_surprise: "\u2728 \u7ED9\u6211\u60CA\u559C", spin_fav: "\u2764\uFE0F \u6536\u85CF",
-      setting_family: "\u5BB6\u5EAD\u4EBA\u6570", setting_sound: "\u58F0\u97F3", setting_theme: "\u4E3B\u9898", setting_lang: "\u8BED\u8A00",
-      grocery_pick: "\u9009\u62E9\u672C\u5468\u996D\u83DC", grocery_list: "\u8D2D\u7269\u6E05\u5355",
-      mascot_idle: ["\u5728\u505A\u4EC0\u4E48\uFF1F","\u997F\u4E86\u5417\uFF1F","\u5403\u996D\u5566\uFF01","\u597D\u5403\uFF01","\u51C6\u5907\u597D\u4E86\u5417\uFF1F","\u8F6C\u8F6C\u76D8\uFF01","\u6478\u6478\u6211\uFF01"],
-      mascot_saved: "\u597D\u5403\uFF01\u5DF2\u4FDD\u5B58 \u2728", mascot_thinking: "\u6B63\u5728\u67E5\u627E... \u{1F50D}",
-      mascot_found: "\u627E\u5230\u4E86\uFF01\u2728", mascot_guess: "\u6211\u731C\u4E86\u4E00\u4E2A\uFF01",
-      mascot_notfound: "\u6CA1\u627E\u5230 \u{1F615}", mascot_sixseven: "\u516D\u4E03\uFF01\u{1F64C}",
-      alert_need_name: "\u7ED9\u98DF\u8C31\u8D77\u4E2A\u540D\u5B57\uFF01", alert_need_ing: "\u81F3\u5C11\u6DFB\u52A0\u4E00\u79CD\u98DF\u6750\uFF01",
-      alert_need_recipes: "\u81F3\u5C11\u6DFB\u52A02\u4E2A\u98DF\u8C31\uFF01", alert_need_type: "\u5148\u8F93\u5165\u98DF\u8C31\u540D\uFF01"
-    },
-    ar: {
-      app_title: "\u0631\u0648\u0644\u064A\u062A \u0627\u0644\u0639\u0634\u0627\u0621", app_subtitle: "\u0645\u0627\u0630\u0627 \u0633\u0646\u0623\u0643\u0644 \u0627\u0644\u0644\u064A\u0644\u0629\u061F",
-      nav_recipes: "\u0627\u0644\u0648\u0635\u0641\u0627\u062A", nav_spin: "\u0623\u062F\u0631!", nav_groceries: "\u0627\u0644\u0628\u0642\u0627\u0644\u0629", nav_week: "\u0627\u0644\u0623\u0633\u0628\u0648\u0639", nav_settings: "\u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A",
-      form_recipe_name: "\u0627\u0633\u0645 \u0627\u0644\u0648\u0635\u0641\u0629", form_recipe_placeholder: "\u0645\u062B\u0644: \u0628\u0627\u0633\u062A\u0627 \u0628\u0627\u0644\u0644\u062D\u0645",
-      form_suggested: "\u0645\u0643\u0648\u0646\u0627\u062A \u0645\u0642\u062A\u0631\u062D\u0629 (\u0627\u0636\u063A\u0637 \u0644\u0644\u0627\u062E\u062A\u064A\u0627\u0631)", form_add_own: "\u0623\u0636\u0641 \u0645\u0643\u0648\u0646\u0627\u062A\u0643",
-      form_your_recipes: "\u0648\u0635\u0641\u0627\u062A\u0643", form_which_cat: "\u0623\u064A \u0641\u0626\u0629\u061F",
-      form_cat_hint: "\u0627\u062A\u0631\u0643\u0647\u0627 \u0641\u0627\u0631\u063A\u0629 \u0648\u0633\u0623\u062D\u0632\u0631!",
-      btn_save: "\u0627\u062D\u0641\u0638 \u0627\u0644\u0648\u0635\u0641\u0629", btn_add: "+ \u0623\u0636\u0641", btn_spin: "\u0623\u062F\u0631!",
-      btn_search_web: "\u{1F30D} \u0627\u0628\u062D\u062B \u0641\u064A \u0627\u0644\u0648\u064A\u0628", btn_searching: "\u{1F50D} \u062C\u0627\u0631\u064A \u0627\u0644\u0628\u062D\u062B...",
-      btn_add_to_week: "\u0623\u0636\u0641 \u0644\u0647\u0630\u0627 \u0627\u0644\u0623\u0633\u0628\u0648\u0639", btn_make_list: "\u0623\u0646\u0634\u0626 \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u062A\u0633\u0648\u0642",
-      filter_all: "\u0627\u0644\u0643\u0644", filter_fav: "\u2764\uFE0F \u0627\u0644\u0645\u0641\u0636\u0644\u0629", filter_top: "\u2B50 \u0627\u0644\u0623\u0641\u0636\u0644",
-      cat_all: "\u0627\u0644\u0643\u0644", cat_breakfast: "\u0627\u0644\u0641\u0637\u0648\u0631", cat_lunch: "\u0627\u0644\u063A\u062F\u0627\u0621",
-      cat_dinner: "\u0627\u0644\u0639\u0634\u0627\u0621", cat_snacks: "\u0648\u062C\u0628\u0627\u062A \u062E\u0641\u064A\u0641\u0629", cat_sweet: "\u062D\u0644\u0648\u064A\u0627\u062A",
-      spin_all: "\u0627\u0644\u0643\u0644", spin_surprise: "\u2728 \u0641\u0627\u062C\u0626\u0646\u064A", spin_fav: "\u2764\uFE0F \u0627\u0644\u0645\u0641\u0636\u0644\u0629",
-      setting_family: "\u062D\u062C\u0645 \u0627\u0644\u0639\u0627\u0626\u0644\u0629", setting_sound: "\u0627\u0644\u0635\u0648\u062A", setting_theme: "\u0627\u0644\u0645\u0638\u0647\u0631", setting_lang: "\u0627\u0644\u0644\u063A\u0629",
-      grocery_pick: "\u0627\u062E\u062A\u0631 \u0648\u062C\u0628\u0627\u062A \u0627\u0644\u0623\u0633\u0628\u0648\u0639", grocery_list: "\u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u062A\u0633\u0648\u0642",
-      mascot_idle: ["\u0645\u0627\u0630\u0627 \u0646\u0637\u0628\u062E\u061F","\u062C\u0627\u0626\u0639\u061F","\u0647\u064A\u0627 \u0646\u0623\u0643\u0644!","\u0644\u0630\u064A\u0630!","\u0645\u0633\u062A\u0639\u062F\u061F","\u0623\u062F\u0631!","\u0627\u0636\u063A\u0637 \u0639\u0644\u064A!"],
-      mascot_saved: "\u0644\u0630\u064A\u0630! \u062A\u0645 \u0627\u0644\u062D\u0641\u0638 \u2728", mascot_thinking: "\u062C\u0627\u0631\u064A \u0627\u0644\u0628\u062D\u062B... \u{1F50D}",
-      mascot_found: "\u0648\u062C\u062F\u062A\u0647! \u2728", mascot_guess: "\u062D\u0632\u0631\u062A \u0644\u0643!",
-      mascot_notfound: "\u0644\u0645 \u0623\u062C\u062F\u0647 \u{1F615}", mascot_sixseven: "\u0633\u062A\u0629 \u0633\u0628\u0639\u0629! \u{1F64C}",
-      alert_need_name: "\u0623\u0639\u0637 \u0648\u0635\u0641\u062A\u0643 \u0627\u0633\u0645\u0627\u064B!", alert_need_ing: "\u0623\u0636\u0641 \u0645\u0643\u0648\u0646\u0627\u064B \u0648\u0627\u062D\u062F\u0627\u064B \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644!",
-      alert_need_recipes: "\u0623\u0636\u0641 \u0648\u0635\u0641\u062A\u064A\u0646 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644!", alert_need_type: "\u0627\u0643\u062A\u0628 \u0627\u0633\u0645 \u0627\u0644\u0648\u0635\u0641\u0629 \u0623\u0648\u0644\u0627\u064B!"
-    },
-    cy: {
-      app_title: "Rwlét Swper", app_subtitle: "Beth sydd i swper heno?",
-      nav_recipes: "Ryseitiau", nav_spin: "Troi!", nav_groceries: "Nwyddau", nav_week: "Wythnos", nav_settings: "Gosodiadau",
-      form_recipe_name: "Enw'r Rysáit", form_recipe_placeholder: "e.e. Pasta Bolognese",
-      form_suggested: "Cynhwysion Awgrymedig (tapia i ddewis)", form_add_own: "Ychwanegu Dy Gynhwysyn",
-      form_your_recipes: "Dy Ryseitiau", form_which_cat: "Pa gategori?",
-      form_cat_hint: "Gadewch yn wag ac fe ddyfala i!",
-      btn_save: "Cadw'r Rysáit", btn_add: "+ Ychwanegu", btn_spin: "TROI!",
-      btn_search_web: "\u{1F30D} Chwilio'r we", btn_searching: "\u{1F50D} Chwilio...",
-      btn_add_to_week: "Ychwanegu i'r Wythnos Hon", btn_make_list: "Gwneud Rhestr Nwyddau",
-      filter_all: "Pob un", filter_fav: "\u2764\uFE0F Ffefrynnau", filter_top: "\u2B50 Gorau",
-      cat_all: "Pob un", cat_breakfast: "Brecwast", cat_lunch: "Cinio",
-      cat_dinner: "Swper", cat_snacks: "Byrbrydau", cat_sweet: "Pethau Melys",
-      spin_all: "Pob un", spin_surprise: "\u2728 Synnwch fi", spin_fav: "\u2764\uFE0F Ffefrynnau",
-      setting_family: "Maint y Teulu", setting_sound: "Sain", setting_theme: "Thema", setting_lang: "Iaith",
-      grocery_pick: "Dewis Prydau'r Wythnos", grocery_list: "Rhestr Siopa",
-      mascot_idle: ["Beth sy'n coginio?","Llwglyd?","Awn ni i fwyta!","Blasus!","Barod, chef?","Troi!","Tapia fi!"],
-      mascot_saved: "Blasus! Wedi cadw \u2728", mascot_thinking: "Chwilio... \u{1F50D}",
-      mascot_found: "Wedi'i ffeindio! \u2728", mascot_guess: "Dyfais i!",
-      mascot_notfound: "Methais ffeindio \u{1F615}", mascot_sixseven: "Chwech saith! \u{1F64C}",
-      alert_need_name: "Rho enw i'r rysáit!", alert_need_ing: "Ychwanega o leiaf un cynhwysyn!",
-      alert_need_recipes: "Ychwanega o leiaf 2 rysáit!", alert_need_type: "Teipia enw'n gyntaf!"
-    }
-  };
-
-  function t(key) {
-    const lang = settings.lang || 'en';
-    const src = translations[lang] || translations.en;
-    if (src[key] !== undefined) return src[key];
-    if (translations.en[key] !== undefined) return translations.en[key];
-    return key;
-  }
-
-  function applyLanguage() {
-    const lang = settings.lang || 'en';
-    document.documentElement.lang = lang;
-    // RTL for Arabic
-    document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
-    // Walk all [data-i18n] elements and update their text/placeholder
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
-      const val = t(key);
-      if (Array.isArray(val)) return; // array values are for mascot
-      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-        el.placeholder = val;
-      } else {
-        el.textContent = val;
-      }
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-      el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
-    });
-    // Re-render dynamic bits
-    if (typeof renderCategoryBar === 'function') renderCategoryBar();
-    if (typeof renderRecipes === 'function') renderRecipes();
-    // Update mascot idle messages
-    mascotMessages = t('mascot_idle') || [];
-  }
-
-  function setLanguage(lang) {
-    settings.lang = lang;
-    save();
-    applyLanguage();
-    mascotSay(t('mascot_idle')[0] || "Hello!");
-  }
-  let currentIngredients = [];
-  let lastWinner = null;
-  let spinMode = 'all';
-  let recipeFilter = 'all';
-  let pendingDayTarget = null;
-
-  function save() {
-    localStorage.setItem('dr_recipes', JSON.stringify(recipes));
-    localStorage.setItem('dr_week', JSON.stringify(week));
-    localStorage.setItem('dr_history', JSON.stringify(history));
-    localStorage.setItem('dr_groceryChecked', JSON.stringify(groceryChecked));
-    localStorage.setItem('dr_settings', JSON.stringify(settings));
-  }
-
-  const recipeDatabase = {
-    'pasta bolognese': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'minced beef': [125, 'g'], 'tomato sauce': [100, 'ml'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'olive oil': [1, 'tbsp'], 'salt': [0.25, 'tsp'], 'parmesan': [20, 'g'] } },
-    'spaghetti bolognese': { emoji: '\u{1F35D}', ingredients: { 'spaghetti': [100, 'g'], 'minced beef': [125, 'g'], 'tomato sauce': [100, 'ml'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'olive oil': [1, 'tbsp'], 'parmesan': [20, 'g'] } },
-    'pasta': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tomato sauce': [100, 'ml'], 'garlic': [1, 'clove'], 'olive oil': [1, 'tbsp'], 'parmesan': [20, 'g'] } },
-    'carbonara': { emoji: '\u{1F35D}', ingredients: { 'spaghetti': [100, 'g'], 'bacon': [50, 'g'], 'eggs': [1, 'whole'], 'parmesan': [25, 'g'], 'black pepper': [0.5, 'tsp'] } },
-    'pasta carbonara': { emoji: '\u{1F35D}', ingredients: { 'spaghetti': [100, 'g'], 'bacon': [50, 'g'], 'eggs': [1, 'whole'], 'parmesan': [25, 'g'], 'black pepper': [0.5, 'tsp'] } },
-    'pasta pesto': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'pesto': [30, 'g'], 'parmesan': [20, 'g'], 'pine nuts': [10, 'g'], 'cherry tomatoes': [40, 'g'] } },
-    'pesto pasta': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'pesto': [30, 'g'], 'parmesan': [20, 'g'], 'pine nuts': [10, 'g'], 'cherry tomatoes': [40, 'g'] } },
-    'pasta alfredo': { emoji: '\u{1F35D}', ingredients: { 'fettuccine': [100, 'g'], 'butter': [30, 'g'], 'cream': [100, 'ml'], 'parmesan': [40, 'g'], 'garlic': [1, 'clove'], 'black pepper': [0.25, 'tsp'] } },
-    'fettuccine alfredo': { emoji: '\u{1F35D}', ingredients: { 'fettuccine': [100, 'g'], 'butter': [30, 'g'], 'cream': [100, 'ml'], 'parmesan': [40, 'g'], 'garlic': [1, 'clove'] } },
-    'pasta arrabbiata': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tomato sauce': [120, 'ml'], 'garlic': [2, 'cloves'], 'chili flakes': [0.5, 'tsp'], 'olive oil': [1, 'tbsp'], 'parsley': [1, 'tbsp'] } },
-    'pasta arrabiata': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tomato sauce': [120, 'ml'], 'garlic': [2, 'cloves'], 'chili flakes': [0.5, 'tsp'], 'olive oil': [1, 'tbsp'], 'parsley': [1, 'tbsp'] } },
-    'pasta primavera': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'bell pepper': [0.5, 'medium'], 'broccoli': [50, 'g'], 'courgette': [0.5, 'medium'], 'peas': [30, 'g'], 'olive oil': [1, 'tbsp'], 'parmesan': [20, 'g'], 'garlic': [1, 'clove'] } },
-    'tuna pasta': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tuna': [50, 'g'], 'sweetcorn': [40, 'g'], 'mayo': [1.5, 'tbsp'], 'onion': [0.25, 'medium'] } },
-    'pasta bake': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tomato sauce': [120, 'ml'], 'mozzarella': [50, 'g'], 'cheddar cheese': [30, 'g'], 'onion': [0.25, 'medium'], 'garlic': [1, 'clove'] } },
-    'tomato pasta': { emoji: '\u{1F35D}', ingredients: { 'pasta': [100, 'g'], 'tomato sauce': [120, 'ml'], 'garlic': [1, 'clove'], 'basil': [3, 'leaves'], 'olive oil': [1, 'tbsp'], 'parmesan': [20, 'g'] } },
-    'cheese pasta': { emoji: '\u{1F9C0}', ingredients: { 'pasta': [100, 'g'], 'cheddar cheese': [60, 'g'], 'butter': [15, 'g'], 'milk': [80, 'ml'], 'flour': [10, 'g'] } },
-    'ravioli': { emoji: '\u{1F35D}', ingredients: { 'ravioli': [150, 'g'], 'butter': [15, 'g'], 'sage': [3, 'leaves'], 'parmesan': [20, 'g'] } },
-    'tortellini': { emoji: '\u{1F35D}', ingredients: { 'tortellini': [150, 'g'], 'tomato sauce': [80, 'ml'], 'parmesan': [20, 'g'], 'basil': [3, 'leaves'] } },
-    'gnocchi': { emoji: '\u{1F954}', ingredients: { 'gnocchi': [150, 'g'], 'tomato sauce': [100, 'ml'], 'mozzarella': [40, 'g'], 'basil': [3, 'leaves'], 'parmesan': [15, 'g'] } },
-    'pasta salad': { emoji: '\u{1F957}', ingredients: { 'pasta': [80, 'g'], 'tomato': [0.5, 'medium'], 'cucumber': [0.25, 'medium'], 'olives': [5, 'olives'], 'feta': [30, 'g'], 'olive oil': [1, 'tbsp'] } },
-    'mac and cheese': { emoji: '\u{1F9C0}', ingredients: { 'macaroni': [100, 'g'], 'cheddar cheese': [50, 'g'], 'butter': [15, 'g'], 'milk': [150, 'ml'], 'flour': [10, 'g'] } },
-    'pizza': { emoji: '\u{1F355}', ingredients: { 'pizza dough': [150, 'g'], 'tomato sauce': [60, 'ml'], 'mozzarella': [60, 'g'], 'olive oil': [1, 'tsp'], 'basil': [2, 'leaves'] } },
-    'margherita pizza': { emoji: '\u{1F355}', ingredients: { 'pizza dough': [150, 'g'], 'tomato sauce': [60, 'ml'], 'mozzarella': [60, 'g'], 'basil': [3, 'leaves'] } },
-    'burger': { emoji: '\u{1F354}', ingredients: { 'burger buns': [1, 'bun'], 'minced beef': [150, 'g'], 'lettuce': [2, 'leaves'], 'tomato': [2, 'slices'], 'onion': [2, 'slices'], 'ketchup': [1, 'tbsp'], 'cheese': [1, 'slice'] } },
-    'cheeseburger': { emoji: '\u{1F354}', ingredients: { 'burger buns': [1, 'bun'], 'minced beef': [150, 'g'], 'cheese slice': [1, 'slice'], 'lettuce': [2, 'leaves'], 'tomato': [2, 'slices'], 'ketchup': [1, 'tbsp'] } },
-    'chicken nuggets': { emoji: '\u{1F357}', ingredients: { 'chicken breast': [150, 'g'], 'breadcrumbs': [50, 'g'], 'egg': [0.5, 'whole'], 'flour': [20, 'g'], 'oil': [2, 'tbsp'] } },
-    'tacos': { emoji: '\u{1F32E}', ingredients: { 'taco shells': [2, 'shells'], 'minced beef': [100, 'g'], 'lettuce': [2, 'leaves'], 'tomato': [0.5, 'medium'], 'cheese': [30, 'g'], 'sour cream': [1, 'tbsp'], 'salsa': [2, 'tbsp'] } },
-    'fried rice': { emoji: '\u{1F35A}', ingredients: { 'rice': [75, 'g'], 'egg': [1, 'whole'], 'soy sauce': [1, 'tbsp'], 'peas': [30, 'g'], 'carrots': [40, 'g'], 'spring onion': [1, 'stem'], 'sesame oil': [1, 'tsp'] } },
-    'pancakes': { emoji: '\u{1F95E}', ingredients: { 'flour': [60, 'g'], 'egg': [0.5, 'whole'], 'milk': [100, 'ml'], 'sugar': [1, 'tbsp'], 'butter': [10, 'g'], 'baking powder': [0.5, 'tsp'] } },
-    'omelette': { emoji: '\u{1F373}', ingredients: { 'eggs': [3, 'whole'], 'cheese': [30, 'g'], 'ham': [30, 'g'], 'mushrooms': [40, 'g'], 'butter': [10, 'g'] } },
-    'chicken stir fry': { emoji: '\u{1F963}', ingredients: { 'chicken breast': [150, 'g'], 'broccoli': [80, 'g'], 'soy sauce': [1.5, 'tbsp'], 'garlic': [1, 'clove'], 'ginger': [5, 'g'], 'bell pepper': [0.5, 'medium'], 'oil': [1, 'tbsp'], 'rice': [75, 'g'] } },
-    'spaghetti': { emoji: '\u{1F35D}', ingredients: { 'spaghetti': [100, 'g'], 'tomato sauce': [100, 'ml'], 'garlic': [1, 'clove'], 'olive oil': [1, 'tbsp'], 'basil': [3, 'leaves'], 'parmesan': [20, 'g'] } },
-    'fish fingers': { emoji: '\u{1F41F}', ingredients: { 'fish fillets': [150, 'g'], 'breadcrumbs': [40, 'g'], 'egg': [0.5, 'whole'], 'flour': [20, 'g'], 'lemon': [0.25, 'lemon'] } },
-    'fish and chips': { emoji: '\u{1F41F}', ingredients: { 'fish fillets': [180, 'g'], 'potatoes': [250, 'g'], 'flour': [40, 'g'], 'oil': [3, 'tbsp'], 'peas': [60, 'g'] } },
-    'grilled cheese': { emoji: '\u{1F9C0}', ingredients: { 'bread': [2, 'slices'], 'butter': [10, 'g'], 'cheddar cheese': [50, 'g'] } },
-    'chicken soup': { emoji: '\u{1F372}', ingredients: { 'chicken': [100, 'g'], 'onion': [0.25, 'medium'], 'garlic': [1, 'clove'], 'carrots': [50, 'g'], 'celery': [30, 'g'], 'noodles': [30, 'g'], 'chicken stock': [300, 'ml'] } },
-    'tomato soup': { emoji: '\u{1F345}', ingredients: { 'tomatoes': [250, 'g'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'cream': [30, 'ml'], 'basil': [3, 'leaves'], 'stock': [200, 'ml'], 'butter': [10, 'g'] } },
-    'salad': { emoji: '\u{1F957}', ingredients: { 'lettuce': [60, 'g'], 'tomato': [1, 'medium'], 'cucumber': [0.5, 'medium'], 'olive oil': [1, 'tbsp'], 'lemon': [0.25, 'lemon'] } },
-    'caesar salad': { emoji: '\u{1F957}', ingredients: { 'lettuce': [100, 'g'], 'chicken breast': [100, 'g'], 'croutons': [20, 'g'], 'parmesan': [20, 'g'], 'caesar dressing': [2, 'tbsp'] } },
-    'sandwich': { emoji: '\u{1F96A}', ingredients: { 'bread': [2, 'slices'], 'butter': [10, 'g'], 'ham': [30, 'g'], 'cheese': [25, 'g'], 'lettuce': [1, 'leaf'], 'tomato': [2, 'slices'] } },
-    'quesadilla': { emoji: '\u{1FAD3}', ingredients: { 'tortilla': [2, 'tortillas'], 'cheese': [60, 'g'], 'chicken': [80, 'g'], 'bell pepper': [0.25, 'medium'], 'salsa': [2, 'tbsp'] } },
-    'curry': { emoji: '\u{1F35B}', ingredients: { 'chicken': [150, 'g'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'curry paste': [1.5, 'tbsp'], 'coconut milk': [100, 'ml'], 'rice': [75, 'g'] } },
-    'chicken curry': { emoji: '\u{1F35B}', ingredients: { 'chicken': [150, 'g'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'curry powder': [1, 'tbsp'], 'coconut milk': [100, 'ml'], 'rice': [75, 'g'], 'tomato': [0.5, 'medium'] } },
-    'shepherds pie': { emoji: '\u{1F967}', ingredients: { 'minced lamb': [150, 'g'], 'potatoes': [250, 'g'], 'onion': [0.5, 'medium'], 'carrots': [50, 'g'], 'peas': [40, 'g'], 'gravy': [100, 'ml'] } },
-    'lasagna': { emoji: '\u{1F35D}', ingredients: { 'lasagna sheets': [80, 'g'], 'minced beef': [120, 'g'], 'tomato sauce': [150, 'ml'], 'mozzarella': [50, 'g'], 'ricotta': [40, 'g'], 'onion': [0.25, 'medium'] } },
-    'baked potato': { emoji: '\u{1F954}', ingredients: { 'potatoes': [250, 'g'], 'butter': [15, 'g'], 'cheese': [40, 'g'], 'beans': [100, 'g'] } },
-    'wraps': { emoji: '\u{1F32F}', ingredients: { 'tortilla wraps': [1, 'wrap'], 'chicken': [80, 'g'], 'lettuce': [20, 'g'], 'tomato': [0.25, 'medium'], 'mayo': [1, 'tbsp'], 'cheese': [20, 'g'] } },
-    'noodles': { emoji: '\u{1F35C}', ingredients: { 'noodles': [100, 'g'], 'soy sauce': [1, 'tbsp'], 'vegetables': [100, 'g'], 'garlic': [1, 'clove'], 'sesame oil': [1, 'tsp'] } },
-    'ramen': { emoji: '\u{1F35C}', ingredients: { 'ramen noodles': [100, 'g'], 'broth': [400, 'ml'], 'egg': [1, 'whole'], 'spring onion': [1, 'stem'], 'pork': [60, 'g'] } },
-    'risotto': { emoji: '\u{1F35A}', ingredients: { 'rice': [75, 'g'], 'onion': [0.25, 'medium'], 'garlic': [1, 'clove'], 'stock': [250, 'ml'], 'parmesan': [25, 'g'], 'butter': [15, 'g'] } },
-    'chili': { emoji: '\u{1F336}', ingredients: { 'minced beef': [125, 'g'], 'kidney beans': [80, 'g'], 'tomatoes': [100, 'g'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'chili powder': [1, 'tsp'], 'rice': [75, 'g'] } },
-    'sausages and mash': { emoji: '\u{1F32D}', ingredients: { 'sausages': [2, 'sausages'], 'potatoes': [250, 'g'], 'butter': [15, 'g'], 'milk': [50, 'ml'], 'onion': [0.5, 'medium'], 'gravy': [80, 'ml'], 'peas': [50, 'g'] } },
-    'roast chicken': { emoji: '\u{1F357}', ingredients: { 'whole chicken': [250, 'g'], 'potatoes': [200, 'g'], 'carrots': [80, 'g'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'olive oil': [1, 'tbsp'], 'rosemary': [0.5, 'tsp'] } },
-    'french toast': { emoji: '\u{1F35E}', ingredients: { 'bread': [2, 'slices'], 'eggs': [1, 'whole'], 'milk': [50, 'ml'], 'cinnamon': [0.25, 'tsp'], 'sugar': [1, 'tsp'], 'butter': [10, 'g'], 'maple syrup': [1, 'tbsp'] } },
-    'burrito': { emoji: '\u{1F32F}', ingredients: { 'tortilla': [1, 'large'], 'rice': [50, 'g'], 'beans': [60, 'g'], 'chicken': [100, 'g'], 'cheese': [30, 'g'], 'salsa': [2, 'tbsp'] } },
-    'sushi': { emoji: '\u{1F363}', ingredients: { 'sushi rice': [80, 'g'], 'nori': [2, 'sheets'], 'salmon': [60, 'g'], 'cucumber': [0.25, 'medium'], 'avocado': [0.25, 'medium'], 'soy sauce': [2, 'tbsp'] } },
-    'meatballs': { emoji: '\u{1F35D}', ingredients: { 'minced beef': [125, 'g'], 'breadcrumbs': [20, 'g'], 'egg': [0.25, 'whole'], 'onion': [0.25, 'medium'], 'spaghetti': [80, 'g'], 'tomato sauce': [100, 'ml'] } },
-    'hot dogs': { emoji: '\u{1F32D}', ingredients: { 'hot dog sausages': [2, 'sausages'], 'hot dog buns': [2, 'buns'], 'ketchup': [1, 'tbsp'], 'mustard': [1, 'tsp'] } },
-    'dumplings': { emoji: '\u{1F95F}', ingredients: { 'dumpling wrappers': [8, 'wrappers'], 'minced pork': [80, 'g'], 'cabbage': [40, 'g'], 'spring onion': [1, 'stem'], 'soy sauce': [1, 'tbsp'] } },
-
-    // Chicken dishes
-    'chicken tikka masala': { emoji: '\u{1F35B}', ingredients: { 'chicken breast': [150, 'g'], 'yogurt': [40, 'g'], 'tomato sauce': [100, 'ml'], 'cream': [50, 'ml'], 'garam masala': [1, 'tsp'], 'garlic': [1, 'clove'], 'ginger': [5, 'g'], 'onion': [0.5, 'medium'], 'rice': [75, 'g'] } },
-    'chicken tikka': { emoji: '\u{1F357}', ingredients: { 'chicken breast': [150, 'g'], 'yogurt': [50, 'g'], 'garam masala': [1, 'tsp'], 'paprika': [0.5, 'tsp'], 'garlic': [1, 'clove'], 'ginger': [5, 'g'], 'lemon': [0.25, 'lemon'] } },
-    'butter chicken': { emoji: '\u{1F35B}', ingredients: { 'chicken breast': [150, 'g'], 'butter': [15, 'g'], 'tomato sauce': [100, 'ml'], 'cream': [60, 'ml'], 'garam masala': [1, 'tsp'], 'garlic': [1, 'clove'], 'onion': [0.5, 'medium'], 'rice': [75, 'g'] } },
-    'chicken fajitas': { emoji: '\u{1F32F}', ingredients: { 'chicken breast': [150, 'g'], 'tortilla': [2, 'wraps'], 'bell pepper': [0.5, 'medium'], 'onion': [0.5, 'medium'], 'fajita seasoning': [1, 'tbsp'], 'sour cream': [1, 'tbsp'], 'salsa': [2, 'tbsp'] } },
-    'chicken kebab': { emoji: '\u{1F357}', ingredients: { 'chicken breast': [150, 'g'], 'pita bread': [1, 'pita'], 'lettuce': [30, 'g'], 'tomato': [0.5, 'medium'], 'onion': [0.25, 'medium'], 'garlic sauce': [2, 'tbsp'] } },
-    'chicken parmesan': { emoji: '\u{1F357}', ingredients: { 'chicken breast': [150, 'g'], 'breadcrumbs': [30, 'g'], 'parmesan': [30, 'g'], 'mozzarella': [50, 'g'], 'tomato sauce': [100, 'ml'], 'egg': [0.5, 'whole'], 'pasta': [80, 'g'] } },
-    'chicken pie': { emoji: '\u{1F967}', ingredients: { 'chicken breast': [120, 'g'], 'puff pastry': [80, 'g'], 'cream': [50, 'ml'], 'onion': [0.5, 'medium'], 'carrots': [40, 'g'], 'peas': [30, 'g'], 'chicken stock': [150, 'ml'] } },
-    'chicken wings': { emoji: '\u{1F357}', ingredients: { 'chicken wings': [250, 'g'], 'hot sauce': [2, 'tbsp'], 'butter': [15, 'g'], 'garlic powder': [0.5, 'tsp'], 'honey': [1, 'tbsp'] } },
-    'chicken caesar wrap': { emoji: '\u{1F32F}', ingredients: { 'chicken breast': [100, 'g'], 'tortilla': [1, 'wrap'], 'lettuce': [30, 'g'], 'parmesan': [15, 'g'], 'caesar dressing': [1.5, 'tbsp'], 'croutons': [15, 'g'] } },
-    'chicken enchiladas': { emoji: '\u{1F32F}', ingredients: { 'chicken breast': [120, 'g'], 'tortilla': [2, 'wraps'], 'enchilada sauce': [100, 'ml'], 'cheese': [50, 'g'], 'onion': [0.25, 'medium'], 'sour cream': [1, 'tbsp'] } },
-    'chicken salad': { emoji: '\u{1F957}', ingredients: { 'chicken breast': [120, 'g'], 'lettuce': [60, 'g'], 'tomato': [0.5, 'medium'], 'cucumber': [0.25, 'medium'], 'olive oil': [1, 'tbsp'], 'lemon': [0.25, 'lemon'] } },
-
-    // Beef dishes
-    'steak': { emoji: '\u{1F969}', ingredients: { 'steak': [200, 'g'], 'butter': [15, 'g'], 'garlic': [1, 'clove'], 'rosemary': [1, 'sprig'], 'olive oil': [1, 'tbsp'], 'salt': [0.5, 'tsp'], 'pepper': [0.5, 'tsp'] } },
-    'steak and chips': { emoji: '\u{1F969}', ingredients: { 'steak': [200, 'g'], 'potatoes': [250, 'g'], 'butter': [15, 'g'], 'oil': [3, 'tbsp'], 'salt': [0.5, 'tsp'], 'pepper': [0.5, 'tsp'] } },
-    'beef stew': { emoji: '\u{1F372}', ingredients: { 'beef chunks': [200, 'g'], 'potatoes': [150, 'g'], 'carrots': [80, 'g'], 'onion': [0.5, 'medium'], 'beef stock': [300, 'ml'], 'garlic': [1, 'clove'], 'flour': [10, 'g'] } },
-    'beef stroganoff': { emoji: '\u{1F372}', ingredients: { 'beef strips': [150, 'g'], 'mushrooms': [80, 'g'], 'onion': [0.5, 'medium'], 'sour cream': [60, 'ml'], 'beef stock': [100, 'ml'], 'butter': [15, 'g'], 'egg noodles': [75, 'g'] } },
-    'beef tacos': { emoji: '\u{1F32E}', ingredients: { 'taco shells': [2, 'shells'], 'minced beef': [120, 'g'], 'taco seasoning': [1, 'tbsp'], 'lettuce': [30, 'g'], 'tomato': [0.25, 'medium'], 'cheese': [30, 'g'], 'sour cream': [1, 'tbsp'] } },
-    'beef chili': { emoji: '\u{1F336}', ingredients: { 'minced beef': [150, 'g'], 'kidney beans': [80, 'g'], 'tomatoes': [100, 'g'], 'onion': [0.5, 'medium'], 'chili powder': [1, 'tsp'], 'cumin': [0.5, 'tsp'], 'rice': [75, 'g'] } },
-    'cottage pie': { emoji: '\u{1F967}', ingredients: { 'minced beef': [150, 'g'], 'potatoes': [250, 'g'], 'onion': [0.5, 'medium'], 'carrots': [50, 'g'], 'peas': [40, 'g'], 'gravy': [100, 'ml'], 'butter': [15, 'g'] } },
-    'beef wellington': { emoji: '\u{1F969}', ingredients: { 'beef fillet': [180, 'g'], 'puff pastry': [100, 'g'], 'mushrooms': [80, 'g'], 'prosciutto': [30, 'g'], 'egg': [0.25, 'whole'], 'dijon mustard': [1, 'tsp'] } },
-    'meatloaf': { emoji: '\u{1F969}', ingredients: { 'minced beef': [180, 'g'], 'breadcrumbs': [30, 'g'], 'egg': [0.5, 'whole'], 'onion': [0.25, 'medium'], 'ketchup': [1, 'tbsp'], 'milk': [30, 'ml'] } },
-
-    // Fish & seafood
-    'salmon': { emoji: '\u{1F41F}', ingredients: { 'salmon fillet': [150, 'g'], 'lemon': [0.25, 'lemon'], 'olive oil': [1, 'tbsp'], 'garlic': [1, 'clove'], 'salt': [0.25, 'tsp'], 'dill': [0.5, 'tsp'] } },
-    'baked salmon': { emoji: '\u{1F41F}', ingredients: { 'salmon fillet': [150, 'g'], 'lemon': [0.25, 'lemon'], 'olive oil': [1, 'tbsp'], 'garlic': [1, 'clove'], 'dill': [0.5, 'tsp'], 'asparagus': [80, 'g'] } },
-    'tuna salad': { emoji: '\u{1F957}', ingredients: { 'tuna': [60, 'g'], 'lettuce': [50, 'g'], 'tomato': [0.5, 'medium'], 'cucumber': [0.25, 'medium'], 'olives': [5, 'olives'], 'mayo': [1, 'tbsp'] } },
-    'fish tacos': { emoji: '\u{1F32E}', ingredients: { 'taco shells': [2, 'shells'], 'white fish': [120, 'g'], 'cabbage': [40, 'g'], 'lime': [0.25, 'lime'], 'salsa': [2, 'tbsp'], 'sour cream': [1, 'tbsp'] } },
-    'prawn curry': { emoji: '\u{1F35B}', ingredients: { 'prawns': [150, 'g'], 'coconut milk': [100, 'ml'], 'curry paste': [1.5, 'tbsp'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'rice': [75, 'g'] } },
-    'prawn stir fry': { emoji: '\u{1F363}', ingredients: { 'prawns': [150, 'g'], 'vegetables': [120, 'g'], 'soy sauce': [1.5, 'tbsp'], 'garlic': [1, 'clove'], 'ginger': [5, 'g'], 'rice': [75, 'g'], 'sesame oil': [1, 'tsp'] } },
-    'cod': { emoji: '\u{1F41F}', ingredients: { 'cod fillet': [150, 'g'], 'lemon': [0.25, 'lemon'], 'butter': [10, 'g'], 'garlic': [1, 'clove'], 'parsley': [1, 'tbsp'] } },
-
-    // World cuisine
-    'paella': { emoji: '\u{1F35A}', ingredients: { 'rice': [80, 'g'], 'chicken': [100, 'g'], 'prawns': [80, 'g'], 'chorizo': [40, 'g'], 'bell pepper': [0.5, 'medium'], 'peas': [40, 'g'], 'saffron': [0.1, 'tsp'], 'chicken stock': [200, 'ml'] } },
-    'pad thai': { emoji: '\u{1F35C}', ingredients: { 'rice noodles': [100, 'g'], 'chicken': [100, 'g'], 'egg': [1, 'whole'], 'bean sprouts': [50, 'g'], 'peanuts': [15, 'g'], 'lime': [0.25, 'lime'], 'fish sauce': [1, 'tbsp'], 'tamarind paste': [1, 'tsp'] } },
-    'sweet and sour chicken': { emoji: '\u{1F357}', ingredients: { 'chicken breast': [150, 'g'], 'bell pepper': [0.5, 'medium'], 'pineapple': [60, 'g'], 'onion': [0.25, 'medium'], 'ketchup': [2, 'tbsp'], 'vinegar': [1, 'tbsp'], 'sugar': [1, 'tbsp'], 'rice': [75, 'g'] } },
-    'kung pao chicken': { emoji: '\u{1F357}', ingredients: { 'chicken breast': [150, 'g'], 'peanuts': [20, 'g'], 'bell pepper': [0.5, 'medium'], 'soy sauce': [1.5, 'tbsp'], 'chili': [0.5, 'tsp'], 'garlic': [1, 'clove'], 'rice': [75, 'g'] } },
-    'gyoza': { emoji: '\u{1F95F}', ingredients: { 'dumpling wrappers': [10, 'wrappers'], 'minced pork': [80, 'g'], 'cabbage': [50, 'g'], 'spring onion': [1, 'stem'], 'ginger': [5, 'g'], 'soy sauce': [1, 'tbsp'] } },
-    'bibimbap': { emoji: '\u{1F35A}', ingredients: { 'rice': [100, 'g'], 'beef': [80, 'g'], 'egg': [1, 'whole'], 'spinach': [40, 'g'], 'carrots': [40, 'g'], 'bean sprouts': [30, 'g'], 'soy sauce': [1, 'tbsp'], 'gochujang': [1, 'tbsp'] } },
-    'pho': { emoji: '\u{1F35C}', ingredients: { 'rice noodles': [100, 'g'], 'beef': [80, 'g'], 'beef stock': [400, 'ml'], 'spring onion': [1, 'stem'], 'bean sprouts': [30, 'g'], 'lime': [0.25, 'lime'], 'fresh coriander': [5, 'g'] } },
-    'falafel': { emoji: '\u{1F33F}', ingredients: { 'chickpeas': [150, 'g'], 'onion': [0.25, 'medium'], 'garlic': [1, 'clove'], 'cumin': [0.5, 'tsp'], 'fresh coriander': [5, 'g'], 'flour': [10, 'g'], 'oil': [3, 'tbsp'] } },
-    'hummus': { emoji: '\u{1F957}', ingredients: { 'chickpeas': [80, 'g'], 'tahini': [1, 'tbsp'], 'lemon': [0.25, 'lemon'], 'garlic': [0.5, 'clove'], 'olive oil': [1, 'tbsp'], 'salt': [0.25, 'tsp'] } },
-    'gyros': { emoji: '\u{1F357}', ingredients: { 'chicken': [150, 'g'], 'pita bread': [1, 'pita'], 'tzatziki': [2, 'tbsp'], 'tomato': [0.5, 'medium'], 'onion': [0.25, 'medium'], 'lettuce': [20, 'g'] } },
-    'moussaka': { emoji: '\u{1F967}', ingredients: { 'minced lamb': [150, 'g'], 'aubergine': [1, 'medium'], 'potato': [150, 'g'], 'tomato sauce': [100, 'ml'], 'bechamel sauce': [80, 'ml'], 'onion': [0.5, 'medium'] } },
-
-    // Breakfast
-    'scrambled eggs': { emoji: '\u{1F373}', ingredients: { 'eggs': [2, 'whole'], 'butter': [10, 'g'], 'milk': [20, 'ml'], 'salt': [0.25, 'tsp'] } },
-    'fried eggs': { emoji: '\u{1F373}', ingredients: { 'eggs': [2, 'whole'], 'butter': [5, 'g'], 'salt': [0.25, 'tsp'] } },
-    'boiled eggs': { emoji: '\u{1F95A}', ingredients: { 'eggs': [2, 'whole'], 'salt': [0.25, 'tsp'] } },
-    'avocado toast': { emoji: '\u{1F951}', ingredients: { 'bread': [2, 'slices'], 'avocado': [0.5, 'medium'], 'lemon': [0.25, 'lemon'], 'salt': [0.25, 'tsp'], 'chili flakes': [0.25, 'tsp'] } },
-    'eggs benedict': { emoji: '\u{1F373}', ingredients: { 'eggs': [2, 'whole'], 'english muffin': [1, 'muffin'], 'ham': [40, 'g'], 'hollandaise sauce': [2, 'tbsp'], 'butter': [10, 'g'] } },
-    'full english breakfast': { emoji: '\u{1F373}', ingredients: { 'sausages': [2, 'sausages'], 'bacon': [2, 'rashers'], 'eggs': [2, 'whole'], 'baked beans': [80, 'g'], 'tomato': [0.5, 'medium'], 'mushrooms': [40, 'g'], 'toast': [2, 'slices'] } },
-    'porridge': { emoji: '\u{1F963}', ingredients: { 'oats': [40, 'g'], 'milk': [200, 'ml'], 'honey': [1, 'tsp'], 'banana': [0.5, 'medium'], 'berries': [30, 'g'] } },
-    'granola bowl': { emoji: '\u{1F963}', ingredients: { 'granola': [50, 'g'], 'yogurt': [120, 'g'], 'berries': [40, 'g'], 'honey': [1, 'tsp'], 'banana': [0.5, 'medium'] } },
-    'bagel': { emoji: '\u{1F96F}', ingredients: { 'bagel': [1, 'bagel'], 'cream cheese': [30, 'g'], 'salmon': [40, 'g'], 'cucumber': [0.25, 'medium'] } },
-    'smoothie': { emoji: '\u{1F964}', ingredients: { 'banana': [1, 'medium'], 'berries': [60, 'g'], 'yogurt': [100, 'g'], 'milk': [100, 'ml'], 'honey': [1, 'tsp'] } },
-    'smoothie bowl': { emoji: '\u{1F964}', ingredients: { 'banana': [1, 'medium'], 'berries': [60, 'g'], 'yogurt': [120, 'g'], 'granola': [30, 'g'], 'honey': [1, 'tsp'] } },
-    'crepes': { emoji: '\u{1F95E}', ingredients: { 'flour': [50, 'g'], 'egg': [1, 'whole'], 'milk': [120, 'ml'], 'butter': [10, 'g'], 'sugar': [1, 'tsp'] } },
-    'waffles': { emoji: '\u{1F9C7}', ingredients: { 'flour': [60, 'g'], 'egg': [0.5, 'whole'], 'milk': [100, 'ml'], 'sugar': [1, 'tbsp'], 'butter': [15, 'g'], 'baking powder': [0.5, 'tsp'] } },
-
-    // Lighter & veggie
-    'veggie burger': { emoji: '\u{1F354}', ingredients: { 'veggie burger patty': [1, 'patty'], 'burger bun': [1, 'bun'], 'lettuce': [2, 'leaves'], 'tomato': [2, 'slices'], 'onion': [2, 'slices'], 'mayo': [1, 'tbsp'] } },
-    'vegetable curry': { emoji: '\u{1F35B}', ingredients: { 'mixed vegetables': [200, 'g'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'curry paste': [1.5, 'tbsp'], 'coconut milk': [100, 'ml'], 'rice': [75, 'g'] } },
-    'stuffed peppers': { emoji: '\u{1F336}', ingredients: { 'bell peppers': [2, 'peppers'], 'rice': [60, 'g'], 'minced beef': [80, 'g'], 'onion': [0.25, 'medium'], 'tomato sauce': [60, 'ml'], 'cheese': [30, 'g'] } },
-    'ratatouille': { emoji: '\u{1F346}', ingredients: { 'aubergine': [0.5, 'medium'], 'courgette': [0.5, 'medium'], 'bell pepper': [0.5, 'medium'], 'tomatoes': [150, 'g'], 'onion': [0.5, 'medium'], 'garlic': [2, 'cloves'], 'olive oil': [1.5, 'tbsp'] } },
-    'greek salad': { emoji: '\u{1F957}', ingredients: { 'tomato': [1, 'medium'], 'cucumber': [0.5, 'medium'], 'red onion': [0.25, 'medium'], 'feta': [50, 'g'], 'olives': [8, 'olives'], 'olive oil': [1.5, 'tbsp'], 'oregano': [0.5, 'tsp'] } },
-    'quinoa salad': { emoji: '\u{1F957}', ingredients: { 'quinoa': [60, 'g'], 'cucumber': [0.25, 'medium'], 'tomato': [0.5, 'medium'], 'feta': [30, 'g'], 'lemon': [0.25, 'lemon'], 'olive oil': [1, 'tbsp'], 'mint': [5, 'g'] } },
-    'tofu stir fry': { emoji: '\u{1F963}', ingredients: { 'tofu': [150, 'g'], 'vegetables': [150, 'g'], 'soy sauce': [1.5, 'tbsp'], 'garlic': [1, 'clove'], 'ginger': [5, 'g'], 'sesame oil': [1, 'tsp'], 'rice': [75, 'g'] } },
-    'veggie wrap': { emoji: '\u{1F32F}', ingredients: { 'tortilla': [1, 'wrap'], 'hummus': [2, 'tbsp'], 'lettuce': [20, 'g'], 'cucumber': [0.25, 'medium'], 'bell pepper': [0.25, 'medium'], 'cheese': [20, 'g'] } },
-    'cauliflower rice': { emoji: '\u{1F33F}', ingredients: { 'cauliflower': [200, 'g'], 'garlic': [1, 'clove'], 'olive oil': [1, 'tbsp'], 'salt': [0.25, 'tsp'] } },
-
-    // Soups & stews
-    'minestrone': { emoji: '\u{1F372}', ingredients: { 'pasta': [30, 'g'], 'tomatoes': [100, 'g'], 'carrots': [40, 'g'], 'celery': [30, 'g'], 'onion': [0.25, 'medium'], 'beans': [50, 'g'], 'stock': [300, 'ml'] } },
-    'lentil soup': { emoji: '\u{1F372}', ingredients: { 'lentils': [80, 'g'], 'onion': [0.5, 'medium'], 'carrots': [50, 'g'], 'celery': [30, 'g'], 'garlic': [1, 'clove'], 'stock': [350, 'ml'] } },
-    'mushroom soup': { emoji: '\u{1F372}', ingredients: { 'mushrooms': [200, 'g'], 'onion': [0.5, 'medium'], 'cream': [50, 'ml'], 'stock': [250, 'ml'], 'butter': [15, 'g'], 'thyme': [0.5, 'tsp'] } },
-    'butternut squash soup': { emoji: '\u{1F372}', ingredients: { 'butternut squash': [250, 'g'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'stock': [250, 'ml'], 'cream': [30, 'ml'] } },
-
-    // Kid favorites
-    'fish pie': { emoji: '\u{1F41F}', ingredients: { 'white fish': [150, 'g'], 'salmon': [60, 'g'], 'potatoes': [250, 'g'], 'milk': [150, 'ml'], 'butter': [15, 'g'], 'peas': [50, 'g'], 'cheese': [30, 'g'] } },
-    'toad in the hole': { emoji: '\u{1F32D}', ingredients: { 'sausages': [3, 'sausages'], 'flour': [60, 'g'], 'egg': [1, 'whole'], 'milk': [100, 'ml'], 'gravy': [80, 'ml'] } },
-    'fish cakes': { emoji: '\u{1F41F}', ingredients: { 'white fish': [150, 'g'], 'potatoes': [150, 'g'], 'breadcrumbs': [30, 'g'], 'egg': [0.5, 'whole'], 'parsley': [1, 'tbsp'] } },
-    'beans on toast': { emoji: '\u{1F35E}', ingredients: { 'baked beans': [200, 'g'], 'bread': [2, 'slices'], 'butter': [10, 'g'], 'cheese': [20, 'g'] } },
-    'cheese on toast': { emoji: '\u{1F9C0}', ingredients: { 'bread': [2, 'slices'], 'cheddar cheese': [60, 'g'], 'butter': [5, 'g'] } },
-    'tuna melt': { emoji: '\u{1F9C0}', ingredients: { 'bread': [2, 'slices'], 'tuna': [60, 'g'], 'cheddar cheese': [40, 'g'], 'mayo': [1, 'tbsp'], 'butter': [10, 'g'] } },
-    'pigs in blankets': { emoji: '\u{1F32D}', ingredients: { 'cocktail sausages': [6, 'sausages'], 'bacon': [3, 'rashers'] } },
-
-    // Pizza variants
-    'pepperoni pizza': { emoji: '\u{1F355}', ingredients: { 'pizza dough': [150, 'g'], 'tomato sauce': [60, 'ml'], 'mozzarella': [60, 'g'], 'pepperoni': [40, 'g'], 'oregano': [0.25, 'tsp'] } },
-    'hawaiian pizza': { emoji: '\u{1F355}', ingredients: { 'pizza dough': [150, 'g'], 'tomato sauce': [60, 'ml'], 'mozzarella': [60, 'g'], 'ham': [40, 'g'], 'pineapple': [50, 'g'] } },
-    'bbq chicken pizza': { emoji: '\u{1F355}', ingredients: { 'pizza dough': [150, 'g'], 'bbq sauce': [50, 'ml'], 'mozzarella': [60, 'g'], 'chicken': [80, 'g'], 'red onion': [0.25, 'medium'] } },
-    'veggie pizza': { emoji: '\u{1F355}', ingredients: { 'pizza dough': [150, 'g'], 'tomato sauce': [60, 'ml'], 'mozzarella': [60, 'g'], 'bell pepper': [0.25, 'medium'], 'mushrooms': [40, 'g'], 'olives': [5, 'olives'] } },
-    'calzone': { emoji: '\u{1F355}', ingredients: { 'pizza dough': [180, 'g'], 'ricotta': [60, 'g'], 'mozzarella': [50, 'g'], 'ham': [40, 'g'], 'tomato sauce': [40, 'ml'] } },
-
-    // Sauces/sides
-    'garlic bread': { emoji: '\u{1F35E}', ingredients: { 'bread': [2, 'slices'], 'butter': [30, 'g'], 'garlic': [2, 'cloves'], 'parsley': [1, 'tbsp'] } },
-    'roasted vegetables': { emoji: '\u{1F954}', ingredients: { 'potatoes': [150, 'g'], 'carrots': [80, 'g'], 'bell pepper': [0.5, 'medium'], 'courgette': [0.5, 'medium'], 'olive oil': [1.5, 'tbsp'], 'rosemary': [0.5, 'tsp'] } },
-    'mashed potatoes': { emoji: '\u{1F954}', ingredients: { 'potatoes': [250, 'g'], 'butter': [20, 'g'], 'milk': [50, 'ml'], 'salt': [0.5, 'tsp'] } },
-    'chips': { emoji: '\u{1F35F}', ingredients: { 'potatoes': [250, 'g'], 'oil': [3, 'tbsp'], 'salt': [0.5, 'tsp'] } },
-
-    // Sweet / desserts
-    'chocolate chip cookies': { emoji: '\u{1F36A}', ingredients: { 'flour': [125, 'g'], 'butter': [60, 'g'], 'sugar': [80, 'g'], 'egg': [0.5, 'whole'], 'chocolate chips': [60, 'g'], 'vanilla': [0.25, 'tsp'], 'baking soda': [0.25, 'tsp'] } },
-    'brownies': { emoji: '\u{1F36B}', ingredients: { 'dark chocolate': [80, 'g'], 'butter': [60, 'g'], 'sugar': [80, 'g'], 'egg': [1, 'whole'], 'flour': [40, 'g'], 'cocoa powder': [15, 'g'] } },
-    'banana bread': { emoji: '\u{1F35E}', ingredients: { 'bananas': [1, 'medium'], 'flour': [80, 'g'], 'sugar': [50, 'g'], 'butter': [40, 'g'], 'egg': [0.5, 'whole'], 'baking soda': [0.25, 'tsp'] } },
-    'apple pie': { emoji: '\u{1F967}', ingredients: { 'apples': [2, 'medium'], 'pie pastry': [100, 'g'], 'sugar': [30, 'g'], 'cinnamon': [0.5, 'tsp'], 'butter': [15, 'g'] } },
-    'cupcakes': { emoji: '\u{1F9C1}', ingredients: { 'flour': [60, 'g'], 'sugar': [50, 'g'], 'butter': [50, 'g'], 'egg': [0.5, 'whole'], 'milk': [30, 'ml'], 'vanilla': [0.25, 'tsp'], 'baking powder': [0.5, 'tsp'] } },
-    'ice cream': { emoji: '\u{1F366}', ingredients: { 'cream': [100, 'ml'], 'milk': [50, 'ml'], 'sugar': [30, 'g'], 'vanilla': [0.5, 'tsp'] } },
-    'cheesecake': { emoji: '\u{1F370}', ingredients: { 'cream cheese': [100, 'g'], 'digestive biscuits': [30, 'g'], 'butter': [20, 'g'], 'sugar': [30, 'g'], 'berries': [40, 'g'] } },
-    'chocolate cake': { emoji: '\u{1F382}', ingredients: { 'flour': [80, 'g'], 'cocoa powder': [20, 'g'], 'sugar': [80, 'g'], 'butter': [60, 'g'], 'egg': [1, 'whole'], 'milk': [60, 'ml'], 'baking powder': [0.5, 'tsp'] } },
-    'fruit salad': { emoji: '\u{1F34F}', ingredients: { 'apple': [0.5, 'medium'], 'banana': [0.5, 'medium'], 'strawberries': [40, 'g'], 'grapes': [40, 'g'], 'orange': [0.5, 'medium'] } },
-    'crumble': { emoji: '\u{1F35D}', ingredients: { 'apples': [1, 'medium'], 'flour': [50, 'g'], 'butter': [30, 'g'], 'sugar': [30, 'g'], 'oats': [20, 'g'] } },
-  };
-
-  // ============ CATEGORIES ============
-  const CATEGORIES = [
-    { id: 'all', key: 'cat_all', emoji: '\u{1F37D}\uFE0F' },
-    { id: 'breakfast', key: 'cat_breakfast', emoji: '\u{1F373}' },
-    { id: 'lunch', key: 'cat_lunch', emoji: '\u{1F96A}' },
-    { id: 'dinner', key: 'cat_dinner', emoji: '\u{1F35D}' },
-    { id: 'snacks', key: 'cat_snacks', emoji: '\u{1F37F}' },
-    { id: 'sweet', key: 'cat_sweet', emoji: '\u{1F370}' }
-  ];
-  // Helper: get translated label for a category
-  function catLabel(c) { return t(c.key); }
-  let activeCategory = 'all';
-
-  // Auto-guess a category from recipe name + ingredients (best effort)
-  function guessCategory(name, ingredients) {
-    const n = (name || '').toLowerCase();
-    const ingList = Object.keys(ingredients || {}).join(' ').toLowerCase();
-
-    // Sweet: cakes, cookies, ice cream, desserts
-    const sweetKws = ['cake', 'cookie', 'brownie', 'cupcake', 'muffin', 'pie', 'tart', 'cheesecake',
-                      'ice cream', 'pudding', 'crumble', 'custard', 'mousse', 'fudge', 'candy',
-                      'chocolate', 'fruit salad', 'banana bread', 'donut', 'doughnut', 'scone',
-                      'waffle', 'crepe', 'pancake'];
-    // Exception: apple/chicken pie = not sweet
-    if (n.includes('chicken pie') || n.includes('cottage pie') || n.includes('shepherd')
-        || n.includes('fish pie') || n.includes('meat pie')) {
-      // savory pies
-    } else {
-      for (const kw of sweetKws) if (n.includes(kw)) return 'sweet';
-    }
-
-    // Breakfast
-    const breakfastKws = ['breakfast', 'porridge', 'oatmeal', 'granola', 'cereal', 'bagel',
-                          'smoothie', 'egg', 'omelette', 'benedict', 'french toast',
-                          'avocado toast', 'full english'];
-    for (const kw of breakfastKws) if (n.includes(kw)) return 'breakfast';
-
-    // Snacks: small bites, dips, light things
-    const snackKws = ['hummus', 'dip', 'chip', 'crisp', 'popcorn', 'snack', 'nachos',
-                      'garlic bread', 'cheese on toast', 'beans on toast', 'bruschetta',
-                      'pigs in blankets', 'wings', 'spring roll'];
-    for (const kw of snackKws) if (n.includes(kw)) return 'snacks';
-
-    // Lunch: sandwiches, wraps, salads, soups
-    const lunchKws = ['sandwich', 'wrap', 'salad', 'soup', 'tuna melt', 'toastie',
-                      'burrito', 'quesadilla', 'bagel', 'panini', 'sub '];
-    for (const kw of lunchKws) if (n.includes(kw)) return 'lunch';
-
-    // Default is dinner (pasta, curry, roasts, mains, etc.)
-    return 'dinner';
-  }
-
-  function categoryLabel(id) {
-    const c = CATEGORIES.find(c => c.id === id);
-    return c ? c.emoji + ' ' + t(c.key) : '';
-  }
-
-  function guessEmoji(name) {
-    const n = name.toLowerCase();
-    if (recipeDatabase[n]) return recipeDatabase[n].emoji;
-    for (const key of Object.keys(recipeDatabase)) {
-      if (n.includes(key) || key.includes(n)) return recipeDatabase[key].emoji;
-    }
-    if (n.includes('pasta') || n.includes('spaghetti') || n.includes('noodle')) return '\u{1F35D}';
-    if (n.includes('pizza')) return '\u{1F355}';
-    if (n.includes('burger')) return '\u{1F354}';
-    if (n.includes('chicken')) return '\u{1F357}';
-    if (n.includes('fish')) return '\u{1F41F}';
-    if (n.includes('salad')) return '\u{1F957}';
-    if (n.includes('soup')) return '\u{1F372}';
-    if (n.includes('rice')) return '\u{1F35A}';
-    if (n.includes('sandwich') || n.includes('wrap')) return '\u{1F96A}';
-    if (n.includes('curry')) return '\u{1F35B}';
-    if (n.includes('taco') || n.includes('burrito')) return '\u{1F32E}';
-    if (n.includes('cheese')) return '\u{1F9C0}';
-    if (n.includes('egg')) return '\u{1F373}';
-    if (n.includes('steak') || n.includes('beef')) return '\u{1F969}';
-    return '\u{1F37D}\uFE0F';
-  }
-
-  // Stop words that shouldn't match anything
-  const stopWords = new Set(['and', 'with', 'the', 'a', 'of', 'in', 'on', 'for', 'to', 'my', 'our', 'some', 'homemade', 'easy', 'quick']);
-
-  let activeRecipeMatch = null; // which recipe key we're currently suggesting from
-  let webResults = {};          // cached web search results by search term
-  let lastWebSearch = '';       // last term we searched for
-
-  // Convert a raw TheMealDB meal object into our internal format.
-  function mealToRecipe(m) {
-    const ings = {};
-    for (let i = 1; i <= 20; i++) {
-      const ing = (m['strIngredient' + i] || '').trim().toLowerCase();
-      const measure = (m['strMeasure' + i] || '').trim();
-      if (ing) {
-        const [amount, unit] = parseMeasure(measure);
-        ings[ing] = [amount, unit];
-      }
-    }
-    return {
-      key: m.strMeal.toLowerCase(),
-      displayName: m.strMeal,
-      data: { emoji: guessEmoji(m.strMeal), ingredients: ings },
-      fromWeb: true
-    };
-  }
-
-  // Try multiple search strategies against TheMealDB. Always returns an array
-  // (possibly empty). Caches results per query.
-  async function searchWebRecipes(term) {
-    const key = term.toLowerCase().trim();
-    if (!key) return [];
-    if (webResults[key]) return webResults[key];
-
-    const tries = [];
-    // 1) Whole phrase
-    tries.push(key);
-    // 2) Each significant word
-    const words = key.split(/\s+/).filter(w => w.length >= 4 && !stopWords.has(w));
-    for (const w of words) if (!tries.includes(w)) tries.push(w);
-    // 3) Swap spaces for hyphens (TheMealDB likes "chicken_handi" style sometimes)
-    if (key.includes(' ')) tries.push(key.replace(/\s+/g, '_'));
-
-    const seen = new Set();
-    const out = [];
-
-    // Strategy A: name search - most accurate
-    for (const t of tries) {
-      try {
-        const res = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=' + encodeURIComponent(t));
-        const data = await res.json();
-        for (const m of (data.meals || [])) {
-          if (!seen.has(m.idMeal)) {
-            seen.add(m.idMeal);
-            out.push(mealToRecipe(m));
-          }
-        }
-        if (out.length >= 8) break; // enough
-      } catch (e) { /* keep trying */ }
-    }
-
-    // Strategy B: ingredient filter - finds meals containing the word as an ingredient
-    if (out.length < 3) {
-      for (const t of tries) {
-        try {
-          const res = await fetch('https://www.themealdb.com/api/json/v1/1/filter.php?i=' + encodeURIComponent(t.replace(/\s+/g, '_')));
-          const data = await res.json();
-          const list = (data.meals || []).slice(0, 5);
-          // filter.php returns only id+name+thumb - need lookup for full recipe
-          const fulls = await Promise.all(list.map(async m => {
-            try {
-              const r = await fetch('https://www.themealdb.com/api/json/v1/1/lookup.php?i=' + m.idMeal);
-              const d = await r.json();
-              return d.meals && d.meals[0];
-            } catch { return null; }
-          }));
-          for (const m of fulls) {
-            if (m && !seen.has(m.idMeal)) {
-              seen.add(m.idMeal);
-              out.push(mealToRecipe(m));
-            }
-          }
-          if (out.length >= 6) break;
-        } catch (e) { /* keep trying */ }
-      }
-    }
-
-    // Strategy C: smart guess when web has nothing - always gives user SOMETHING
-    if (out.length === 0) {
-      out.push(smartGuessRecipe(term));
-    }
-
-    webResults[key] = out;
-    return out;
-  }
-
-  // Smart ingredient guesser: looks at keywords in the recipe name and builds
-  // a plausible ingredient list. Used when nothing was found online.
-  function smartGuessRecipe(name) {
-    const lower = name.toLowerCase();
-    const ings = {};
-
-    // Meat / protein keywords
-    const meatMap = {
-      'chicken': { 'chicken breast': [150, 'g'] },
-      'beef': { 'beef': [150, 'g'] },
-      'steak': { 'steak': [200, 'g'] },
-      'pork': { 'pork': [150, 'g'] },
-      'lamb': { 'lamb': [150, 'g'] },
-      'turkey': { 'turkey': [150, 'g'] },
-      'fish': { 'fish fillet': [150, 'g'] },
-      'salmon': { 'salmon fillet': [150, 'g'] },
-      'tuna': { 'tuna': [80, 'g'] },
-      'prawn': { 'prawns': [120, 'g'] },
-      'shrimp': { 'prawns': [120, 'g'] },
-      'tofu': { 'tofu': [150, 'g'] }
-    };
-    // Carb/base keywords
-    const carbMap = {
-      'pasta': { 'pasta': [100, 'g'] },
-      'spaghetti': { 'spaghetti': [100, 'g'] },
-      'noodle': { 'noodles': [100, 'g'] },
-      'rice': { 'rice': [75, 'g'] },
-      'bread': { 'bread': [2, 'slices'] },
-      'tortilla': { 'tortilla': [2, 'wraps'] },
-      'potato': { 'potatoes': [200, 'g'] },
-      'quinoa': { 'quinoa': [70, 'g'] }
-    };
-    // Style / cuisine keywords
-    const styleMap = {
-      'curry': { 'curry paste': [1.5, 'tbsp'], 'coconut milk': [100, 'ml'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'] },
-      'soup': { 'stock': [400, 'ml'], 'onion': [0.5, 'medium'], 'carrots': [50, 'g'] },
-      'stir fry': { 'soy sauce': [1.5, 'tbsp'], 'garlic': [1, 'clove'], 'ginger': [5, 'g'], 'vegetables': [150, 'g'] },
-      'salad': { 'lettuce': [50, 'g'], 'tomato': [0.5, 'medium'], 'cucumber': [0.25, 'medium'], 'olive oil': [1, 'tbsp'] },
-      'wrap': { 'tortilla': [1, 'wrap'], 'lettuce': [20, 'g'], 'mayo': [1, 'tbsp'] },
-      'sandwich': { 'bread': [2, 'slices'], 'butter': [10, 'g'], 'lettuce': [15, 'g'] },
-      'burger': { 'burger bun': [1, 'bun'], 'lettuce': [2, 'leaves'], 'tomato': [2, 'slices'], 'cheese': [20, 'g'] },
-      'pizza': { 'pizza dough': [150, 'g'], 'tomato sauce': [60, 'ml'], 'mozzarella': [60, 'g'] },
-      'taco': { 'taco shells': [2, 'shells'], 'lettuce': [30, 'g'], 'cheese': [30, 'g'], 'salsa': [2, 'tbsp'] },
-      'roast': { 'potatoes': [200, 'g'], 'carrots': [80, 'g'], 'rosemary': [0.5, 'tsp'] },
-      'stew': { 'potatoes': [150, 'g'], 'carrots': [80, 'g'], 'onion': [0.5, 'medium'], 'stock': [300, 'ml'] },
-      'pie': { 'pie pastry': [120, 'g'], 'onion': [0.5, 'medium'], 'butter': [15, 'g'] },
-      'bake': { 'cheese': [50, 'g'], 'onion': [0.5, 'medium'], 'tomato sauce': [80, 'ml'] },
-      'grill': { 'olive oil': [1, 'tbsp'], 'lemon': [0.25, 'lemon'], 'garlic': [1, 'clove'] }
-    };
-    // Dessert keywords
-    const dessertMap = {
-      'cake': { 'flour': [80, 'g'], 'sugar': [70, 'g'], 'butter': [50, 'g'], 'eggs': [1, 'whole'], 'baking powder': [0.5, 'tsp'] },
-      'cookie': { 'flour': [100, 'g'], 'butter': [50, 'g'], 'sugar': [60, 'g'], 'egg': [0.5, 'whole'] },
-      'brownie': { 'chocolate': [60, 'g'], 'butter': [50, 'g'], 'sugar': [60, 'g'], 'flour': [40, 'g'], 'egg': [1, 'whole'] },
-      'muffin': { 'flour': [80, 'g'], 'sugar': [50, 'g'], 'butter': [40, 'g'], 'egg': [0.5, 'whole'], 'milk': [40, 'ml'] },
-      'pancake': { 'flour': [60, 'g'], 'milk': [100, 'ml'], 'egg': [1, 'whole'], 'butter': [10, 'g'] },
-      'pudding': { 'milk': [200, 'ml'], 'sugar': [30, 'g'], 'eggs': [2, 'whole'] },
-      'ice cream': { 'cream': [150, 'ml'], 'sugar': [30, 'g'], 'vanilla': [0.5, 'tsp'] },
-      'cheesecake': { 'cream cheese': [120, 'g'], 'biscuits': [40, 'g'], 'butter': [30, 'g'], 'sugar': [30, 'g'] }
-    };
-    // Veggie hints
-    const veggieMap = {
-      'mushroom': { 'mushrooms': [100, 'g'] },
-      'spinach': { 'spinach': [80, 'g'] },
-      'broccoli': { 'broccoli': [100, 'g'] },
-      'cauliflower': { 'cauliflower': [150, 'g'] },
-      'aubergine': { 'aubergine': [0.5, 'medium'] },
-      'courgette': { 'courgette': [0.5, 'medium'] },
-      'pepper': { 'bell pepper': [0.5, 'medium'] },
-      'tomato': { 'tomatoes': [150, 'g'] },
-      'onion': { 'onion': [1, 'medium'] },
-      'garlic': { 'garlic': [2, 'cloves'] },
-      'cheese': { 'cheese': [60, 'g'] },
-      'egg': { 'eggs': [2, 'whole'] },
-      'chocolate': { 'chocolate': [60, 'g'] }
-    };
-
-    const all = [meatMap, carbMap, styleMap, dessertMap, veggieMap];
-    for (const map of all) {
-      for (const [kw, kwIngs] of Object.entries(map)) {
-        if (lower.includes(kw)) Object.assign(ings, kwIngs);
-      }
-    }
-
-    // Always add base seasonings if nothing matched or for flavor
-    if (Object.keys(ings).length === 0) {
-      Object.assign(ings, { 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'olive oil': [1, 'tbsp'], 'salt': [0.5, 'tsp'], 'pepper': [0.25, 'tsp'] });
-    } else {
-      // Add salt & pepper if not there
-      if (!ings['salt']) ings['salt'] = [0.5, 'tsp'];
-      if (!ings['pepper'] && !ings['black pepper']) ings['pepper'] = [0.25, 'tsp'];
-    }
-
-    return {
-      key: lower + ' (guess)',
-      displayName: name + ' (my guess!)',
-      data: { emoji: guessEmoji(name), ingredients: ings },
-      fromWeb: true,
-      isGuess: true
-    };
-  }
-
-  // Parse "2 tbsp", "1/2 cup", "200g" etc. -> [amount, unit]
-  function parseMeasure(s) {
-    if (!s) return [1, ''];
-    s = s.trim();
-    // Handle fractions like "1/2"
-    const fracMatch = s.match(/^(\d+)?\s*(\d+)\/(\d+)\s*(.*)$/);
-    if (fracMatch) {
-      const whole = parseInt(fracMatch[1] || '0');
-      const num = parseInt(fracMatch[2]);
-      const den = parseInt(fracMatch[3]);
-      const rest = fracMatch[4].trim();
-      return [whole + num/den, cleanUnit(rest)];
-    }
-    const m = s.match(/^([\d.]+)\s*(.*)$/);
-    if (m) return [parseFloat(m[1]) || 1, cleanUnit(m[2])];
-    return [1, cleanUnit(s)];
-  }
-
-  function cleanUnit(u) {
-    return (u || '').replace(/\s+/g, ' ').trim().toLowerCase();
-  }
-
-  async function doWebSearch() {
-    const input = document.getElementById('recipe-name');
-    const term = input.value.trim();
-    if (term.length < 3) { alert(t('alert_need_type')); return; }
-    const btn = document.getElementById('web-search-btn');
-    btn.disabled = true;
-    btn.textContent = '\u{1F50D} Searching...';
-    mascotSetMood('thinking');
-    mascotSay(t('mascot_thinking'));
-
-    let results = [];
-    try {
-      results = await searchWebRecipes(term);
-      console.log('[web search] term=', term, 'results=', results);
-    } catch (err) {
-      console.error('[web search] error:', err);
-    }
-
-    btn.disabled = false;
-    btn.innerHTML = '\u{1F30D} Search the web';
-    lastWebSearch = term.toLowerCase();
-    activeRecipeMatch = null;
-
-    // SAFETY NET: if something went wrong and results is empty, force a smart guess
-    if (!results || results.length === 0) {
-      try {
-        const guess = smartGuessRecipe(term);
-        results = [guess];
-        webResults[lastWebSearch] = results;
-      } catch (e) {
-        console.error('[web search] smart guess failed:', e);
-      }
-    } else {
-      webResults[lastWebSearch] = results;
-    }
-
-    if (!results || results.length === 0) {
-      mascotSay(t('mascot_notfound'));
-      mascotSetMood('idle', 2000);
-    } else {
-      const hasRealHits = results.some(r => !r.isGuess);
-      if (hasRealHits) {
-        const count = results.filter(r => !r.isGuess).length;
-        mascotSay(t('mascot_found'));
-        mascotSetMood('excited', 2500);
-      } else {
-        mascotSay(t('mascot_guess'));
-        mascotSetMood('thinking', 2500);
-      }
-      activeRecipeMatch = results[0].key;
-    }
-    suggestIngredients();
-  }
-
-  function suggestIngredients() {
-    const name = document.getElementById('recipe-name').value.toLowerCase().trim();
-    const sugArea = document.getElementById('suggestions-area');
-    const chips = document.getElementById('suggested-chips');
-    const matchBar = document.getElementById('match-bar');
-
-    if (name.length < 3) {
-      sugArea.style.display = 'none';
-      if (matchBar) matchBar.style.display = 'none';
-      activeRecipeMatch = null;
-      return;
-    }
-
-    const nameWords = name.split(/\s+/).filter(w => w.length >= 3 && !stopWords.has(w));
-    if (nameWords.length === 0) {
-      sugArea.style.display = 'none';
-      if (matchBar) matchBar.style.display = 'none';
-      activeRecipeMatch = null;
-      return;
-    }
-
-    // Score every recipe (local + web results if any)
-    const scored = [];
-    const seenKeys = new Set();
-    const scoreRecipe = (key, data, fromWeb = false, displayName = null, forceInclude = false, isGuess = false) => {
-      if (seenKeys.has(key)) return;
-      const keyWords = key.split(' ').filter(w => w.length >= 3);
-      let score = 0;
-      for (const nw of nameWords) {
-        for (const kw of keyWords) {
-          if (kw === nw) score += 10;
-          else if (kw.length >= 4 && nw.length >= 4 && (kw.startsWith(nw) || nw.startsWith(kw))) score += 3;
-        }
-      }
-      if (key === name) score += 100;
-      else if (key.split(' ').every(w => nameWords.includes(w))) score += 5;
-      // Web results get a bonus so they appear near the top
-      if (fromWeb && !isGuess) score += 8;
-      if (forceInclude || score >= 10) {
-        seenKeys.add(key);
-        scored.push({ key, data, score, fromWeb, isGuess, displayName: displayName || key });
-      }
-    };
-
-    for (const [key, data] of Object.entries(recipeDatabase)) {
-      scoreRecipe(key, data, false);
-    }
-    // Include web results - ALWAYS force-show them because the user explicitly asked
-    if (lastWebSearch && webResults[lastWebSearch]) {
-      for (const w of webResults[lastWebSearch]) {
-        scoreRecipe(w.key, w.data, true, w.displayName, true, w.isGuess);
-      }
-    }
-
-    // Sort best first
-    scored.sort((a, b) => b.score - a.score);
-
-    if (scored.length === 0) {
-      sugArea.style.display = 'none';
-      if (matchBar) matchBar.style.display = 'none';
-      activeRecipeMatch = null;
-      return;
-    }
-
-    // If we haven't locked onto a match yet, pick the top one
-    if (!activeRecipeMatch || !scored.some(s => s.key === activeRecipeMatch)) {
-      activeRecipeMatch = scored[0].key;
-    }
-    const active = scored.find(s => s.key === activeRecipeMatch) || scored[0];
-
-    // Build match bar - let user pick between the top matches
-    if (matchBar) {
-      if (scored.length > 1) {
-        matchBar.style.display = 'flex';
-        matchBar.innerHTML = '';
-        const top = scored.slice(0, 6);
-        for (const s of top) {
-          const chip = document.createElement('div');
-          chip.className = 'chip' + (s.key === activeRecipeMatch ? ' selected' : '');
-          const webTag = s.fromWeb ? ' \u{1F30D}' : '';
-          chip.textContent = (s.data.emoji || '') + ' ' + s.displayName + webTag;
-          chip.onclick = () => { activeRecipeMatch = s.key; suggestIngredients(); };
-          matchBar.appendChild(chip);
-        }
-      } else {
-        matchBar.style.display = 'none';
-      }
-    }
-
-    // Show ingredients for active match
-    sugArea.style.display = 'block';
-    chips.innerHTML = '';
-    const label = document.querySelector('#suggestions-area label');
-    if (label) {
-      const src = active.fromWeb ? ' (from the web \u{1F30D})' : '';
-      label.textContent = `Suggested for "${active.displayName || active.key}"${src} (tap to select)`;
-    }
-    for (const ing of Object.keys(active.data.ingredients)) {
-      const chip = document.createElement('div');
-      const sel = currentIngredients.find(i => i.name === ing);
-      chip.className = 'chip' + (sel ? ' selected' : '');
-      chip.textContent = ing;
-      chip.onclick = () => toggleIngredient(ing, active.data.ingredients[ing]);
-      chips.appendChild(chip);
-    }
-  }
-
-  function toggleIngredient(name, qty) {
-    const idx = currentIngredients.findIndex(i => i.name === name);
-    if (idx >= 0) {
-      currentIngredients.splice(idx, 1);
-    } else {
-      currentIngredients.push({ name, amount: qty ? qty[0] : 1, unit: qty ? qty[1] : '' });
-    }
-    suggestIngredients();
-    renderSelectedIngredients();
-  }
-
-  function addCustomIngredient() {
-    const input = document.getElementById('custom-ingredient');
-    const val = input.value.trim().toLowerCase();
-    if (!val || currentIngredients.some(i => i.name === val)) return;
-    currentIngredients.push({ name: val, amount: 1, unit: '' });
-    input.value = '';
-    suggestIngredients();
-    renderSelectedIngredients();
-  }
-
-  function renderSelectedIngredients() {
-    const container = document.getElementById('selected-ingredients');
-    container.innerHTML = '';
-    for (const ing of currentIngredients) {
-      const chip = document.createElement('div');
-      chip.className = 'chip selected';
-      chip.textContent = ing.name + ' \u2715';
-      chip.onclick = () => toggleIngredient(ing.name);
-      container.appendChild(chip);
-    }
-  }
-
-  function saveRecipe() {
-    const name = document.getElementById('recipe-name').value.trim();
-    if (!name) { alert(t('alert_need_name')); return; }
-    if (currentIngredients.length === 0) { alert(t('alert_need_ing')); return; }
-
-    const ingsObj = {};
-    currentIngredients.forEach(i => { ingsObj[i.name] = [i.amount, i.unit]; });
-    const pickedCat = document.querySelector('input[name="new-cat"]:checked');
-    const category = pickedCat ? pickedCat.value : guessCategory(name, ingsObj);
-
-    recipes.push({
-      name,
-      emoji: guessEmoji(name),
-      ingredients: currentIngredients.map(i => ({...i})),
-      rating: 0,
-      favorite: false,
-      category,
-      id: Date.now()
-    });
-    save();
-    playSound('add');
-
-    document.getElementById('recipe-name').value = '';
-    currentIngredients = [];
-    document.getElementById('suggestions-area').style.display = 'none';
-    document.getElementById('selected-ingredients').innerHTML = '';
-    // reset category picker
-    const catInputs = document.querySelectorAll('input[name="new-cat"]');
-    catInputs.forEach(i => i.checked = false);
-    renderRecipes();
-    mascotSay(t('mascot_saved'));
-  }
-
-  function deleteRecipe(id) {
-    if (!confirm('Delete this recipe?')) return;
-    recipes = recipes.filter(r => r.id !== id);
-    for (const day of Object.keys(week)) {
-      if (week[day] === id) week[day] = null;
-    }
-    save();
-    renderRecipes();
-  }
-
-  function toggleFavorite(id) {
-    const r = recipes.find(x => x.id === id);
-    if (!r) return;
-    r.favorite = !r.favorite;
-    save();
-    renderRecipes();
-    playSound('tap');
-  }
-
-  function setRating(id, rating) {
-    const r = recipes.find(x => x.id === id);
-    if (!r) return;
-    r.rating = r.rating === rating ? 0 : rating;
-    save();
-    renderRecipes();
-    playSound('tap');
-  }
-
-  function setFilter(f) {
-    recipeFilter = f;
-    ['all', 'fav', 'top'].forEach(k => {
-      const el = document.getElementById('filter-' + k);
-      if (el) el.classList.toggle('selected', k === f);
-    });
-    renderRecipes();
-  }
-
-  function setCategory(id) {
-    activeCategory = id;
-    renderCategoryBar();
-    renderRecipes();
-  }
-
-  function renderCategoryBar() {
-    const bar = document.getElementById('category-filter-bar');
-    if (!bar) return;
-    bar.innerHTML = '';
-    for (const c of CATEGORIES) {
-      const chip = document.createElement('div');
-      chip.className = 'chip' + (activeCategory === c.id ? ' selected' : '');
-      chip.textContent = c.emoji + ' ' + t(c.key);
-      chip.onclick = () => setCategory(c.id);
-      bar.appendChild(chip);
-    }
-  }
-
-  function recipeCategory(r) {
-    return r.category || guessCategory(r.name, (r.ingredients || []).reduce((o, i) => {
-      const n = typeof i === 'string' ? i : i.name; o[n] = true; return o;
-    }, {}));
-  }
-
-  function renderRecipes() {
-    const list = document.getElementById('recipes-list');
-    let shown = recipes;
-    if (recipeFilter === 'fav') shown = recipes.filter(r => r.favorite);
-    if (recipeFilter === 'top') shown = [...recipes].sort((a, b) => (b.rating || 0) - (a.rating || 0)).filter(r => r.rating > 0);
-    if (activeCategory !== 'all') shown = shown.filter(r => recipeCategory(r) === activeCategory);
-
-    if (shown.length === 0) {
-      const catLabel = CATEGORIES.find(c => c.id === activeCategory);
-      list.innerHTML = '<div class="empty-state"><div class="emoji">\u{1F373}</div><p>' +
-        (recipes.length === 0 ? 'No recipes yet! Add your first one above.' :
-         recipeFilter === 'fav' ? 'No favorites yet. Tap the heart on a recipe!' :
-         recipeFilter === 'top' ? 'No rated recipes yet. Give them some stars!' :
-         activeCategory !== 'all' ? `No ${catLabel ? t(catLabel.key).toLowerCase() : 'recipes'} yet!` :
-         'No recipes found.') + '</p></div>';
-      return;
-    }
-
-    list.innerHTML = '';
-    for (let i = 0; i < shown.length; i++) {
-      const r = shown[i];
-      const card = document.createElement('div');
-      card.className = 'recipe-card card-color-' + (i % 5);
-      const stars = [1,2,3,4,5].map(n =>
-        `<span class="star ${(r.rating||0) >= n ? 'filled' : ''}" onclick="setRating(${r.id}, ${n})">\u2605</span>`
-      ).join('');
-      const ingHtml = r.ingredients.map(ing => {
-        const name = typeof ing === 'string' ? ing : ing.name;
-        return `<span class="ingredient-tag">${escHtml(name)}</span>`;
-      }).join('');
-      const cat = recipeCategory(r);
-      const catChip = CATEGORIES.find(c => c.id === cat);
-      card.innerHTML = `
-        <div class="recipe-card-header">
-          <span class="recipe-emoji">${r.emoji || '\u{1F37D}\uFE0F'}</span>
-          <h3>${escHtml(r.name)}</h3>
-          ${catChip ? `<span class="cat-tag">${catChip.emoji} ${t(catChip.key)}</span>` : ''}
-        </div>
-        <div class="ingredients">${ingHtml}</div>
-        <div class="card-actions">
-          <button class="fav-btn" onclick="toggleFavorite(${r.id})">${r.favorite ? '\u2764\uFE0F' : '\u{1F90D}'}</button>
-          <div class="star-rating">${stars}</div>
-          <button class="delete-btn" onclick="deleteRecipe(${r.id})">\u2715</button>
-        </div>
-      `;
-      list.appendChild(card);
-    }
-  }
-
-  let spinning = false;
-
-  function setSpinMode(mode) {
-    spinMode = mode;
-    document.querySelectorAll('.spin-mode-toggle button').forEach(b => b.classList.remove('active'));
-    document.getElementById('mode-' + mode).classList.add('active');
-  }
-
-  function getSpinPool() {
-    if (spinMode === 'fav') return recipes.filter(r => r.favorite);
-    if (spinMode === 'surprise') {
-      const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-      const recentIds = new Set(history.filter(h => h.date > weekAgo).map(h => h.recipeId));
-      const pool = recipes.filter(r => !recentIds.has(r.id));
-      return pool.length > 0 ? pool : recipes;
-    }
-    return recipes;
-  }
-
-  function spinRoulette() {
-    if (spinning) return;
-    const pool = getSpinPool();
-    if (pool.length < 2) {
-      alert(spinMode === 'fav' ? 'Need at least 2 favorite recipes!' :
-            spinMode === 'surprise' ? 'Need at least 2 recipes you haven\'t had recently!' :
-            'Add at least 2 recipes first!');
-      return;
-    }
-
-    spinning = true;
-    const btn = document.getElementById('spin-btn');
-    const display = document.getElementById('roulette-display');
-    const actions = document.getElementById('spin-actions');
-    btn.classList.add('spinning');
-    actions.style.display = 'none';
-    playSound('spin');
-
-    let count = 0;
-    const total = 20 + Math.floor(Math.random() * 10);
-    let delay = 80;
-
-    function flip() {
-      const r = pool[Math.floor(Math.random() * pool.length)];
-      display.innerHTML = `<div class="roulette-card shuffling"><span>${r.emoji || '\u{1F37D}\uFE0F'}</span><span>${escHtml(r.name)}</span></div>`;
-      count++;
-      if (count < total) {
-        delay += count * 3;
-        setTimeout(flip, delay);
-      } else {
-        const winner = pool[Math.floor(Math.random() * pool.length)];
-        lastWinner = winner;
-        display.innerHTML = `<div class="roulette-card"><span>${winner.emoji || '\u{1F37D}\uFE0F'}</span><span>${escHtml(winner.name)}</span></div>`;
-        btn.classList.remove('spinning');
-        spinning = false;
-        actions.style.display = 'block';
-        setTimeout(() => showCelebration(winner), 300);
-      }
-    }
-    flip();
-  }
-
-  function showCelebration(recipe) {
-    const overlay = document.getElementById('celebration');
-    document.getElementById('winner-text').textContent = recipe.name;
-    document.getElementById('winner-emoji').textContent = recipe.emoji || '\u{1F37D}\uFE0F';
-    overlay.classList.add('active');
-    spawnConfetti();
-    playSound('win');
-    mascotSay(t('mascot_sixseven'));
-  }
-
-  function closeCelebration() {
-    document.getElementById('celebration').classList.remove('active');
-    document.querySelectorAll('.confetti-piece').forEach(el => el.remove());
-  }
-
-  function spawnConfetti() {
-    const colors = ['#FFB5C2', '#B8E8D0', '#C5B9F2', '#FFDAB3', '#B3D9FF', '#FFF2B3'];
-    for (let i = 0; i < 70; i++) {
-      const piece = document.createElement('div');
-      piece.className = 'confetti-piece';
-      piece.style.left = Math.random() * 100 + 'vw';
-      piece.style.top = '-10px';
-      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-      piece.style.width = (6 + Math.random() * 8) + 'px';
-      piece.style.height = (6 + Math.random() * 8) + 'px';
-      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-      piece.style.animation = `confettiFall ${1.5 + Math.random() * 2}s ease-out ${Math.random() * 0.5}s forwards`;
-      document.body.appendChild(piece);
-    }
-    setTimeout(() => document.querySelectorAll('.confetti-piece').forEach(el => el.remove()), 4500);
-  }
-
-  function logToHistory() {
-    if (!lastWinner) return;
-    history.unshift({ recipeId: lastWinner.id, name: lastWinner.name, emoji: lastWinner.emoji, date: Date.now() });
-    if (history.length > 50) history = history.slice(0, 50);
-    save();
-    alert('Logged ' + lastWinner.name + ' to your history!');
-    mascotSay("Noted! \u{1F4DD}");
-  }
-
-  function openCalendarPicker() {
-    if (!lastWinner) return;
-    pendingDayTarget = lastWinner.id;
-    const body = document.getElementById('day-modal-body');
-    body.innerHTML = '';
-    for (const day of ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']) {
-      const btn = document.createElement('button');
-      btn.className = 'modal-recipe-btn';
-      const current = week[day] ? recipes.find(r => r.id === week[day]) : null;
-      btn.innerHTML = `<strong>${day}</strong> ${current ? '\u2014 ' + (current.emoji||'\u{1F37D}\uFE0F') + ' ' + escHtml(current.name) : '<span style="opacity:0.5">(empty)</span>'}`;
-      btn.onclick = () => assignToDay(day);
-      body.appendChild(btn);
-    }
-    document.getElementById('day-modal').classList.add('active');
-  }
-
-  function assignToDay(day) {
-    if (!pendingDayTarget) return;
-    week[day] = pendingDayTarget;
-    save();
-    closeDayModal();
-    const r = recipes.find(x => x.id === pendingDayTarget);
-    alert(`Added ${r ? r.name : 'recipe'} to ${day}!`);
-    pendingDayTarget = null;
-  }
-
-  function closeDayModal() {
-    document.getElementById('day-modal').classList.remove('active');
-  }
-
-  function renderCalendar() {
-    const grid = document.getElementById('calendar-grid');
-    grid.innerHTML = '';
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    for (const day of days) {
-      const div = document.createElement('div');
-      div.className = 'calendar-day';
-      const recipeId = week[day];
-      const recipe = recipeId ? recipes.find(r => r.id === recipeId) : null;
-      div.innerHTML = `
-        <div class="calendar-day-name">${day}</div>
-        <div class="calendar-day-meal">
-          ${recipe
-            ? `<span class="calendar-day-emoji">${recipe.emoji || '\u{1F37D}\uFE0F'}</span><span>${escHtml(recipe.name)}</span>`
-            : `<span class="calendar-day-empty">Tap to add</span>`}
-        </div>
-        ${recipe ? `<button class="calendar-clear" onclick="event.stopPropagation(); clearDay('${day}')">\u2715</button>` : ''}
-      `;
-      div.onclick = () => pickRecipeForDay(day);
-      grid.appendChild(div);
-    }
-    renderHistory();
-  }
-
-  function clearDay(day) {
-    week[day] = null;
-    save();
-    renderCalendar();
-  }
-
-  function clearWeek() {
-    if (!confirm('Clear all dinners this week?')) return;
-    for (const day of Object.keys(week)) week[day] = null;
-    save();
-    renderCalendar();
-  }
-
-  function pickRecipeForDay(day) {
-    if (recipes.length === 0) {
-      alert('Add some recipes first!');
-      return;
-    }
-    const body = document.getElementById('recipe-modal-body');
-    document.getElementById('recipe-modal-title').textContent = `Pick a recipe for ${day}`;
-    body.innerHTML = '';
-    for (const r of recipes) {
-      const btn = document.createElement('button');
-      btn.className = 'modal-recipe-btn';
-      btn.innerHTML = `${r.emoji || '\u{1F37D}\uFE0F'} ${escHtml(r.name)}`;
-      btn.onclick = () => { week[day] = r.id; save(); closeRecipeModal(); renderCalendar(); };
-      body.appendChild(btn);
-    }
-    document.getElementById('recipe-modal').classList.add('active');
-  }
-
-  function closeRecipeModal() {
-    document.getElementById('recipe-modal').classList.remove('active');
-  }
-
-  function autoFillWeek() {
-    if (recipes.length === 0) { alert('Add some recipes first!'); return; }
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    const recentIds = new Set(history.filter(h => h.date > weekAgo).map(h => h.recipeId));
-    const fresh = recipes.filter(r => !recentIds.has(r.id));
-    const pool = fresh.length >= 3 ? fresh : recipes;
-    const shuffled = [...pool].sort(() => Math.random() - 0.5);
-    for (let i = 0; i < days.length; i++) {
-      week[days[i]] = shuffled[i % shuffled.length].id;
-    }
-    save();
-    renderCalendar();
-    mascotSay("Week sorted! \u{1F5D3}\uFE0F");
-    playSound('win');
-  }
-
-  function renderHistory() {
-    const list = document.getElementById('history-list');
-    if (history.length === 0) {
-      list.innerHTML = '<div class="empty-state"><div class="emoji">\u{1F4DD}</div><p>No meal history yet.</p></div>';
-      return;
-    }
-    list.innerHTML = '';
-    for (const h of history.slice(0, 10)) {
-      const div = document.createElement('div');
-      div.className = 'history-item';
-      const d = new Date(h.date);
-      const dateStr = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-      div.innerHTML = `<span style="font-size:20px">${h.emoji || '\u{1F37D}\uFE0F'}</span><span>${escHtml(h.name)}</span><span class="history-date">${dateStr}</span>`;
-      list.appendChild(div);
-    }
-  }
-
-  // ============ SMART INGREDIENT NORMALIZATION ============
-  // Maps many ways of saying the same thing to ONE canonical name.
-  const ingredientAliases = {
-    // Tomatoes
-    'tomato': 'tomato', 'tomatoes': 'tomato', 'tomatos': 'tomato', 'cherry tomato': 'tomato', 'cherry tomatoes': 'tomato',
-    // Onion
-    'onion': 'onion', 'onions': 'onion', 'red onion': 'onion', 'white onion': 'onion', 'yellow onion': 'onion', 'brown onion': 'onion',
-    // Garlic
-    'garlic': 'garlic', 'garlic clove': 'garlic', 'garlic cloves': 'garlic', 'cloves of garlic': 'garlic',
-    // Beef
-    'minced beef': 'minced beef', 'beef mince': 'minced beef', 'ground beef': 'minced beef', 'mince': 'minced beef', 'beef': 'minced beef',
-    // Lamb
-    'minced lamb': 'minced lamb', 'lamb mince': 'minced lamb', 'ground lamb': 'minced lamb',
-    // Pork
-    'minced pork': 'minced pork', 'pork mince': 'minced pork', 'ground pork': 'minced pork',
-    // Chicken
-    'chicken': 'chicken', 'chicken breast': 'chicken breast', 'chicken breasts': 'chicken breast',
-    'chicken thigh': 'chicken thigh', 'chicken thighs': 'chicken thigh',
-    'whole chicken': 'whole chicken',
-    // Cheese
-    'cheese': 'cheese', 'cheddar': 'cheddar cheese', 'cheddar cheese': 'cheddar cheese',
-    'mozzarella': 'mozzarella', 'parmesan': 'parmesan', 'parmigiano': 'parmesan',
-    'cheese slice': 'cheese slices', 'cheese slices': 'cheese slices',
-    'ricotta': 'ricotta',
-    // Pasta
-    'pasta': 'pasta', 'spaghetti': 'spaghetti', 'macaroni': 'macaroni', 'lasagna sheets': 'lasagna sheets',
-    'penne': 'pasta', 'fusilli': 'pasta',
-    // Rice
-    'rice': 'rice', 'white rice': 'rice', 'brown rice': 'rice', 'sushi rice': 'sushi rice',
-    // Noodles
-    'noodles': 'noodles', 'ramen noodles': 'ramen noodles',
-    // Potato
-    'potato': 'potato', 'potatoes': 'potato',
-    // Eggs
-    'egg': 'egg', 'eggs': 'egg',
-    // Milk
-    'milk': 'milk', 'whole milk': 'milk', 'semi-skimmed milk': 'milk',
-    // Butter
-    'butter': 'butter', 'unsalted butter': 'butter', 'salted butter': 'butter',
-    // Bread
-    'bread': 'bread', 'bread slice': 'bread', 'bread slices': 'bread', 'slice of bread': 'bread',
-    // Carrot
-    'carrot': 'carrot', 'carrots': 'carrot',
-    // Pepper (veg)
-    'bell pepper': 'bell pepper', 'bell peppers': 'bell pepper', 'capsicum': 'bell pepper', 'pepper': 'bell pepper',
-    // Pepper (spice)
-    'black pepper': 'black pepper', 'ground pepper': 'black pepper',
-    // Oils
-    'olive oil': 'olive oil', 'oil': 'oil', 'vegetable oil': 'oil', 'sunflower oil': 'oil', 'sesame oil': 'sesame oil',
-    // Others
-    'flour': 'flour', 'plain flour': 'flour', 'all purpose flour': 'flour', 'all-purpose flour': 'flour',
-    'sugar': 'sugar', 'white sugar': 'sugar', 'caster sugar': 'sugar',
-    'salt': 'salt', 'sea salt': 'salt', 'table salt': 'salt',
-    'lemon': 'lemon', 'lemons': 'lemon',
-    'lettuce': 'lettuce', 'iceberg lettuce': 'lettuce', 'romaine': 'lettuce',
-    'cucumber': 'cucumber', 'cucumbers': 'cucumber',
-    'mushroom': 'mushroom', 'mushrooms': 'mushroom',
-    'spring onion': 'spring onion', 'spring onions': 'spring onion', 'scallion': 'spring onion', 'scallions': 'spring onion', 'green onion': 'spring onion',
-    'pea': 'peas', 'peas': 'peas',
-    'bean': 'beans', 'beans': 'beans',
-    'kidney bean': 'kidney beans', 'kidney beans': 'kidney beans',
-    'tomato sauce': 'tomato sauce', 'passata': 'tomato sauce', 'marinara': 'tomato sauce',
-    'soy sauce': 'soy sauce',
-    'stock': 'stock', 'chicken stock': 'chicken stock', 'beef stock': 'beef stock', 'vegetable stock': 'vegetable stock', 'broth': 'stock',
-    'basil': 'basil', 'basil leaves': 'basil',
-    'parsley': 'parsley',
-    'rosemary': 'rosemary',
-    'ginger': 'ginger', 'fresh ginger': 'ginger',
-    'coconut milk': 'coconut milk',
-    'cream': 'cream', 'heavy cream': 'cream', 'double cream': 'cream',
-    'salmon': 'salmon',
-    'bacon': 'bacon',
-    'ham': 'ham',
-    'sausage': 'sausages', 'sausages': 'sausages', 'hot dog sausages': 'hot dog sausages',
-    'tortilla': 'tortilla', 'tortillas': 'tortilla', 'tortilla wraps': 'tortilla',
-    'breadcrumbs': 'breadcrumbs', 'bread crumbs': 'breadcrumbs', 'panko': 'breadcrumbs',
-    'ketchup': 'ketchup',
-    'mayo': 'mayo', 'mayonnaise': 'mayo',
-    'mustard': 'mustard',
-    'salsa': 'salsa',
-    'sour cream': 'sour cream',
-    'avocado': 'avocado', 'avocados': 'avocado',
-    'broccoli': 'broccoli',
-    'cabbage': 'cabbage',
-    'celery': 'celery',
-    'fish': 'fish fillets', 'fish fillet': 'fish fillets', 'fish fillets': 'fish fillets',
-  };
-
-  // Normalize ingredient name -> canonical form
-  function normalizeIngredient(rawName) {
-    if (!rawName) return '';
-    let n = rawName.toLowerCase().trim();
-    // Strip simple plurals/extras
-    n = n.replace(/\s+/g, ' ');
-    if (ingredientAliases[n]) return ingredientAliases[n];
-    // Try stripping trailing 's' for naive plurals
-    if (n.endsWith('s') && ingredientAliases[n.slice(0, -1)]) return ingredientAliases[n.slice(0, -1)];
-    // Try stripping 'es' (tomatoes -> tomato)
-    if (n.endsWith('es') && ingredientAliases[n.slice(0, -2)]) return ingredientAliases[n.slice(0, -2)];
-    // Substring match (e.g. "crushed tomatoes" -> tomato)
-    for (const [alias, canon] of Object.entries(ingredientAliases)) {
-      if (n.includes(alias)) return canon;
-    }
-    return n;
-  }
-
-  // ============ SMART UNIT CONVERSIONS ============
-  // Convert every unit to a "base unit" so we can add them up.
-  // Returns [amountInBase, baseUnit] or null if we can't convert.
-  function toBase(amount, unit) {
-    const u = (unit || '').toLowerCase().trim();
-    // Weight -> grams
-    if (u === 'g' || u === 'gram' || u === 'grams') return [amount, 'g'];
-    if (u === 'kg' || u === 'kilo' || u === 'kilos' || u === 'kilogram' || u === 'kilograms') return [amount * 1000, 'g'];
-    // Volume -> ml
-    if (u === 'ml' || u === 'milliliter' || u === 'millilitre') return [amount, 'ml'];
-    if (u === 'l' || u === 'liter' || u === 'litre' || u === 'liters' || u === 'litres') return [amount * 1000, 'ml'];
-    // Spoons -> ml (approx)
-    if (u === 'tsp' || u === 'teaspoon' || u === 'teaspoons') return [amount * 5, 'ml-spoon'];
-    if (u === 'tbsp' || u === 'tablespoon' || u === 'tablespoons') return [amount * 15, 'ml-spoon'];
-    // Counted items keep their unit
-    return null;
-  }
-
-  // Convert from base back to the "best" display unit
-  function fromBase(amount, baseUnit) {
-    if (baseUnit === 'g') {
-      if (amount >= 1000) return [+(amount / 1000).toFixed(2), 'kg'];
-      return [Math.round(amount), 'g'];
-    }
-    if (baseUnit === 'ml') {
-      if (amount >= 1000) return [+(amount / 1000).toFixed(2), 'L'];
-      return [Math.round(amount), 'ml'];
-    }
-    if (baseUnit === 'ml-spoon') {
-      // Convert back to tbsp/tsp nicely
-      if (amount >= 45) { // 3+ tbsp -> use tbsp
-        const tbsp = amount / 15;
-        return [Math.round(tbsp * 2) / 2, 'tbsp'];
-      }
-      if (amount >= 15) {
-        return [Math.round((amount / 15) * 2) / 2, 'tbsp'];
-      }
-      return [Math.round((amount / 5) * 2) / 2, 'tsp'];
-    }
-    return [amount, baseUnit];
-  }
-
-  function generateGroceryList() {
-    const mealIds = Object.values(week).filter(x => x);
-    if (mealIds.length === 0) {
-      document.getElementById('grocery-list').innerHTML = '<div class="empty-state"><div class="emoji">\u{1F6D2}</div><p>Add some meals to your week first!</p></div>';
-      return;
-    }
-
-    // combined[canonicalName] = { name, buckets: { baseUnit: amount, ... }, countedUnits: { unit: amount } }
-    const combined = {};
-    for (const id of mealIds) {
-      const recipe = recipes.find(r => r.id === id);
-      if (!recipe) continue;
-      for (const ing of recipe.ingredients) {
-        const rawName = typeof ing === 'string' ? ing : ing.name;
-        const amount = typeof ing === 'string' ? null : ing.amount;
-        const unit = typeof ing === 'string' ? '' : ing.unit;
-        const canonName = normalizeIngredient(rawName);
-
-        if (!combined[canonName]) {
-          combined[canonName] = { name: canonName, buckets: {}, countedUnits: {}, hasAmount: false };
-        }
-        const entry = combined[canonName];
-
-        if (amount == null) continue;
-        const scaledAmount = amount * settings.familySize;
-        entry.hasAmount = true;
-
-        const base = toBase(scaledAmount, unit);
-        if (base) {
-          // Mergeable unit (g, ml, spoons)
-          const [amt, bUnit] = base;
-          entry.buckets[bUnit] = (entry.buckets[bUnit] || 0) + amt;
-        } else {
-          // Counted (e.g. "2 slices", "3 cloves") - add by unit
-          const u = unit || 'whole';
-          entry.countedUnits[u] = (entry.countedUnits[u] || 0) + scaledAmount;
-        }
-      }
-    }
-
-    // Sort names alphabetically
-    const sorted = Object.keys(combined).sort();
-    groceryChecked = groceryChecked.filter(g => sorted.includes(g));
-    save();
-
-    const list = document.getElementById('grocery-list');
-    list.innerHTML = '';
-    document.getElementById('people-count').textContent = settings.familySize;
-
-    if (sorted.length === 0) {
-      list.innerHTML = '<div class="empty-state"><div class="emoji">\u{1F6D2}</div><p>Add some meals to your week first!</p></div>';
-      return;
-    }
-
-    for (const key of sorted) {
-      const item = combined[key];
-      const div = document.createElement('div');
-      div.className = 'grocery-item' + (groceryChecked.includes(key) ? ' checked' : '');
-
-      // Build amount string from buckets + countedUnits
-      const parts = [];
-      for (const [baseUnit, amt] of Object.entries(item.buckets)) {
-        const [displayAmt, displayUnit] = fromBase(amt, baseUnit);
-        parts.push(displayAmt + (displayUnit ? ' ' + displayUnit : ''));
-      }
-      for (const [u, amt] of Object.entries(item.countedUnits)) {
-        const prettyAmt = Math.ceil(amt * 2) / 2;
-        parts.push(prettyAmt + (u && u !== 'whole' ? ' ' + u : ''));
-      }
-      const amountStr = item.hasAmount ? parts.join(' + ') : '';
-
-      div.innerHTML = `
-        <div class="grocery-check">${groceryChecked.includes(key) ? '\u2713' : ''}</div>
-        <span>${escHtml(item.name)}</span>
-        ${amountStr ? `<span class="grocery-amount">${amountStr}</span>` : ''}
-      `;
-      div.onclick = () => {
-        const idx = groceryChecked.indexOf(key);
-        if (idx >= 0) groceryChecked.splice(idx, 1);
-        else groceryChecked.push(key);
-        save();
-        generateGroceryList();
-      };
-      list.appendChild(div);
-    }
-  }
-
-  function formatAmount(amount, unit) {
-    if (unit === 'g' || unit === 'ml') {
-      if (amount >= 1000) {
-        const bigUnit = unit === 'g' ? 'kg' : 'L';
-        return (amount / 1000).toFixed(1).replace('.0', '') + ' ' + bigUnit;
-      }
-      return Math.round(amount) + ' ' + unit;
-    }
-    return Math.ceil(amount * 2) / 2 + (unit ? ' ' + unit : '');
-  }
-
-  function setFamilySize() {
-    const val = parseInt(document.getElementById('family-size-input').value) || 1;
-    settings.familySize = Math.max(1, Math.min(20, val));
-    save();
-    mascotSay(`Cooking for ${settings.familySize}!`);
-  }
-
-  function toggleSound() {
-    settings.sound = !settings.sound;
-    save();
-    updateSettingsUI();
-    if (settings.sound) playSound('tap');
-  }
-
-  function toggleTheme() {
-    settings.theme = settings.theme === 'dark' ? 'light' : 'dark';
-    applyTheme();
-    save();
-    updateSettingsUI();
-  }
-
-  function applyTheme() {
-    document.body.setAttribute('data-theme', settings.theme);
-    document.getElementById('theme-btn').textContent = settings.theme === 'dark' ? '\u2600\uFE0F' : '\u{1F319}';
-  }
-
-  function updateSettingsUI() {
-    document.getElementById('family-size-input').value = settings.familySize;
-    document.getElementById('sound-toggle').classList.toggle('on', settings.sound);
-    document.getElementById('dark-toggle').classList.toggle('on', settings.theme === 'dark');
-  }
-
-  function clearAllData() {
-    if (!confirm('This will delete ALL your recipes, history, and settings. Are you sure?')) return;
-    if (!confirm('Really sure? This cannot be undone!')) return;
-    localStorage.clear();
-    location.reload();
-  }
-
-  let audioCtx = null;
-  function playSound(type) {
-    if (!settings.sound) return;
-    try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const now = audioCtx.currentTime;
-      const freqs = {
-        tap: [[800, 0.08]],
-        add: [[523, 0.1], [659, 0.1], [784, 0.12]],
-        spin: [[200, 0.05], [300, 0.05], [400, 0.05], [500, 0.05], [600, 0.05]],
-        win: [[523, 0.15], [659, 0.15], [784, 0.15], [1047, 0.3]],
-      };
-      const seq = freqs[type] || freqs.tap;
-      let t = now;
-      for (const [freq, dur] of seq) {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.frequency.value = freq;
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0.15, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(t);
-        osc.stop(t + dur);
-        t += dur;
-      }
-    } catch (e) {}
-  }
-
-  // Idle messages come from translations (so they switch language too!)
-  function getIdleMessages() {
-    const fromT = t('mascot_idle');
-    if (Array.isArray(fromT) && fromT.length) return fromT;
-    // Fallback English extras if translation missing
-    return ["What's cooking?","Hungry?","Let's eat!","Yummy yum!","Ready, chef?"];
-  }
-
-  // Tiny jokes the mascot tells when tapped
-  const mascotJokes = [
-    "Why did the tomato blush? It saw the salad dressing! \u{1F345}",
-    "What do you call cheese that isn't yours? Nacho cheese! \u{1F9C0}",
-    "I'm on a seafood diet. I see food, I eat it.",
-    "Lettuce turnip the beet!",
-    "I donut know any more puns.",
-    "Orange you glad I'm here?",
-    "I loaf you a latte!",
-    "You're a grate friend!",
-    "Pasta la vista, baby!",
-    "I'm feeling souper today!",
-    "Olive you so much!",
-    "Don't go bacon my heart!",
-    "This is eggs-actly what I needed!",
-    "I'm feeling a bit crumbly today...",
-    "You're the apple of my pie!",
-    "Let's taco 'bout dinner!",
-    "I relish this moment!",
-    "It's a piece of cake!",
-    "Just beet it!",
-    "Catch you on the flip side! \u{1F95E}"
-  ];
-
-  // Idle mood messages by mood
-  const moodTimeouts = { current: null };
-
-  function mascotSetMood(mood, durationMs) {
-    const el = document.getElementById('mascot');
-    if (!el) return;
-    // Remove all mood classes
-    el.classList.remove('excited', 'thinking', 'sleepy');
-    el.setAttribute('data-mood', mood);
-    if (mood === 'excited' || mood === 'thinking' || mood === 'sleepy') {
-      el.classList.add(mood);
-    }
-    if (moodTimeouts.current) clearTimeout(moodTimeouts.current);
-    if (durationMs) {
-      moodTimeouts.current = setTimeout(() => mascotSetMood('idle'), durationMs);
-    }
-  }
-
-  function mascotPoke() {
-    const joke = mascotJokes[Math.floor(Math.random() * mascotJokes.length)];
-    mascotSay(joke);
-    mascotSetMood('happy', 2500);
-    playSound('tap');
-  }
-
-  // After 30s of idleness, get sleepy
-  let lastActivityAt = Date.now();
-  function bumpActivity() {
-    lastActivityAt = Date.now();
-    const el = document.getElementById('mascot');
-    if (el && el.classList.contains('sleepy')) mascotSetMood('idle');
-  }
-  document.addEventListener('click', bumpActivity);
-  document.addEventListener('keydown', bumpActivity);
-  setInterval(() => {
-    if (Date.now() - lastActivityAt > 30000) {
-      const el = document.getElementById('mascot');
-      if (el && el.getAttribute('data-mood') === 'idle') {
-        mascotSetMood('sleepy');
-      }
-    }
-  }, 5000);
-
-  let mascotMessages = getIdleMessages();
-  function mascotSay(msg) {
-    const el = document.getElementById('mascot-speech');
-    el.textContent = msg;
-    setTimeout(() => {
-      el.textContent = mascotMessages[Math.floor(Math.random() * mascotMessages.length)];
-    }, 3000);
-  }
-
-  function showPage(name) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-    const btns = document.querySelectorAll('.nav button');
-    const pages = ['recipes', 'spin', 'calendar', 'grocery', 'settings'];
-    btns.forEach((b, i) => b.classList.toggle('active', pages[i] === name));
-    if (name === 'calendar') renderCalendar();
-    if (name === 'grocery') generateGroceryList();
-    if (name === 'settings') updateSettingsUI();
-    playSound('tap');
-  }
-
-  function escHtml(s) {
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
-
-  document.getElementById('recipe-name').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('custom-ingredient').focus();
-  });
-  document.getElementById('custom-ingredient').addEventListener('keydown', e => {
-    if (e.key === 'Enter') addCustomIngredient();
-  });
-
-  // Migrate old recipes (string ingredients) to new format
-  for (const r of recipes) {
-    if (!r.emoji) r.emoji = guessEmoji(r.name);
-    if (r.rating === undefined) r.rating = 0;
-    if (r.favorite === undefined) r.favorite = false;
-    r.ingredients = r.ingredients.map(ing => typeof ing === 'string' ? { name: ing, amount: 1, unit: '' } : ing);
-  }
-  save();
-
-  applyTheme();
-  updateSettingsUI();
-  setFilter('all');
-  renderCategoryBar();
-  renderRecipes();
-  applyLanguage();
-  // Sync language picker dropdown to current language
-  const langSel = document.getElementById('lang-select');
-  if (langSel) langSel.value = settings.lang || 'en';
-</script>
 </body>
 </html>
