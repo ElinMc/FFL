@@ -155,24 +155,86 @@
   }
 
   /* ========= FLOATING FOOD EMOJIS ========= */
+  /* Anchored to corners & edges so they never cross the central writing area */
   .floating-food {
     position: absolute;
-    font-size: 36px;
+    font-size: 42px;
     pointer-events: none;
-    opacity: 0.7;
-    animation: float-around 15s linear infinite;
+    opacity: 0.75;
   }
-  .food-1 { top: 12%; left: 8%; animation-delay: 0s; }
-  .food-2 { top: 22%; right: 10%; animation-delay: -3s; }
-  .food-3 { bottom: 22%; left: 12%; animation-delay: -6s; }
-  .food-4 { bottom: 30%; right: 8%; animation-delay: -9s; }
-  .food-5 { top: 45%; left: 5%; animation-delay: -12s; }
-  .food-6 { top: 55%; right: 5%; animation-delay: -4s; }
-  @keyframes float-around {
+  /* Top-left corner */
+  .food-1 { top: 4vh; left: 5vw; animation: corner-tl 17s ease-in-out infinite; }
+  /* Top-right corner */
+  .food-2 { top: 4vh; right: 5vw; animation: corner-tr 21s ease-in-out infinite; }
+  /* Left side middle (hugs far left edge) */
+  .food-3 { top: 38vh; left: 2vw; animation: side-l 24s ease-in-out infinite; }
+  /* Right side middle (hugs far right edge) */
+  .food-4 { top: 56vh; right: 2vw; animation: side-r 26s ease-in-out infinite; }
+  /* Bottom-left corner */
+  .food-5 { bottom: 6vh; left: 7vw; animation: corner-bl 19s ease-in-out infinite; }
+  /* Bottom-right corner */
+  .food-6 { bottom: 6vh; right: 7vw; animation: corner-br 22s ease-in-out infinite; }
+
+  /* TOP-LEFT corner: wanders around the top-left quadrant, never inward enough to reach writing */
+  @keyframes corner-tl {
+    0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    20%  { transform: translate(60px, 40px) rotate(22deg) scale(1.1); }
+    40%  { transform: translate(25px, 110px) rotate(-15deg) scale(0.92); }
+    60%  { transform: translate(80px, 70px) rotate(18deg) scale(1.05); }
+    80%  { transform: translate(35px, 30px) rotate(-8deg) scale(1); }
+  }
+  /* TOP-RIGHT corner: mirrored path */
+  @keyframes corner-tr {
+    0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    20%  { transform: translate(-60px, 40px) rotate(-22deg) scale(1.1); }
+    40%  { transform: translate(-25px, 110px) rotate(15deg) scale(0.92); }
+    60%  { transform: translate(-80px, 70px) rotate(-18deg) scale(1.05); }
+    80%  { transform: translate(-35px, 30px) rotate(8deg) scale(1); }
+  }
+  /* LEFT SIDE: mostly moves up/down along the left edge, tiny inward drift */
+  @keyframes side-l {
     0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    25% { transform: translate(15px, -20px) rotate(10deg); }
-    50% { transform: translate(-10px, -10px) rotate(-5deg); }
-    75% { transform: translate(10px, 15px) rotate(5deg); }
+    15% { transform: translate(20px, -90px) rotate(18deg); }
+    35% { transform: translate(10px, -140px) rotate(-10deg); }
+    55% { transform: translate(30px, 60px) rotate(14deg); }
+    75% { transform: translate(5px, 130px) rotate(-16deg); }
+    90% { transform: translate(25px, -30px) rotate(8deg); }
+  }
+  /* RIGHT SIDE: mirrored vertical drift */
+  @keyframes side-r {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    15% { transform: translate(-20px, -90px) rotate(-18deg); }
+    35% { transform: translate(-10px, -140px) rotate(10deg); }
+    55% { transform: translate(-30px, 60px) rotate(-14deg); }
+    75% { transform: translate(-5px, 130px) rotate(16deg); }
+    90% { transform: translate(-25px, -30px) rotate(-8deg); }
+  }
+  /* BOTTOM-LEFT corner */
+  @keyframes corner-bl {
+    0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    20%  { transform: translate(70px, -50px) rotate(-20deg) scale(1.08); }
+    40%  { transform: translate(30px, -20px) rotate(15deg) scale(0.95); }
+    60%  { transform: translate(90px, -80px) rotate(-10deg) scale(1.1); }
+    80%  { transform: translate(40px, -40px) rotate(22deg) scale(1); }
+  }
+  /* BOTTOM-RIGHT corner */
+  @keyframes corner-br {
+    0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    20%  { transform: translate(-70px, -50px) rotate(20deg) scale(1.08); }
+    40%  { transform: translate(-30px, -20px) rotate(-15deg) scale(0.95); }
+    60%  { transform: translate(-90px, -80px) rotate(10deg) scale(1.1); }
+    80%  { transform: translate(-40px, -40px) rotate(-22deg) scale(1); }
+  }
+
+  /* On smaller screens, tuck emojis even closer to the edge so they never overlap writing */
+  @media (max-width: 600px) {
+    .floating-food { font-size: 32px; opacity: 0.6; }
+    .food-1 { top: 2vh; left: 3vw; }
+    .food-2 { top: 2vh; right: 3vw; }
+    .food-3 { top: 35vh; left: 1vw; }
+    .food-4 { top: 58vh; right: 1vw; }
+    .food-5 { bottom: 4vh; left: 3vw; }
+    .food-6 { bottom: 4vh; right: 3vw; }
   }
 
   /* ========= FEATURES SECTION ========= */
