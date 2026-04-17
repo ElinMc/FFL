@@ -275,6 +275,44 @@
     font-size: 13px;
     color: var(--text-light);
   }
+  .cat-tag {
+    background: linear-gradient(135deg, var(--pink), var(--lavender));
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  .cat-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .cat-pick-chip {
+    cursor: pointer;
+    user-select: none;
+    display: inline-block;
+  }
+  .cat-pick-chip input { display: none; }
+  .cat-pick-chip span {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 16px;
+    background: var(--card-bg);
+    border: 2px solid #f0e0e8;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .cat-pick-chip input:checked + span {
+    background: var(--lavender);
+    border-color: var(--lavender);
+    color: white;
+  }
   .card-actions {
     display: flex;
     gap: 6px;
@@ -919,15 +957,28 @@
 
   <div id="selected-ingredients" class="suggested-ingredients" style="margin-bottom: 16px;"></div>
 
+  <div class="form-group">
+    <label>Which category?</label>
+    <div class="cat-picker">
+      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="breakfast"><span>&#x1F373; Breakfast</span></label>
+      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="lunch"><span>&#x1F96A; Lunch</span></label>
+      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="dinner"><span>&#x1F35D; Dinner</span></label>
+      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="snacks"><span>&#x1F37F; Snacks</span></label>
+      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="sweet"><span>&#x1F370; Sweet</span></label>
+    </div>
+    <p style="font-size: 12px; color: var(--text-light); margin-top: 6px;">Leave blank and I'll guess it for you!</p>
+  </div>
+
   <button class="btn btn-pink" onclick="saveRecipe()">Save Recipe</button>
 
   <div style="margin-top: 30px;">
     <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 14px;">Your Recipes</h2>
-    <div class="suggested-ingredients" style="margin-bottom: 14px;">
+    <div class="suggested-ingredients" style="margin-bottom: 10px;">
       <div class="chip selected" onclick="setFilter('all')" id="filter-all">All</div>
       <div class="chip" onclick="setFilter('fav')" id="filter-fav">&#x2764;&#xFE0F; Favorites</div>
       <div class="chip" onclick="setFilter('top')" id="filter-top">&#x2B50; Top Rated</div>
     </div>
+    <div class="suggested-ingredients" id="category-filter-bar" style="margin-bottom: 14px;"></div>
     <div id="recipes-list"></div>
   </div>
 </div>
@@ -1206,6 +1257,61 @@
     'fruit salad': { emoji: '\u{1F34F}', ingredients: { 'apple': [0.5, 'medium'], 'banana': [0.5, 'medium'], 'strawberries': [40, 'g'], 'grapes': [40, 'g'], 'orange': [0.5, 'medium'] } },
     'crumble': { emoji: '\u{1F35D}', ingredients: { 'apples': [1, 'medium'], 'flour': [50, 'g'], 'butter': [30, 'g'], 'sugar': [30, 'g'], 'oats': [20, 'g'] } },
   };
+
+  // ============ CATEGORIES ============
+  const CATEGORIES = [
+    { id: 'all', label: 'All', emoji: '\u{1F37D}\uFE0F' },
+    { id: 'breakfast', label: 'Breakfast', emoji: '\u{1F373}' },
+    { id: 'lunch', label: 'Lunch', emoji: '\u{1F96A}' },
+    { id: 'dinner', label: 'Dinner', emoji: '\u{1F35D}' },
+    { id: 'snacks', label: 'Snacks', emoji: '\u{1F37F}' },
+    { id: 'sweet', label: 'Sweet Stuff', emoji: '\u{1F370}' }
+  ];
+  let activeCategory = 'all';
+
+  // Auto-guess a category from recipe name + ingredients (best effort)
+  function guessCategory(name, ingredients) {
+    const n = (name || '').toLowerCase();
+    const ingList = Object.keys(ingredients || {}).join(' ').toLowerCase();
+
+    // Sweet: cakes, cookies, ice cream, desserts
+    const sweetKws = ['cake', 'cookie', 'brownie', 'cupcake', 'muffin', 'pie', 'tart', 'cheesecake',
+                      'ice cream', 'pudding', 'crumble', 'custard', 'mousse', 'fudge', 'candy',
+                      'chocolate', 'fruit salad', 'banana bread', 'donut', 'doughnut', 'scone',
+                      'waffle', 'crepe', 'pancake'];
+    // Exception: apple/chicken pie = not sweet
+    if (n.includes('chicken pie') || n.includes('cottage pie') || n.includes('shepherd')
+        || n.includes('fish pie') || n.includes('meat pie')) {
+      // savory pies
+    } else {
+      for (const kw of sweetKws) if (n.includes(kw)) return 'sweet';
+    }
+
+    // Breakfast
+    const breakfastKws = ['breakfast', 'porridge', 'oatmeal', 'granola', 'cereal', 'bagel',
+                          'smoothie', 'egg', 'omelette', 'benedict', 'french toast',
+                          'avocado toast', 'full english'];
+    for (const kw of breakfastKws) if (n.includes(kw)) return 'breakfast';
+
+    // Snacks: small bites, dips, light things
+    const snackKws = ['hummus', 'dip', 'chip', 'crisp', 'popcorn', 'snack', 'nachos',
+                      'garlic bread', 'cheese on toast', 'beans on toast', 'bruschetta',
+                      'pigs in blankets', 'wings', 'spring roll'];
+    for (const kw of snackKws) if (n.includes(kw)) return 'snacks';
+
+    // Lunch: sandwiches, wraps, salads, soups
+    const lunchKws = ['sandwich', 'wrap', 'salad', 'soup', 'tuna melt', 'toastie',
+                      'burrito', 'quesadilla', 'bagel', 'panini', 'sub '];
+    for (const kw of lunchKws) if (n.includes(kw)) return 'lunch';
+
+    // Default is dinner (pasta, curry, roasts, mains, etc.)
+    return 'dinner';
+  }
+
+  function categoryLabel(id) {
+    const c = CATEGORIES.find(c => c.id === id);
+    return c ? c.emoji + ' ' + c.label : '';
+  }
 
   function guessEmoji(name) {
     const n = name.toLowerCase();
@@ -1648,12 +1754,18 @@
     if (!name) { alert('Give your recipe a name!'); return; }
     if (currentIngredients.length === 0) { alert('Add at least one ingredient!'); return; }
 
+    const ingsObj = {};
+    currentIngredients.forEach(i => { ingsObj[i.name] = [i.amount, i.unit]; });
+    const pickedCat = document.querySelector('input[name="new-cat"]:checked');
+    const category = pickedCat ? pickedCat.value : guessCategory(name, ingsObj);
+
     recipes.push({
       name,
       emoji: guessEmoji(name),
       ingredients: currentIngredients.map(i => ({...i})),
       rating: 0,
       favorite: false,
+      category,
       id: Date.now()
     });
     save();
@@ -1663,6 +1775,9 @@
     currentIngredients = [];
     document.getElementById('suggestions-area').style.display = 'none';
     document.getElementById('selected-ingredients').innerHTML = '';
+    // reset category picker
+    const catInputs = document.querySelectorAll('input[name="new-cat"]');
+    catInputs.forEach(i => i.checked = false);
     renderRecipes();
     mascotSay("Yum! Saved \u2728");
   }
@@ -1704,17 +1819,46 @@
     renderRecipes();
   }
 
+  function setCategory(id) {
+    activeCategory = id;
+    renderCategoryBar();
+    renderRecipes();
+  }
+
+  function renderCategoryBar() {
+    const bar = document.getElementById('category-filter-bar');
+    if (!bar) return;
+    bar.innerHTML = '';
+    for (const c of CATEGORIES) {
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (activeCategory === c.id ? ' selected' : '');
+      chip.textContent = c.emoji + ' ' + c.label;
+      chip.onclick = () => setCategory(c.id);
+      bar.appendChild(chip);
+    }
+  }
+
+  function recipeCategory(r) {
+    return r.category || guessCategory(r.name, (r.ingredients || []).reduce((o, i) => {
+      const n = typeof i === 'string' ? i : i.name; o[n] = true; return o;
+    }, {}));
+  }
+
   function renderRecipes() {
     const list = document.getElementById('recipes-list');
     let shown = recipes;
     if (recipeFilter === 'fav') shown = recipes.filter(r => r.favorite);
     if (recipeFilter === 'top') shown = [...recipes].sort((a, b) => (b.rating || 0) - (a.rating || 0)).filter(r => r.rating > 0);
+    if (activeCategory !== 'all') shown = shown.filter(r => recipeCategory(r) === activeCategory);
 
     if (shown.length === 0) {
+      const catLabel = CATEGORIES.find(c => c.id === activeCategory);
       list.innerHTML = '<div class="empty-state"><div class="emoji">\u{1F373}</div><p>' +
         (recipes.length === 0 ? 'No recipes yet! Add your first one above.' :
          recipeFilter === 'fav' ? 'No favorites yet. Tap the heart on a recipe!' :
-         'No rated recipes yet. Give them some stars!') + '</p></div>';
+         recipeFilter === 'top' ? 'No rated recipes yet. Give them some stars!' :
+         activeCategory !== 'all' ? `No ${catLabel ? catLabel.label.toLowerCase() : 'recipes'} yet!` :
+         'No recipes found.') + '</p></div>';
       return;
     }
 
@@ -1730,10 +1874,13 @@
         const name = typeof ing === 'string' ? ing : ing.name;
         return `<span class="ingredient-tag">${escHtml(name)}</span>`;
       }).join('');
+      const cat = recipeCategory(r);
+      const catChip = CATEGORIES.find(c => c.id === cat);
       card.innerHTML = `
         <div class="recipe-card-header">
           <span class="recipe-emoji">${r.emoji || '\u{1F37D}\uFE0F'}</span>
           <h3>${escHtml(r.name)}</h3>
+          ${catChip ? `<span class="cat-tag">${catChip.emoji} ${catChip.label}</span>` : ''}
         </div>
         <div class="ingredients">${ingHtml}</div>
         <div class="card-actions">
@@ -2433,6 +2580,7 @@
   applyTheme();
   updateSettingsUI();
   setFilter('all');
+  renderCategoryBar();
   renderRecipes();
 </script>
 </body>
