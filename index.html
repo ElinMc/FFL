@@ -1237,39 +1237,194 @@
   let webResults = {};          // cached web search results by search term
   let lastWebSearch = '';       // last term we searched for
 
-  // TheMealDB free API - no key needed.
+  // Convert a raw TheMealDB meal object into our internal format.
+  function mealToRecipe(m) {
+    const ings = {};
+    for (let i = 1; i <= 20; i++) {
+      const ing = (m['strIngredient' + i] || '').trim().toLowerCase();
+      const measure = (m['strMeasure' + i] || '').trim();
+      if (ing) {
+        const [amount, unit] = parseMeasure(measure);
+        ings[ing] = [amount, unit];
+      }
+    }
+    return {
+      key: m.strMeal.toLowerCase(),
+      displayName: m.strMeal,
+      data: { emoji: guessEmoji(m.strMeal), ingredients: ings },
+      fromWeb: true
+    };
+  }
+
+  // Try multiple search strategies against TheMealDB. Always returns an array
+  // (possibly empty). Caches results per query.
   async function searchWebRecipes(term) {
     const key = term.toLowerCase().trim();
     if (!key) return [];
     if (webResults[key]) return webResults[key];
-    try {
-      const res = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=' + encodeURIComponent(key));
-      const data = await res.json();
-      const meals = data.meals || [];
-      // Transform into our format
-      const mapped = meals.map(m => {
-        const ings = {};
-        for (let i = 1; i <= 20; i++) {
-          const ing = (m['strIngredient' + i] || '').trim().toLowerCase();
-          const measure = (m['strMeasure' + i] || '').trim();
-          if (ing) {
-            const [amount, unit] = parseMeasure(measure);
-            ings[ing] = [amount, unit];
+
+    const tries = [];
+    // 1) Whole phrase
+    tries.push(key);
+    // 2) Each significant word
+    const words = key.split(/\s+/).filter(w => w.length >= 4 && !stopWords.has(w));
+    for (const w of words) if (!tries.includes(w)) tries.push(w);
+    // 3) Swap spaces for hyphens (TheMealDB likes "chicken_handi" style sometimes)
+    if (key.includes(' ')) tries.push(key.replace(/\s+/g, '_'));
+
+    const seen = new Set();
+    const out = [];
+
+    // Strategy A: name search - most accurate
+    for (const t of tries) {
+      try {
+        const res = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=' + encodeURIComponent(t));
+        const data = await res.json();
+        for (const m of (data.meals || [])) {
+          if (!seen.has(m.idMeal)) {
+            seen.add(m.idMeal);
+            out.push(mealToRecipe(m));
           }
         }
-        return {
-          key: m.strMeal.toLowerCase(),
-          displayName: m.strMeal,
-          data: { emoji: guessEmoji(m.strMeal), ingredients: ings },
-          fromWeb: true
-        };
-      });
-      webResults[key] = mapped;
-      return mapped;
-    } catch (e) {
-      console.warn('Web search failed:', e);
-      return [];
+        if (out.length >= 8) break; // enough
+      } catch (e) { /* keep trying */ }
     }
+
+    // Strategy B: ingredient filter - finds meals containing the word as an ingredient
+    if (out.length < 3) {
+      for (const t of tries) {
+        try {
+          const res = await fetch('https://www.themealdb.com/api/json/v1/1/filter.php?i=' + encodeURIComponent(t.replace(/\s+/g, '_')));
+          const data = await res.json();
+          const list = (data.meals || []).slice(0, 5);
+          // filter.php returns only id+name+thumb - need lookup for full recipe
+          const fulls = await Promise.all(list.map(async m => {
+            try {
+              const r = await fetch('https://www.themealdb.com/api/json/v1/1/lookup.php?i=' + m.idMeal);
+              const d = await r.json();
+              return d.meals && d.meals[0];
+            } catch { return null; }
+          }));
+          for (const m of fulls) {
+            if (m && !seen.has(m.idMeal)) {
+              seen.add(m.idMeal);
+              out.push(mealToRecipe(m));
+            }
+          }
+          if (out.length >= 6) break;
+        } catch (e) { /* keep trying */ }
+      }
+    }
+
+    // Strategy C: smart guess when web has nothing - always gives user SOMETHING
+    if (out.length === 0) {
+      out.push(smartGuessRecipe(term));
+    }
+
+    webResults[key] = out;
+    return out;
+  }
+
+  // Smart ingredient guesser: looks at keywords in the recipe name and builds
+  // a plausible ingredient list. Used when nothing was found online.
+  function smartGuessRecipe(name) {
+    const lower = name.toLowerCase();
+    const ings = {};
+
+    // Meat / protein keywords
+    const meatMap = {
+      'chicken': { 'chicken breast': [150, 'g'] },
+      'beef': { 'beef': [150, 'g'] },
+      'steak': { 'steak': [200, 'g'] },
+      'pork': { 'pork': [150, 'g'] },
+      'lamb': { 'lamb': [150, 'g'] },
+      'turkey': { 'turkey': [150, 'g'] },
+      'fish': { 'fish fillet': [150, 'g'] },
+      'salmon': { 'salmon fillet': [150, 'g'] },
+      'tuna': { 'tuna': [80, 'g'] },
+      'prawn': { 'prawns': [120, 'g'] },
+      'shrimp': { 'prawns': [120, 'g'] },
+      'tofu': { 'tofu': [150, 'g'] }
+    };
+    // Carb/base keywords
+    const carbMap = {
+      'pasta': { 'pasta': [100, 'g'] },
+      'spaghetti': { 'spaghetti': [100, 'g'] },
+      'noodle': { 'noodles': [100, 'g'] },
+      'rice': { 'rice': [75, 'g'] },
+      'bread': { 'bread': [2, 'slices'] },
+      'tortilla': { 'tortilla': [2, 'wraps'] },
+      'potato': { 'potatoes': [200, 'g'] },
+      'quinoa': { 'quinoa': [70, 'g'] }
+    };
+    // Style / cuisine keywords
+    const styleMap = {
+      'curry': { 'curry paste': [1.5, 'tbsp'], 'coconut milk': [100, 'ml'], 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'] },
+      'soup': { 'stock': [400, 'ml'], 'onion': [0.5, 'medium'], 'carrots': [50, 'g'] },
+      'stir fry': { 'soy sauce': [1.5, 'tbsp'], 'garlic': [1, 'clove'], 'ginger': [5, 'g'], 'vegetables': [150, 'g'] },
+      'salad': { 'lettuce': [50, 'g'], 'tomato': [0.5, 'medium'], 'cucumber': [0.25, 'medium'], 'olive oil': [1, 'tbsp'] },
+      'wrap': { 'tortilla': [1, 'wrap'], 'lettuce': [20, 'g'], 'mayo': [1, 'tbsp'] },
+      'sandwich': { 'bread': [2, 'slices'], 'butter': [10, 'g'], 'lettuce': [15, 'g'] },
+      'burger': { 'burger bun': [1, 'bun'], 'lettuce': [2, 'leaves'], 'tomato': [2, 'slices'], 'cheese': [20, 'g'] },
+      'pizza': { 'pizza dough': [150, 'g'], 'tomato sauce': [60, 'ml'], 'mozzarella': [60, 'g'] },
+      'taco': { 'taco shells': [2, 'shells'], 'lettuce': [30, 'g'], 'cheese': [30, 'g'], 'salsa': [2, 'tbsp'] },
+      'roast': { 'potatoes': [200, 'g'], 'carrots': [80, 'g'], 'rosemary': [0.5, 'tsp'] },
+      'stew': { 'potatoes': [150, 'g'], 'carrots': [80, 'g'], 'onion': [0.5, 'medium'], 'stock': [300, 'ml'] },
+      'pie': { 'pie pastry': [120, 'g'], 'onion': [0.5, 'medium'], 'butter': [15, 'g'] },
+      'bake': { 'cheese': [50, 'g'], 'onion': [0.5, 'medium'], 'tomato sauce': [80, 'ml'] },
+      'grill': { 'olive oil': [1, 'tbsp'], 'lemon': [0.25, 'lemon'], 'garlic': [1, 'clove'] }
+    };
+    // Dessert keywords
+    const dessertMap = {
+      'cake': { 'flour': [80, 'g'], 'sugar': [70, 'g'], 'butter': [50, 'g'], 'eggs': [1, 'whole'], 'baking powder': [0.5, 'tsp'] },
+      'cookie': { 'flour': [100, 'g'], 'butter': [50, 'g'], 'sugar': [60, 'g'], 'egg': [0.5, 'whole'] },
+      'brownie': { 'chocolate': [60, 'g'], 'butter': [50, 'g'], 'sugar': [60, 'g'], 'flour': [40, 'g'], 'egg': [1, 'whole'] },
+      'muffin': { 'flour': [80, 'g'], 'sugar': [50, 'g'], 'butter': [40, 'g'], 'egg': [0.5, 'whole'], 'milk': [40, 'ml'] },
+      'pancake': { 'flour': [60, 'g'], 'milk': [100, 'ml'], 'egg': [1, 'whole'], 'butter': [10, 'g'] },
+      'pudding': { 'milk': [200, 'ml'], 'sugar': [30, 'g'], 'eggs': [2, 'whole'] },
+      'ice cream': { 'cream': [150, 'ml'], 'sugar': [30, 'g'], 'vanilla': [0.5, 'tsp'] },
+      'cheesecake': { 'cream cheese': [120, 'g'], 'biscuits': [40, 'g'], 'butter': [30, 'g'], 'sugar': [30, 'g'] }
+    };
+    // Veggie hints
+    const veggieMap = {
+      'mushroom': { 'mushrooms': [100, 'g'] },
+      'spinach': { 'spinach': [80, 'g'] },
+      'broccoli': { 'broccoli': [100, 'g'] },
+      'cauliflower': { 'cauliflower': [150, 'g'] },
+      'aubergine': { 'aubergine': [0.5, 'medium'] },
+      'courgette': { 'courgette': [0.5, 'medium'] },
+      'pepper': { 'bell pepper': [0.5, 'medium'] },
+      'tomato': { 'tomatoes': [150, 'g'] },
+      'onion': { 'onion': [1, 'medium'] },
+      'garlic': { 'garlic': [2, 'cloves'] },
+      'cheese': { 'cheese': [60, 'g'] },
+      'egg': { 'eggs': [2, 'whole'] },
+      'chocolate': { 'chocolate': [60, 'g'] }
+    };
+
+    const all = [meatMap, carbMap, styleMap, dessertMap, veggieMap];
+    for (const map of all) {
+      for (const [kw, kwIngs] of Object.entries(map)) {
+        if (lower.includes(kw)) Object.assign(ings, kwIngs);
+      }
+    }
+
+    // Always add base seasonings if nothing matched or for flavor
+    if (Object.keys(ings).length === 0) {
+      Object.assign(ings, { 'onion': [0.5, 'medium'], 'garlic': [1, 'clove'], 'olive oil': [1, 'tbsp'], 'salt': [0.5, 'tsp'], 'pepper': [0.25, 'tsp'] });
+    } else {
+      // Add salt & pepper if not there
+      if (!ings['salt']) ings['salt'] = [0.5, 'tsp'];
+      if (!ings['pepper'] && !ings['black pepper']) ings['pepper'] = [0.25, 'tsp'];
+    }
+
+    return {
+      key: lower + ' (guess)',
+      displayName: name + ' (my guess!)',
+      data: { emoji: guessEmoji(name), ingredients: ings },
+      fromWeb: true,
+      isGuess: true
+    };
   }
 
   // Parse "2 tbsp", "1/2 cup", "200g" etc. -> [amount, unit]
@@ -1300,16 +1455,29 @@
     if (term.length < 3) { alert('Type a recipe name first!'); return; }
     const btn = document.getElementById('web-search-btn');
     btn.disabled = true;
-    btn.textContent = 'Searching...';
+    btn.textContent = '\u{1F50D} Searching...';
+    mascotSetMood('thinking');
     mascotSay('Looking it up... \u{1F50D}');
     const results = await searchWebRecipes(term);
     btn.disabled = false;
     btn.innerHTML = '\u{1F30D} Search the web';
     lastWebSearch = term.toLowerCase();
+    activeRecipeMatch = null; // force re-pick
     if (results.length === 0) {
-      mascotSay("Didn't find that one \u{1F615}");
+      mascotSay("Couldn't find it \u{1F615}");
+      mascotSetMood('idle', 2000);
     } else {
-      mascotSay(`Found ${results.length}! \u2728`);
+      const hasRealHits = results.some(r => !r.isGuess);
+      if (hasRealHits) {
+        const count = results.filter(r => !r.isGuess).length;
+        mascotSay(`Found ${count}! \u2728`);
+        mascotSetMood('excited', 2500);
+      } else {
+        mascotSay("I'll take a guess! \u{1F914}");
+        mascotSetMood('thinking', 2500);
+      }
+      // auto-pick first web result so user sees it immediately
+      activeRecipeMatch = results[0].key;
     }
     suggestIngredients();
   }
@@ -1337,7 +1505,9 @@
 
     // Score every recipe (local + web results if any)
     const scored = [];
-    const scoreRecipe = (key, data, fromWeb = false, displayName = null) => {
+    const seenKeys = new Set();
+    const scoreRecipe = (key, data, fromWeb = false, displayName = null, forceInclude = false, isGuess = false) => {
+      if (seenKeys.has(key)) return;
       const keyWords = key.split(' ').filter(w => w.length >= 3);
       let score = 0;
       for (const nw of nameWords) {
@@ -1348,16 +1518,21 @@
       }
       if (key === name) score += 100;
       else if (key.split(' ').every(w => nameWords.includes(w))) score += 5;
-      if (score >= 10) scored.push({ key, data, score, fromWeb, displayName: displayName || key });
+      // Web results get a bonus so they appear near the top
+      if (fromWeb && !isGuess) score += 8;
+      if (forceInclude || score >= 10) {
+        seenKeys.add(key);
+        scored.push({ key, data, score, fromWeb, isGuess, displayName: displayName || key });
+      }
     };
 
     for (const [key, data] of Object.entries(recipeDatabase)) {
       scoreRecipe(key, data, false);
     }
-    // Include web results if we've searched
+    // Include web results - ALWAYS force-show them because the user explicitly asked
     if (lastWebSearch && webResults[lastWebSearch]) {
       for (const w of webResults[lastWebSearch]) {
-        scoreRecipe(w.key, w.data, true, w.displayName);
+        scoreRecipe(w.key, w.data, true, w.displayName, true, w.isGuess);
       }
     }
 
