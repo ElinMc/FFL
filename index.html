@@ -1458,12 +1458,34 @@
     btn.textContent = '\u{1F50D} Searching...';
     mascotSetMood('thinking');
     mascotSay('Looking it up... \u{1F50D}');
-    const results = await searchWebRecipes(term);
+
+    let results = [];
+    try {
+      results = await searchWebRecipes(term);
+      console.log('[web search] term=', term, 'results=', results);
+    } catch (err) {
+      console.error('[web search] error:', err);
+    }
+
     btn.disabled = false;
     btn.innerHTML = '\u{1F30D} Search the web';
     lastWebSearch = term.toLowerCase();
-    activeRecipeMatch = null; // force re-pick
-    if (results.length === 0) {
+    activeRecipeMatch = null;
+
+    // SAFETY NET: if something went wrong and results is empty, force a smart guess
+    if (!results || results.length === 0) {
+      try {
+        const guess = smartGuessRecipe(term);
+        results = [guess];
+        webResults[lastWebSearch] = results;
+      } catch (e) {
+        console.error('[web search] smart guess failed:', e);
+      }
+    } else {
+      webResults[lastWebSearch] = results;
+    }
+
+    if (!results || results.length === 0) {
       mascotSay("Couldn't find it \u{1F615}");
       mascotSetMood('idle', 2000);
     } else {
@@ -1473,10 +1495,9 @@
         mascotSay(`Found ${count}! \u2728`);
         mascotSetMood('excited', 2500);
       } else {
-        mascotSay("I'll take a guess! \u{1F914}");
+        mascotSay("Made a guess for you! \u{1F914}");
         mascotSetMood('thinking', 2500);
       }
-      // auto-pick first web result so user sees it immediately
       activeRecipeMatch = results[0].key;
     }
     suggestIngredients();
