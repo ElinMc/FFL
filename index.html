@@ -95,32 +95,137 @@
     text-align: center;
     padding: 26px 20px 6px;
   }
+  /* ========== MASCOT: Spinny the Chef ========== */
+  .mascot-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
   .mascot {
-    font-size: 50px;
-    animation: bob 2.5s ease-in-out infinite;
+    width: 80px;
+    height: 80px;
     display: inline-block;
+    animation: mascot-bob 2.8s ease-in-out infinite;
+    transform-origin: center bottom;
+    filter: drop-shadow(0 4px 8px rgba(255, 181, 194, 0.35));
   }
-  @keyframes bob {
-    0%, 100% { transform: translateY(0) rotate(-3deg); }
-    50% { transform: translateY(-8px) rotate(3deg); }
+  @keyframes mascot-bob {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-6px) rotate(2deg); }
   }
+  .mascot.excited { animation: mascot-excited 0.35s ease-in-out infinite; }
+  @keyframes mascot-excited {
+    0%, 100% { transform: translateY(-4px) rotate(-8deg) scale(1.08); }
+    50% { transform: translateY(-14px) rotate(8deg) scale(1.12); }
+  }
+  .mascot.thinking { animation: mascot-bob 1.4s ease-in-out infinite; }
+  .mascot.sleepy { animation: mascot-sleepy 4s ease-in-out infinite; }
+  @keyframes mascot-sleepy {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-2px) rotate(1deg); }
+  }
+
+  /* Blinking eyes */
+  .mascot .eye-lid {
+    animation: blink 4s infinite;
+    transform-origin: center;
+  }
+  @keyframes blink {
+    0%, 48%, 52%, 98%, 100% { transform: scaleY(0); }
+    50% { transform: scaleY(1); }
+  }
+  .mascot.sleepy .eye-lid { animation: blink-slow 2.5s infinite; }
+  @keyframes blink-slow {
+    0%, 100% { transform: scaleY(0.7); }
+    50% { transform: scaleY(0.9); }
+  }
+
+  /* Chef hat wobble */
+  .mascot .hat {
+    transform-origin: 50px 40px;
+    animation: hat-wobble 3s ease-in-out infinite;
+  }
+  @keyframes hat-wobble {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+
+  /* Star sparkles when excited */
+  .mascot .sparkle {
+    opacity: 0;
+    transform-origin: center;
+  }
+  .mascot.excited .sparkle {
+    animation: sparkle-pop 0.6s ease-in-out infinite;
+  }
+  .mascot.excited .sparkle:nth-child(2) { animation-delay: 0.2s; }
+  .mascot.excited .sparkle:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes sparkle-pop {
+    0%, 100% { opacity: 0; transform: scale(0.3); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* Thinking dots */
+  .mascot .thought-dot { opacity: 0; }
+  .mascot.thinking .thought-dot { animation: thought 1.2s ease-in-out infinite; }
+  .mascot.thinking .thought-dot:nth-child(2) { animation-delay: 0.2s; }
+  .mascot.thinking .thought-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes thought {
+    0%, 100% { opacity: 0; transform: translateY(4px); }
+    50% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Zzz when sleepy */
+  .mascot .zzz { opacity: 0; }
+  .mascot.sleepy .zzz { animation: zzz-fade 3s ease-in-out infinite; }
+  @keyframes zzz-fade {
+    0%, 100% { opacity: 0; transform: translate(0, 0); }
+    50% { opacity: 1; transform: translate(6px, -8px); }
+  }
+
+  /* Mouth swap */
+  .mascot .mouth-happy,
+  .mascot .mouth-wow,
+  .mascot .mouth-smile { display: none; }
+  .mascot[data-mood="idle"] .mouth-smile { display: block; }
+  .mascot[data-mood="happy"] .mouth-happy { display: block; }
+  .mascot[data-mood="excited"] .mouth-wow { display: block; }
+  .mascot[data-mood="thinking"] .mouth-smile { display: block; }
+  .mascot[data-mood="sleepy"] .mouth-smile { display: block; }
+
   .mascot-speech {
     background: var(--card-bg);
     border: 2px solid var(--border);
     border-radius: 20px;
-    padding: 8px 16px;
+    padding: 10px 18px;
     display: inline-block;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text);
-    margin-left: 10px;
     position: relative;
     vertical-align: middle;
+    max-width: 200px;
+    animation: speech-pop 0.3s ease-out;
+  }
+  @keyframes speech-pop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
   }
   .mascot-speech::before {
     content: '';
     position: absolute;
-    left: -8px;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 7px solid transparent;
+    border-right-color: var(--border);
+  }
+  .mascot-speech::after {
+    content: '';
+    position: absolute;
+    left: -7px;
     top: 50%;
     transform: translateY(-50%);
     border: 6px solid transparent;
@@ -654,8 +759,135 @@
 </nav>
 
 <div class="header">
-  <span class="mascot" id="mascot">&#x1F469;&#x200D;&#x1F373;</span>
-  <span class="mascot-speech" id="mascot-speech">What's cooking?</span>
+  <span class="mascot-wrap" onclick="mascotPoke()">
+    <svg class="mascot" id="mascot" data-mood="idle" viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+      <!-- Sparkles (visible when excited) -->
+      <g class="sparkle"><path d="M 8 28 L 11 34 L 17 36 L 11 38 L 8 44 L 5 38 L -1 36 L 5 34 Z" fill="#FFD93D"/></g>
+      <g class="sparkle"><path d="M 90 30 L 93 36 L 99 38 L 93 40 L 90 46 L 87 40 L 81 38 L 87 36 Z" fill="#FFB5C2"/></g>
+      <g class="sparkle"><path d="M 86 80 L 88 84 L 92 86 L 88 88 L 86 92 L 84 88 L 80 86 L 84 84 Z" fill="#C5B9F2"/></g>
+
+      <!-- Thinking dots (visible when thinking) -->
+      <circle class="thought-dot" cx="82" cy="26" r="3" fill="#C5B9F2"/>
+      <circle class="thought-dot" cx="90" cy="18" r="4" fill="#C5B9F2"/>
+      <circle class="thought-dot" cx="96" cy="9" r="5" fill="#C5B9F2"/>
+
+      <!-- Zzz (visible when sleepy) -->
+      <text class="zzz" x="80" y="25" font-family="Nunito" font-size="14" font-weight="800" fill="#C5B9F2">z</text>
+      <text class="zzz" x="87" y="18" font-family="Nunito" font-size="17" font-weight="800" fill="#C5B9F2">z</text>
+      <text class="zzz" x="94" y="9" font-family="Nunito" font-size="20" font-weight="800" fill="#C5B9F2">Z</text>
+
+      <!-- Little round ears (soft triangle with rounded tip) -->
+      <g class="ears">
+        <!-- Left ear -->
+        <path d="M 26 52 Q 22 30 38 38 Q 40 46 36 52 Z" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M 30 49 Q 28 38 35 42 Q 36 47 34 50 Z" fill="#E5D4F5"/>
+        <!-- Right ear -->
+        <path d="M 74 52 Q 78 30 62 38 Q 60 46 64 52 Z" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M 70 49 Q 72 38 65 42 Q 64 47 66 50 Z" fill="#E5D4F5"/>
+      </g>
+
+      <!-- Big round puffy chef hat -->
+      <g class="hat">
+        <!-- Hat band with bow -->
+        <rect x="36" y="38" width="28" height="5" rx="2" fill="#FFB5C2" stroke="#F2B8C6" stroke-width="1.2"/>
+        <!-- Tiny bow on the band -->
+        <path d="M 47 37 L 50 40 L 53 37 L 52 44 L 48 44 Z" fill="#C5B9F2" stroke="#A799D6" stroke-width="0.8" stroke-linejoin="round"/>
+        <circle cx="50" cy="41" r="1" fill="#FFF0F5"/>
+        <!-- Big puffy top -->
+        <path d="M 36 40 Q 25 14 44 18 Q 48 6 58 12 Q 70 8 66 22 Q 76 18 64 40 Z" fill="white" stroke="#F2B8C6" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- Hat shine -->
+        <ellipse cx="42" cy="22" rx="3" ry="6" fill="#FFFAFC" opacity="0.9"/>
+      </g>
+
+      <!-- BIG ROUND FLUFFY HEAD (chubby kawaii cat) -->
+      <circle cx="50" cy="70" r="34" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="2"/>
+
+      <!-- Extra soft fluff on sides (like marshmallow cheeks) -->
+      <circle cx="18" cy="72" r="6" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.8"/>
+      <circle cx="82" cy="72" r="6" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.8"/>
+
+      <!-- BIG PINK BLUSH CHEEKS (the key to cuteness!) -->
+      <ellipse cx="25" cy="76" rx="8" ry="5" fill="#FFB5C2" opacity="0.75"/>
+      <ellipse cx="75" cy="76" rx="8" ry="5" fill="#FFB5C2" opacity="0.75"/>
+      <!-- Extra blush sparkle -->
+      <circle cx="22" cy="74" r="1" fill="#FFFFFF" opacity="0.9"/>
+      <circle cx="78" cy="74" r="1" fill="#FFFFFF" opacity="0.9"/>
+
+      <!-- HUGE SPARKLY KAWAII EYES -->
+      <!-- Left eye -->
+      <ellipse cx="38" cy="68" rx="7" ry="9" fill="#3A2E4A"/>
+      <ellipse cx="38" cy="69" rx="6" ry="8" fill="#5B3E6E"/>
+      <!-- Big white catchlight -->
+      <ellipse cx="40" cy="64" rx="3" ry="4" fill="white"/>
+      <!-- Small catchlight -->
+      <circle cx="35" cy="72" r="1.8" fill="white"/>
+      <!-- Tiny sparkle catchlight -->
+      <circle cx="41" cy="71" r="0.8" fill="white" opacity="0.8"/>
+
+      <!-- Right eye -->
+      <ellipse cx="62" cy="68" rx="7" ry="9" fill="#3A2E4A"/>
+      <ellipse cx="62" cy="69" rx="6" ry="8" fill="#5B3E6E"/>
+      <ellipse cx="64" cy="64" rx="3" ry="4" fill="white"/>
+      <circle cx="59" cy="72" r="1.8" fill="white"/>
+      <circle cx="65" cy="71" r="0.8" fill="white" opacity="0.8"/>
+
+      <!-- Tiny little eyebrow arches (high and small) -->
+      <path d="M 35 55 Q 38 53 41 55" stroke="#7D4E6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M 59 55 Q 62 53 65 55" stroke="#7D4E6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+      <!-- Eyelids (blink) -->
+      <ellipse class="eye-lid" cx="38" cy="68" rx="7.5" ry="9.5" fill="#FFE4EA"/>
+      <ellipse class="eye-lid" cx="62" cy="68" rx="7.5" ry="9.5" fill="#FFE4EA"/>
+
+      <!-- Tiny cute triangle nose -->
+      <path d="M 48 82 L 52 82 L 50 85 Z" fill="#FFB5C2" stroke="#E58FA2" stroke-width="0.8" stroke-linejoin="round"/>
+
+      <!-- Simple cute mouth (tiny smile) -->
+      <g class="mouth-smile">
+        <!-- Soft "u" smile -->
+        <path d="M 46 87 Q 50 92 54 87" fill="none" stroke="#7D4E6A" stroke-width="1.8" stroke-linecap="round"/>
+      </g>
+      <g class="mouth-happy">
+        <!-- Wide happy smile with tongue -->
+        <path d="M 43 87 Q 50 95 57 87 Q 50 92 43 87 Z" fill="#7D4E6A"/>
+        <ellipse cx="50" cy="91" rx="3" ry="1.5" fill="#FFB5C2"/>
+      </g>
+      <g class="mouth-wow">
+        <!-- Little O mouth -->
+        <ellipse cx="50" cy="89" rx="3" ry="3.5" fill="#7D4E6A"/>
+        <ellipse cx="50" cy="90" rx="1.5" ry="2" fill="#FFB5C2"/>
+      </g>
+
+      <!-- Tiny soft whiskers (just 2 on each side, subtle) -->
+      <g stroke="#E0B8C7" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.7">
+        <path d="M 44 82 Q 35 82 28 81"/>
+        <path d="M 44 85 Q 35 86 28 87"/>
+        <path d="M 56 82 Q 65 82 72 81"/>
+        <path d="M 56 85 Q 65 86 72 87"/>
+      </g>
+
+      <!-- Little paws peeking at bottom (SO CUTE) -->
+      <g>
+        <!-- Left paw -->
+        <ellipse cx="40" cy="101" rx="6" ry="4" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.5"/>
+        <circle cx="38" cy="100" r="1" fill="#FFB5C2"/>
+        <circle cx="40" cy="99.5" r="1" fill="#FFB5C2"/>
+        <circle cx="42" cy="100" r="1" fill="#FFB5C2"/>
+        <ellipse cx="40" cy="102" rx="1.5" ry="1" fill="#FFB5C2"/>
+        <!-- Right paw -->
+        <ellipse cx="60" cy="101" rx="6" ry="4" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.5"/>
+        <circle cx="58" cy="100" r="1" fill="#FFB5C2"/>
+        <circle cx="60" cy="99.5" r="1" fill="#FFB5C2"/>
+        <circle cx="62" cy="100" r="1" fill="#FFB5C2"/>
+        <ellipse cx="60" cy="102" rx="1.5" ry="1" fill="#FFB5C2"/>
+      </g>
+
+      <!-- Teeny curly tail peeking out the side -->
+      <path d="M 16 92 Q 4 94 6 84 Q 10 78 14 82" stroke="#F2B8C6" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <circle cx="14" cy="82" r="3" fill="#FFE4EA" stroke="#F2B8C6" stroke-width="1.2"/>
+    </svg>
+    <span class="mascot-speech" id="mascot-speech">What's cooking?</span>
+  </span>
   <h1>Dinner Roulette</h1>
 </div>
 
@@ -1858,7 +2090,108 @@
     } catch (e) {}
   }
 
-  const mascotMessages = ["What's cooking?", "Hungry?", "Let's eat!", "Roll the dice!", "Spin it!", "Yummy yum!"];
+  // Time-of-day aware idle messages
+  function getIdleMessages() {
+    const hr = new Date().getHours();
+    const tod = hr < 5 ? 'late' : hr < 11 ? 'morning' : hr < 14 ? 'lunch' : hr < 17 ? 'afternoon' : hr < 21 ? 'dinner' : 'night';
+    const base = [
+      "What's cooking?",
+      "Hungry yet?",
+      "Let's eat!",
+      "Spin to win!",
+      "Yummy yum!",
+      "What shall we make?",
+      "I'm Spinny \u{1F37D}\uFE0F",
+      "Ready, chef?",
+      "Roulette time!",
+      "Pick a meal!",
+      "Let's get cookin'!",
+      "Tummy rumbling?",
+      "Feed me recipes!",
+      "Whip up something tasty",
+      "Mmm... I smell something",
+      "Chef mode: ON \u{1F469}\u200D\u{1F373}",
+      "Tap me if you're bored!"
+    ];
+    const todMsgs = {
+      morning: ["Morning! Pancakes?", "Breakfast thoughts?", "Rise and dine!", "Eggs or porridge?"],
+      lunch: ["Lunch o'clock!", "What's for lunch?", "Sandwich time?"],
+      afternoon: ["Snack attack?", "Afternoon munchies?", "Planning dinner?"],
+      dinner: ["Dinner time!", "What's for tea?", "Spin that wheel!", "Feed the family!"],
+      night: ["Late night snack?", "Tomorrow's dinner?", "Don't forget to eat!"],
+      late: ["Still up?!", "Midnight chef vibes", "Zzz... wait, food?"]
+    };
+    return [...base, ...(todMsgs[tod] || [])];
+  }
+
+  // Tiny jokes the mascot tells when tapped
+  const mascotJokes = [
+    "Why did the tomato blush? It saw the salad dressing! \u{1F345}",
+    "What do you call cheese that isn't yours? Nacho cheese! \u{1F9C0}",
+    "I'm on a seafood diet. I see food, I eat it.",
+    "Lettuce turnip the beet!",
+    "I donut know any more puns.",
+    "Orange you glad I'm here?",
+    "I loaf you a latte!",
+    "You're a grate friend!",
+    "Pasta la vista, baby!",
+    "I'm feeling souper today!",
+    "Olive you so much!",
+    "Don't go bacon my heart!",
+    "This is eggs-actly what I needed!",
+    "I'm feeling a bit crumbly today...",
+    "You're the apple of my pie!",
+    "Let's taco 'bout dinner!",
+    "I relish this moment!",
+    "It's a piece of cake!",
+    "Just beet it!",
+    "Catch you on the flip side! \u{1F95E}"
+  ];
+
+  // Idle mood messages by mood
+  const moodTimeouts = { current: null };
+
+  function mascotSetMood(mood, durationMs) {
+    const el = document.getElementById('mascot');
+    if (!el) return;
+    // Remove all mood classes
+    el.classList.remove('excited', 'thinking', 'sleepy');
+    el.setAttribute('data-mood', mood);
+    if (mood === 'excited' || mood === 'thinking' || mood === 'sleepy') {
+      el.classList.add(mood);
+    }
+    if (moodTimeouts.current) clearTimeout(moodTimeouts.current);
+    if (durationMs) {
+      moodTimeouts.current = setTimeout(() => mascotSetMood('idle'), durationMs);
+    }
+  }
+
+  function mascotPoke() {
+    const joke = mascotJokes[Math.floor(Math.random() * mascotJokes.length)];
+    mascotSay(joke);
+    mascotSetMood('happy', 2500);
+    playSound('tap');
+  }
+
+  // After 30s of idleness, get sleepy
+  let lastActivityAt = Date.now();
+  function bumpActivity() {
+    lastActivityAt = Date.now();
+    const el = document.getElementById('mascot');
+    if (el && el.classList.contains('sleepy')) mascotSetMood('idle');
+  }
+  document.addEventListener('click', bumpActivity);
+  document.addEventListener('keydown', bumpActivity);
+  setInterval(() => {
+    if (Date.now() - lastActivityAt > 30000) {
+      const el = document.getElementById('mascot');
+      if (el && el.getAttribute('data-mood') === 'idle') {
+        mascotSetMood('sleepy');
+      }
+    }
+  }, 5000);
+
+  const mascotMessages = getIdleMessages();
   function mascotSay(msg) {
     const el = document.getElementById('mascot-speech');
     el.textContent = msg;
