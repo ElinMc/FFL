@@ -789,11 +789,11 @@
 <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">&#x1F319;</button>
 
 <nav class="nav">
-  <button class="active" onclick="showPage('recipes')">Recipes</button>
-  <button onclick="showPage('spin')">Spin!</button>
-  <button onclick="showPage('calendar')">Week</button>
-  <button onclick="showPage('grocery')">Shop</button>
-  <button onclick="showPage('settings')">Settings</button>
+  <button class="active" onclick="showPage('recipes')" data-i18n="nav_recipes">Recipes</button>
+  <button onclick="showPage('spin')" data-i18n="nav_spin">Spin!</button>
+  <button onclick="showPage('calendar')" data-i18n="nav_week">Week</button>
+  <button onclick="showPage('grocery')" data-i18n="nav_groceries">Shop</button>
+  <button onclick="showPage('settings')" data-i18n="nav_settings">Settings</button>
 </nav>
 
 <div class="header">
@@ -926,14 +926,14 @@
     </svg>
     <span class="mascot-speech" id="mascot-speech">What's cooking?</span>
   </span>
-  <h1>Dinner Roulette</h1>
+  <h1 data-i18n="app_title">Dinner Roulette</h1>
 </div>
 
 <div id="page-recipes" class="page active">
   <div class="form-group">
-    <label>Recipe Name</label>
-    <input type="text" id="recipe-name" placeholder="e.g. Pasta Bolognese" oninput="activeRecipeMatch = null; suggestIngredients()">
-    <button type="button" id="web-search-btn" onclick="doWebSearch()" style="margin-top: 8px; padding: 10px 16px; border-radius: 14px; border: 2px solid var(--blue); background: var(--card-bg); color: var(--text); font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; width: 100%;">
+    <label data-i18n="form_recipe_name">Recipe Name</label>
+    <input type="text" id="recipe-name" data-i18n-placeholder="form_recipe_placeholder" placeholder="e.g. Pasta Bolognese" oninput="activeRecipeMatch = null; suggestIngredients()">
+    <button type="button" id="web-search-btn" onclick="doWebSearch()" data-i18n="btn_search_web" style="margin-top: 8px; padding: 10px 16px; border-radius: 14px; border: 2px solid var(--blue); background: var(--card-bg); color: var(--text); font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; width: 100%;">
       &#x1F30D; Search the web
     </button>
   </div>
@@ -942,41 +942,41 @@
 
   <div id="suggestions-area" style="display:none">
     <div class="form-group">
-      <label>Suggested Ingredients (tap to select)</label>
+      <label data-i18n="form_suggested">Suggested Ingredients (tap to select)</label>
       <div id="suggested-chips" class="suggested-ingredients"></div>
     </div>
   </div>
 
   <div class="form-group">
-    <label>Add Your Own Ingredient</label>
+    <label data-i18n="form_add_own">Add Your Own Ingredient</label>
     <div class="add-custom-ingredient">
       <input type="text" id="custom-ingredient" placeholder="e.g. garlic">
-      <button onclick="addCustomIngredient()">+ Add</button>
+      <button onclick="addCustomIngredient()" data-i18n="btn_add">+ Add</button>
     </div>
   </div>
 
   <div id="selected-ingredients" class="suggested-ingredients" style="margin-bottom: 16px;"></div>
 
   <div class="form-group">
-    <label>Which category?</label>
+    <label data-i18n="form_which_cat">Which category?</label>
     <div class="cat-picker">
-      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="breakfast"><span>&#x1F373; Breakfast</span></label>
-      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="lunch"><span>&#x1F96A; Lunch</span></label>
-      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="dinner"><span>&#x1F35D; Dinner</span></label>
-      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="snacks"><span>&#x1F37F; Snacks</span></label>
-      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="sweet"><span>&#x1F370; Sweet</span></label>
+      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="breakfast"><span>&#x1F373; <span data-i18n="cat_breakfast">Breakfast</span></span></label>
+      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="lunch"><span>&#x1F96A; <span data-i18n="cat_lunch">Lunch</span></span></label>
+      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="dinner"><span>&#x1F35D; <span data-i18n="cat_dinner">Dinner</span></span></label>
+      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="snacks"><span>&#x1F37F; <span data-i18n="cat_snacks">Snacks</span></span></label>
+      <label class="cat-pick-chip"><input type="radio" name="new-cat" value="sweet"><span>&#x1F370; <span data-i18n="cat_sweet">Sweet</span></span></label>
     </div>
-    <p style="font-size: 12px; color: var(--text-light); margin-top: 6px;">Leave blank and I'll guess it for you!</p>
+    <p style="font-size: 12px; color: var(--text-light); margin-top: 6px;" data-i18n="form_cat_hint">Leave blank and I'll guess it for you!</p>
   </div>
 
-  <button class="btn btn-pink" onclick="saveRecipe()">Save Recipe</button>
+  <button class="btn btn-pink" onclick="saveRecipe()" data-i18n="btn_save">Save Recipe</button>
 
   <div style="margin-top: 30px;">
-    <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 14px;">Your Recipes</h2>
+    <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 14px;" data-i18n="form_your_recipes">Your Recipes</h2>
     <div class="suggested-ingredients" style="margin-bottom: 10px;">
-      <div class="chip selected" onclick="setFilter('all')" id="filter-all">All</div>
-      <div class="chip" onclick="setFilter('fav')" id="filter-fav">&#x2764;&#xFE0F; Favorites</div>
-      <div class="chip" onclick="setFilter('top')" id="filter-top">&#x2B50; Top Rated</div>
+      <div class="chip selected" onclick="setFilter('all')" id="filter-all" data-i18n="filter_all">All</div>
+      <div class="chip" onclick="setFilter('fav')" id="filter-fav" data-i18n="filter_fav">&#x2764;&#xFE0F; Favorites</div>
+      <div class="chip" onclick="setFilter('top')" id="filter-top" data-i18n="filter_top">&#x2B50; Top Rated</div>
     </div>
     <div class="suggested-ingredients" id="category-filter-bar" style="margin-bottom: 14px;"></div>
     <div id="recipes-list"></div>
@@ -985,12 +985,12 @@
 
 <div id="page-spin" class="page">
   <div class="spin-mode-toggle">
-    <button class="active" onclick="setSpinMode('all')" id="mode-all">All</button>
-    <button onclick="setSpinMode('surprise')" id="mode-surprise">&#x2728; Surprise Me</button>
-    <button onclick="setSpinMode('fav')" id="mode-fav">&#x2764;&#xFE0F; Favorites</button>
+    <button class="active" onclick="setSpinMode('all')" id="mode-all" data-i18n="spin_all">All</button>
+    <button onclick="setSpinMode('surprise')" id="mode-surprise" data-i18n="spin_surprise">&#x2728; Surprise Me</button>
+    <button onclick="setSpinMode('fav')" id="mode-fav" data-i18n="spin_fav">&#x2764;&#xFE0F; Favorites</button>
   </div>
   <div class="spin-area">
-    <button class="spin-button" id="spin-btn" onclick="spinRoulette()">SPIN!</button>
+    <button class="spin-button" id="spin-btn" onclick="spinRoulette()" data-i18n="btn_spin">SPIN!</button>
   </div>
   <div class="roulette-display" id="roulette-display"></div>
   <div id="spin-actions" style="display:none;">
@@ -1016,22 +1016,36 @@
   <p style="color: var(--text-light); font-size: 14px; margin-bottom: 14px;">
     Based on meals in your week. Amounts for <span id="people-count">4</span> people.
   </p>
-  <button class="btn btn-lavender" onclick="generateGroceryList()">Make Grocery List</button>
+  <button class="btn btn-lavender" onclick="generateGroceryList()" data-i18n="btn_make_list">Make Grocery List</button>
   <div id="grocery-list" style="margin-top: 18px;"></div>
 </div>
 
 <div id="page-settings" class="page">
-  <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 14px;">Settings</h2>
+  <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 14px;" data-i18n="nav_settings">Settings</h2>
+  <div class="setting-row" style="display:block;">
+    <label style="margin-bottom: 10px;" data-i18n="setting_lang">Language</label>
+    <select id="lang-select" onchange="setLanguage(this.value)" style="width: 100%; padding: 12px 16px; border-radius: 14px; border: 2px solid #f0e0e8; font-family: inherit; font-size: 15px; font-weight: 600; background: var(--card-bg); color: var(--text);">
+      <option value="en">🇬🇧 English</option>
+      <option value="nl">🇧🇪 Vlaams (Flemish)</option>
+      <option value="fr">🇫🇷 Français</option>
+      <option value="it">🇮🇹 Italiano</option>
+      <option value="de">🇩🇪 Deutsch</option>
+      <option value="es">🇪🇸 Español</option>
+      <option value="zh">🇨🇳 中文</option>
+      <option value="ar">🇸🇦 العربية</option>
+      <option value="cy">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Cymraeg</option>
+    </select>
+  </div>
   <div class="setting-row">
-    <label>How many people?</label>
+    <label data-i18n="setting_family">How many people?</label>
     <input type="number" id="family-size-input" min="1" max="20" onchange="setFamilySize()">
   </div>
   <div class="setting-row">
-    <label>Sound effects</label>
+    <label data-i18n="setting_sound">Sound effects</label>
     <div class="toggle-switch" id="sound-toggle" onclick="toggleSound()"></div>
   </div>
   <div class="setting-row">
-    <label>Dark mode</label>
+    <label data-i18n="setting_theme">Dark mode</label>
     <div class="toggle-switch" id="dark-toggle" onclick="toggleTheme()"></div>
   </div>
   <div class="setting-row" style="display:block;">
@@ -1069,7 +1083,260 @@
   let week = JSON.parse(localStorage.getItem('dr_week') || '{"Mon":null,"Tue":null,"Wed":null,"Thu":null,"Fri":null,"Sat":null,"Sun":null}');
   let history = JSON.parse(localStorage.getItem('dr_history') || '[]');
   let groceryChecked = JSON.parse(localStorage.getItem('dr_groceryChecked') || '[]');
-  let settings = JSON.parse(localStorage.getItem('dr_settings') || '{"familySize":4,"sound":true,"theme":"light"}');
+  let settings = JSON.parse(localStorage.getItem('dr_settings') || '{"familySize":4,"sound":true,"theme":"light","lang":"en"}');
+  if (!settings.lang) settings.lang = 'en';
+
+  // ============ TRANSLATIONS ============
+  const translations = {
+    en: {
+      app_title: "Dinner Roulette", app_subtitle: "What's for dinner tonight?",
+      nav_recipes: "Recipes", nav_spin: "Spin!", nav_groceries: "Groceries", nav_week: "Week", nav_settings: "Settings",
+      form_recipe_name: "Recipe Name", form_recipe_placeholder: "e.g. Pasta Bolognese",
+      form_suggested: "Suggested Ingredients (tap to select)", form_add_own: "Add Your Own Ingredient",
+      form_your_recipes: "Your Recipes", form_which_cat: "Which category?",
+      form_cat_hint: "Leave blank and I'll guess it for you!",
+      btn_save: "Save Recipe", btn_add: "+ Add", btn_spin: "SPIN!",
+      btn_search_web: "\u{1F30D} Search the web", btn_searching: "\u{1F50D} Searching...",
+      btn_add_to_week: "Add to This Week", btn_make_list: "Make Grocery List",
+      filter_all: "All", filter_fav: "\u2764\uFE0F Favorites", filter_top: "\u2B50 Top Rated",
+      cat_all: "All", cat_breakfast: "Breakfast", cat_lunch: "Lunch",
+      cat_dinner: "Dinner", cat_snacks: "Snacks", cat_sweet: "Sweet Stuff",
+      spin_all: "All", spin_surprise: "\u2728 Surprise Me", spin_fav: "\u2764\uFE0F Favorites",
+      setting_family: "Family Size", setting_sound: "Sound", setting_theme: "Theme", setting_lang: "Language",
+      grocery_pick: "Pick Meals for the Week", grocery_list: "Shopping List",
+      mascot_idle: ["What's cooking?","Hungry yet?","Let's eat!","Yummy yum!","Ready, chef?","Spin to win!","Tap me!"],
+      mascot_saved: "Yum! Saved \u2728", mascot_thinking: "Looking it up... \u{1F50D}",
+      mascot_found: "Found it! \u2728", mascot_guess: "Made a guess for you!",
+      mascot_notfound: "Couldn't find it \u{1F615}", mascot_sixseven: "Six seven! \u{1F64C}",
+      alert_need_name: "Give your recipe a name!", alert_need_ing: "Add at least one ingredient!",
+      alert_need_recipes: "Add at least 2 recipes first!", alert_need_type: "Type a recipe name first!"
+    },
+    nl: {
+      app_title: "Avondeten Roulette", app_subtitle: "Wat eten we vanavond?",
+      nav_recipes: "Recepten", nav_spin: "Draai!", nav_groceries: "Boodschappen", nav_week: "Week", nav_settings: "Instellingen",
+      form_recipe_name: "Recept Naam", form_recipe_placeholder: "bv. Spaghetti Bolognese",
+      form_suggested: "Voorgestelde Ingrediënten (tik om te kiezen)", form_add_own: "Voeg Eigen Ingrediënt Toe",
+      form_your_recipes: "Jouw Recepten", form_which_cat: "Welke categorie?",
+      form_cat_hint: "Laat leeg en ik raad het voor je!",
+      btn_save: "Recept Opslaan", btn_add: "+ Toevoegen", btn_spin: "DRAAI!",
+      btn_search_web: "\u{1F30D} Zoek op het web", btn_searching: "\u{1F50D} Zoeken...",
+      btn_add_to_week: "Voeg Toe Aan Deze Week", btn_make_list: "Maak Boodschappenlijst",
+      filter_all: "Alles", filter_fav: "\u2764\uFE0F Favorieten", filter_top: "\u2B50 Top Beoordeeld",
+      cat_all: "Alles", cat_breakfast: "Ontbijt", cat_lunch: "Middageten",
+      cat_dinner: "Avondeten", cat_snacks: "Tussendoortjes", cat_sweet: "Zoetigheden",
+      spin_all: "Alles", spin_surprise: "\u2728 Verras Me", spin_fav: "\u2764\uFE0F Favorieten",
+      setting_family: "Gezinsgrootte", setting_sound: "Geluid", setting_theme: "Thema", setting_lang: "Taal",
+      grocery_pick: "Kies Maaltijden Voor De Week", grocery_list: "Boodschappenlijst",
+      mascot_idle: ["Wat koken we?","Honger?","Laten we eten!","Mmm, lekker!","Klaar, chef?","Draai mee!","Tik op mij!"],
+      mascot_saved: "Lekker! Bewaard \u2728", mascot_thinking: "Ik zoek het op... \u{1F50D}",
+      mascot_found: "Gevonden! \u2728", mascot_guess: "Ik maak een gok voor je!",
+      mascot_notfound: "Ik kon het niet vinden \u{1F615}", mascot_sixseven: "Zes zeven! \u{1F64C}",
+      alert_need_name: "Geef je recept een naam!", alert_need_ing: "Voeg minstens één ingrediënt toe!",
+      alert_need_recipes: "Voeg eerst minstens 2 recepten toe!", alert_need_type: "Typ eerst een receptnaam!"
+    },
+    fr: {
+      app_title: "Roulette du Dîner", app_subtitle: "Qu'est-ce qu'on mange ce soir ?",
+      nav_recipes: "Recettes", nav_spin: "Tourne !", nav_groceries: "Courses", nav_week: "Semaine", nav_settings: "Réglages",
+      form_recipe_name: "Nom de la Recette", form_recipe_placeholder: "ex : Pâtes Bolognaise",
+      form_suggested: "Ingrédients Suggérés (touche pour sélectionner)", form_add_own: "Ajoute ton Ingrédient",
+      form_your_recipes: "Tes Recettes", form_which_cat: "Quelle catégorie ?",
+      form_cat_hint: "Laisse vide et je devine pour toi !",
+      btn_save: "Enregistrer", btn_add: "+ Ajouter", btn_spin: "TOURNE !",
+      btn_search_web: "\u{1F30D} Chercher sur le web", btn_searching: "\u{1F50D} Recherche...",
+      btn_add_to_week: "Ajouter à cette semaine", btn_make_list: "Faire la liste de courses",
+      filter_all: "Tout", filter_fav: "\u2764\uFE0F Favoris", filter_top: "\u2B50 Mieux Notés",
+      cat_all: "Tout", cat_breakfast: "Petit-déj", cat_lunch: "Déjeuner",
+      cat_dinner: "Dîner", cat_snacks: "Encas", cat_sweet: "Sucreries",
+      spin_all: "Tout", spin_surprise: "\u2728 Surprends-moi", spin_fav: "\u2764\uFE0F Favoris",
+      setting_family: "Taille de la Famille", setting_sound: "Son", setting_theme: "Thème", setting_lang: "Langue",
+      grocery_pick: "Choisis les Repas de la Semaine", grocery_list: "Liste de Courses",
+      mascot_idle: ["On cuisine quoi ?","Tu as faim ?","À table !","Miam miam !","Prêt, chef ?","Fais tourner !","Touche-moi !"],
+      mascot_saved: "Miam ! Enregistré \u2728", mascot_thinking: "Je cherche... \u{1F50D}",
+      mascot_found: "Trouvé ! \u2728", mascot_guess: "J'ai fait une supposition !",
+      mascot_notfound: "Pas trouvé \u{1F615}", mascot_sixseven: "Six sept ! \u{1F64C}",
+      alert_need_name: "Donne un nom à ta recette !", alert_need_ing: "Ajoute au moins un ingrédient !",
+      alert_need_recipes: "Ajoute au moins 2 recettes !", alert_need_type: "Tape un nom de recette !"
+    },
+    it: {
+      app_title: "Roulette della Cena", app_subtitle: "Cosa si mangia stasera?",
+      nav_recipes: "Ricette", nav_spin: "Gira!", nav_groceries: "Spesa", nav_week: "Settimana", nav_settings: "Impostazioni",
+      form_recipe_name: "Nome Ricetta", form_recipe_placeholder: "es. Pasta al Ragù",
+      form_suggested: "Ingredienti Suggeriti (tocca per scegliere)", form_add_own: "Aggiungi il Tuo Ingrediente",
+      form_your_recipes: "Le Tue Ricette", form_which_cat: "Quale categoria?",
+      form_cat_hint: "Lascia vuoto e indovino io!",
+      btn_save: "Salva Ricetta", btn_add: "+ Aggiungi", btn_spin: "GIRA!",
+      btn_search_web: "\u{1F30D} Cerca sul web", btn_searching: "\u{1F50D} Sto cercando...",
+      btn_add_to_week: "Aggiungi a Questa Settimana", btn_make_list: "Crea Lista della Spesa",
+      filter_all: "Tutto", filter_fav: "\u2764\uFE0F Preferiti", filter_top: "\u2B50 Migliori",
+      cat_all: "Tutto", cat_breakfast: "Colazione", cat_lunch: "Pranzo",
+      cat_dinner: "Cena", cat_snacks: "Spuntini", cat_sweet: "Dolci",
+      spin_all: "Tutto", spin_surprise: "\u2728 Sorprendimi", spin_fav: "\u2764\uFE0F Preferiti",
+      setting_family: "Famiglia", setting_sound: "Suono", setting_theme: "Tema", setting_lang: "Lingua",
+      grocery_pick: "Scegli i Pasti della Settimana", grocery_list: "Lista della Spesa",
+      mascot_idle: ["Cosa cuciniamo?","Hai fame?","Mangiamo!","Mmm, buono!","Pronto, chef?","Gira!","Toccami!"],
+      mascot_saved: "Mmm! Salvato \u2728", mascot_thinking: "Sto cercando... \u{1F50D}",
+      mascot_found: "Trovato! \u2728", mascot_guess: "Ho fatto un'ipotesi!",
+      mascot_notfound: "Non l'ho trovato \u{1F615}", mascot_sixseven: "Sei sette! \u{1F64C}",
+      alert_need_name: "Dai un nome alla ricetta!", alert_need_ing: "Aggiungi almeno un ingrediente!",
+      alert_need_recipes: "Aggiungi almeno 2 ricette!", alert_need_type: "Scrivi prima un nome!"
+    },
+    de: {
+      app_title: "Abendessen-Roulette", app_subtitle: "Was gibt's heute Abend?",
+      nav_recipes: "Rezepte", nav_spin: "Drehen!", nav_groceries: "Einkauf", nav_week: "Woche", nav_settings: "Einstellungen",
+      form_recipe_name: "Rezeptname", form_recipe_placeholder: "z.B. Spaghetti Bolognese",
+      form_suggested: "Vorgeschlagene Zutaten (tippen zum Auswählen)", form_add_own: "Eigene Zutat Hinzufügen",
+      form_your_recipes: "Deine Rezepte", form_which_cat: "Welche Kategorie?",
+      form_cat_hint: "Leer lassen und ich rate für dich!",
+      btn_save: "Rezept Speichern", btn_add: "+ Hinzufügen", btn_spin: "DREHEN!",
+      btn_search_web: "\u{1F30D} Im Web suchen", btn_searching: "\u{1F50D} Suche...",
+      btn_add_to_week: "Zu dieser Woche hinzufügen", btn_make_list: "Einkaufsliste Erstellen",
+      filter_all: "Alle", filter_fav: "\u2764\uFE0F Favoriten", filter_top: "\u2B50 Top-Bewertet",
+      cat_all: "Alle", cat_breakfast: "Frühstück", cat_lunch: "Mittagessen",
+      cat_dinner: "Abendessen", cat_snacks: "Snacks", cat_sweet: "Süßes",
+      spin_all: "Alle", spin_surprise: "\u2728 Überrasch mich", spin_fav: "\u2764\uFE0F Favoriten",
+      setting_family: "Familiengröße", setting_sound: "Ton", setting_theme: "Design", setting_lang: "Sprache",
+      grocery_pick: "Mahlzeiten für die Woche wählen", grocery_list: "Einkaufsliste",
+      mascot_idle: ["Was kochen wir?","Hungrig?","Lass uns essen!","Mmm, lecker!","Bereit, Chef?","Dreh mich!","Tipp auf mich!"],
+      mascot_saved: "Lecker! Gespeichert \u2728", mascot_thinking: "Ich suche... \u{1F50D}",
+      mascot_found: "Gefunden! \u2728", mascot_guess: "Ich habe geraten!",
+      mascot_notfound: "Nicht gefunden \u{1F615}", mascot_sixseven: "Sechs sieben! \u{1F64C}",
+      alert_need_name: "Gib deinem Rezept einen Namen!", alert_need_ing: "Füge mindestens eine Zutat hinzu!",
+      alert_need_recipes: "Füge mindestens 2 Rezepte hinzu!", alert_need_type: "Schreib erst einen Namen!"
+    },
+    es: {
+      app_title: "Ruleta de Cena", app_subtitle: "¿Qué hay para cenar hoy?",
+      nav_recipes: "Recetas", nav_spin: "¡Gira!", nav_groceries: "Compras", nav_week: "Semana", nav_settings: "Ajustes",
+      form_recipe_name: "Nombre de Receta", form_recipe_placeholder: "ej: Pasta Boloñesa",
+      form_suggested: "Ingredientes Sugeridos (toca para elegir)", form_add_own: "Añade Tu Ingrediente",
+      form_your_recipes: "Tus Recetas", form_which_cat: "¿Qué categoría?",
+      form_cat_hint: "¡Déjalo vacío y yo adivino!",
+      btn_save: "Guardar Receta", btn_add: "+ Añadir", btn_spin: "¡GIRA!",
+      btn_search_web: "\u{1F30D} Buscar en la web", btn_searching: "\u{1F50D} Buscando...",
+      btn_add_to_week: "Añadir a Esta Semana", btn_make_list: "Crear Lista de Compras",
+      filter_all: "Todo", filter_fav: "\u2764\uFE0F Favoritos", filter_top: "\u2B50 Mejor Valorados",
+      cat_all: "Todo", cat_breakfast: "Desayuno", cat_lunch: "Comida",
+      cat_dinner: "Cena", cat_snacks: "Aperitivos", cat_sweet: "Dulces",
+      spin_all: "Todo", spin_surprise: "\u2728 Sorpréndeme", spin_fav: "\u2764\uFE0F Favoritos",
+      setting_family: "Tamaño Familia", setting_sound: "Sonido", setting_theme: "Tema", setting_lang: "Idioma",
+      grocery_pick: "Elige Comidas para la Semana", grocery_list: "Lista de Compras",
+      mascot_idle: ["¿Qué cocinamos?","¿Tienes hambre?","¡A comer!","¡Qué rico!","¿Listo, chef?","¡Dale!","¡Tócame!"],
+      mascot_saved: "¡Rico! Guardado \u2728", mascot_thinking: "Buscando... \u{1F50D}",
+      mascot_found: "¡Encontrado! \u2728", mascot_guess: "¡Hice una suposición!",
+      mascot_notfound: "No lo encontré \u{1F615}", mascot_sixseven: "¡Seis siete! \u{1F64C}",
+      alert_need_name: "¡Dale un nombre a tu receta!", alert_need_ing: "¡Añade al menos un ingrediente!",
+      alert_need_recipes: "¡Añade al menos 2 recetas!", alert_need_type: "¡Escribe un nombre primero!"
+    },
+    zh: {
+      app_title: "\u665A\u9910\u8F6E\u76D8", app_subtitle: "\u4ECA\u665A\u5403\u4EC0\u4E48\uFF1F",
+      nav_recipes: "\u98DF\u8C31", nav_spin: "\u8F6C\uFF01", nav_groceries: "\u8D2D\u7269", nav_week: "\u4E00\u5468", nav_settings: "\u8BBE\u7F6E",
+      form_recipe_name: "\u98DF\u8C31\u540D\u79F0", form_recipe_placeholder: "\u5982\uFF1A\u610F\u5927\u5229\u8089\u9171\u9762",
+      form_suggested: "\u63A8\u8350\u98DF\u6750\uFF08\u70B9\u51FB\u9009\u62E9\uFF09", form_add_own: "\u6DFB\u52A0\u4F60\u7684\u98DF\u6750",
+      form_your_recipes: "\u4F60\u7684\u98DF\u8C31", form_which_cat: "\u54EA\u4E2A\u5206\u7C7B\uFF1F",
+      form_cat_hint: "\u7559\u7A7A\u6211\u4F1A\u731C\u7684\uFF01",
+      btn_save: "\u4FDD\u5B58\u98DF\u8C31", btn_add: "+ \u6DFB\u52A0", btn_spin: "\u8F6C\uFF01",
+      btn_search_web: "\u{1F30D} \u641C\u7D22\u7F51\u9875", btn_searching: "\u{1F50D} \u641C\u7D22\u4E2D...",
+      btn_add_to_week: "\u52A0\u5230\u672C\u5468", btn_make_list: "\u751F\u6210\u8D2D\u7269\u6E05\u5355",
+      filter_all: "\u5168\u90E8", filter_fav: "\u2764\uFE0F \u6536\u85CF", filter_top: "\u2B50 \u9AD8\u8BC4\u5206",
+      cat_all: "\u5168\u90E8", cat_breakfast: "\u65E9\u9910", cat_lunch: "\u5348\u9910",
+      cat_dinner: "\u665A\u9910", cat_snacks: "\u96F6\u98DF", cat_sweet: "\u751C\u70B9",
+      spin_all: "\u5168\u90E8", spin_surprise: "\u2728 \u7ED9\u6211\u60CA\u559C", spin_fav: "\u2764\uFE0F \u6536\u85CF",
+      setting_family: "\u5BB6\u5EAD\u4EBA\u6570", setting_sound: "\u58F0\u97F3", setting_theme: "\u4E3B\u9898", setting_lang: "\u8BED\u8A00",
+      grocery_pick: "\u9009\u62E9\u672C\u5468\u996D\u83DC", grocery_list: "\u8D2D\u7269\u6E05\u5355",
+      mascot_idle: ["\u5728\u505A\u4EC0\u4E48\uFF1F","\u997F\u4E86\u5417\uFF1F","\u5403\u996D\u5566\uFF01","\u597D\u5403\uFF01","\u51C6\u5907\u597D\u4E86\u5417\uFF1F","\u8F6C\u8F6C\u76D8\uFF01","\u6478\u6478\u6211\uFF01"],
+      mascot_saved: "\u597D\u5403\uFF01\u5DF2\u4FDD\u5B58 \u2728", mascot_thinking: "\u6B63\u5728\u67E5\u627E... \u{1F50D}",
+      mascot_found: "\u627E\u5230\u4E86\uFF01\u2728", mascot_guess: "\u6211\u731C\u4E86\u4E00\u4E2A\uFF01",
+      mascot_notfound: "\u6CA1\u627E\u5230 \u{1F615}", mascot_sixseven: "\u516D\u4E03\uFF01\u{1F64C}",
+      alert_need_name: "\u7ED9\u98DF\u8C31\u8D77\u4E2A\u540D\u5B57\uFF01", alert_need_ing: "\u81F3\u5C11\u6DFB\u52A0\u4E00\u79CD\u98DF\u6750\uFF01",
+      alert_need_recipes: "\u81F3\u5C11\u6DFB\u52A02\u4E2A\u98DF\u8C31\uFF01", alert_need_type: "\u5148\u8F93\u5165\u98DF\u8C31\u540D\uFF01"
+    },
+    ar: {
+      app_title: "\u0631\u0648\u0644\u064A\u062A \u0627\u0644\u0639\u0634\u0627\u0621", app_subtitle: "\u0645\u0627\u0630\u0627 \u0633\u0646\u0623\u0643\u0644 \u0627\u0644\u0644\u064A\u0644\u0629\u061F",
+      nav_recipes: "\u0627\u0644\u0648\u0635\u0641\u0627\u062A", nav_spin: "\u0623\u062F\u0631!", nav_groceries: "\u0627\u0644\u0628\u0642\u0627\u0644\u0629", nav_week: "\u0627\u0644\u0623\u0633\u0628\u0648\u0639", nav_settings: "\u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A",
+      form_recipe_name: "\u0627\u0633\u0645 \u0627\u0644\u0648\u0635\u0641\u0629", form_recipe_placeholder: "\u0645\u062B\u0644: \u0628\u0627\u0633\u062A\u0627 \u0628\u0627\u0644\u0644\u062D\u0645",
+      form_suggested: "\u0645\u0643\u0648\u0646\u0627\u062A \u0645\u0642\u062A\u0631\u062D\u0629 (\u0627\u0636\u063A\u0637 \u0644\u0644\u0627\u062E\u062A\u064A\u0627\u0631)", form_add_own: "\u0623\u0636\u0641 \u0645\u0643\u0648\u0646\u0627\u062A\u0643",
+      form_your_recipes: "\u0648\u0635\u0641\u0627\u062A\u0643", form_which_cat: "\u0623\u064A \u0641\u0626\u0629\u061F",
+      form_cat_hint: "\u0627\u062A\u0631\u0643\u0647\u0627 \u0641\u0627\u0631\u063A\u0629 \u0648\u0633\u0623\u062D\u0632\u0631!",
+      btn_save: "\u0627\u062D\u0641\u0638 \u0627\u0644\u0648\u0635\u0641\u0629", btn_add: "+ \u0623\u0636\u0641", btn_spin: "\u0623\u062F\u0631!",
+      btn_search_web: "\u{1F30D} \u0627\u0628\u062D\u062B \u0641\u064A \u0627\u0644\u0648\u064A\u0628", btn_searching: "\u{1F50D} \u062C\u0627\u0631\u064A \u0627\u0644\u0628\u062D\u062B...",
+      btn_add_to_week: "\u0623\u0636\u0641 \u0644\u0647\u0630\u0627 \u0627\u0644\u0623\u0633\u0628\u0648\u0639", btn_make_list: "\u0623\u0646\u0634\u0626 \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u062A\u0633\u0648\u0642",
+      filter_all: "\u0627\u0644\u0643\u0644", filter_fav: "\u2764\uFE0F \u0627\u0644\u0645\u0641\u0636\u0644\u0629", filter_top: "\u2B50 \u0627\u0644\u0623\u0641\u0636\u0644",
+      cat_all: "\u0627\u0644\u0643\u0644", cat_breakfast: "\u0627\u0644\u0641\u0637\u0648\u0631", cat_lunch: "\u0627\u0644\u063A\u062F\u0627\u0621",
+      cat_dinner: "\u0627\u0644\u0639\u0634\u0627\u0621", cat_snacks: "\u0648\u062C\u0628\u0627\u062A \u062E\u0641\u064A\u0641\u0629", cat_sweet: "\u062D\u0644\u0648\u064A\u0627\u062A",
+      spin_all: "\u0627\u0644\u0643\u0644", spin_surprise: "\u2728 \u0641\u0627\u062C\u0626\u0646\u064A", spin_fav: "\u2764\uFE0F \u0627\u0644\u0645\u0641\u0636\u0644\u0629",
+      setting_family: "\u062D\u062C\u0645 \u0627\u0644\u0639\u0627\u0626\u0644\u0629", setting_sound: "\u0627\u0644\u0635\u0648\u062A", setting_theme: "\u0627\u0644\u0645\u0638\u0647\u0631", setting_lang: "\u0627\u0644\u0644\u063A\u0629",
+      grocery_pick: "\u0627\u062E\u062A\u0631 \u0648\u062C\u0628\u0627\u062A \u0627\u0644\u0623\u0633\u0628\u0648\u0639", grocery_list: "\u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u062A\u0633\u0648\u0642",
+      mascot_idle: ["\u0645\u0627\u0630\u0627 \u0646\u0637\u0628\u062E\u061F","\u062C\u0627\u0626\u0639\u061F","\u0647\u064A\u0627 \u0646\u0623\u0643\u0644!","\u0644\u0630\u064A\u0630!","\u0645\u0633\u062A\u0639\u062F\u061F","\u0623\u062F\u0631!","\u0627\u0636\u063A\u0637 \u0639\u0644\u064A!"],
+      mascot_saved: "\u0644\u0630\u064A\u0630! \u062A\u0645 \u0627\u0644\u062D\u0641\u0638 \u2728", mascot_thinking: "\u062C\u0627\u0631\u064A \u0627\u0644\u0628\u062D\u062B... \u{1F50D}",
+      mascot_found: "\u0648\u062C\u062F\u062A\u0647! \u2728", mascot_guess: "\u062D\u0632\u0631\u062A \u0644\u0643!",
+      mascot_notfound: "\u0644\u0645 \u0623\u062C\u062F\u0647 \u{1F615}", mascot_sixseven: "\u0633\u062A\u0629 \u0633\u0628\u0639\u0629! \u{1F64C}",
+      alert_need_name: "\u0623\u0639\u0637 \u0648\u0635\u0641\u062A\u0643 \u0627\u0633\u0645\u0627\u064B!", alert_need_ing: "\u0623\u0636\u0641 \u0645\u0643\u0648\u0646\u0627\u064B \u0648\u0627\u062D\u062F\u0627\u064B \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644!",
+      alert_need_recipes: "\u0623\u0636\u0641 \u0648\u0635\u0641\u062A\u064A\u0646 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644!", alert_need_type: "\u0627\u0643\u062A\u0628 \u0627\u0633\u0645 \u0627\u0644\u0648\u0635\u0641\u0629 \u0623\u0648\u0644\u0627\u064B!"
+    },
+    cy: {
+      app_title: "Rwlét Swper", app_subtitle: "Beth sydd i swper heno?",
+      nav_recipes: "Ryseitiau", nav_spin: "Troi!", nav_groceries: "Nwyddau", nav_week: "Wythnos", nav_settings: "Gosodiadau",
+      form_recipe_name: "Enw'r Rysáit", form_recipe_placeholder: "e.e. Pasta Bolognese",
+      form_suggested: "Cynhwysion Awgrymedig (tapia i ddewis)", form_add_own: "Ychwanegu Dy Gynhwysyn",
+      form_your_recipes: "Dy Ryseitiau", form_which_cat: "Pa gategori?",
+      form_cat_hint: "Gadewch yn wag ac fe ddyfala i!",
+      btn_save: "Cadw'r Rysáit", btn_add: "+ Ychwanegu", btn_spin: "TROI!",
+      btn_search_web: "\u{1F30D} Chwilio'r we", btn_searching: "\u{1F50D} Chwilio...",
+      btn_add_to_week: "Ychwanegu i'r Wythnos Hon", btn_make_list: "Gwneud Rhestr Nwyddau",
+      filter_all: "Pob un", filter_fav: "\u2764\uFE0F Ffefrynnau", filter_top: "\u2B50 Gorau",
+      cat_all: "Pob un", cat_breakfast: "Brecwast", cat_lunch: "Cinio",
+      cat_dinner: "Swper", cat_snacks: "Byrbrydau", cat_sweet: "Pethau Melys",
+      spin_all: "Pob un", spin_surprise: "\u2728 Synnwch fi", spin_fav: "\u2764\uFE0F Ffefrynnau",
+      setting_family: "Maint y Teulu", setting_sound: "Sain", setting_theme: "Thema", setting_lang: "Iaith",
+      grocery_pick: "Dewis Prydau'r Wythnos", grocery_list: "Rhestr Siopa",
+      mascot_idle: ["Beth sy'n coginio?","Llwglyd?","Awn ni i fwyta!","Blasus!","Barod, chef?","Troi!","Tapia fi!"],
+      mascot_saved: "Blasus! Wedi cadw \u2728", mascot_thinking: "Chwilio... \u{1F50D}",
+      mascot_found: "Wedi'i ffeindio! \u2728", mascot_guess: "Dyfais i!",
+      mascot_notfound: "Methais ffeindio \u{1F615}", mascot_sixseven: "Chwech saith! \u{1F64C}",
+      alert_need_name: "Rho enw i'r rysáit!", alert_need_ing: "Ychwanega o leiaf un cynhwysyn!",
+      alert_need_recipes: "Ychwanega o leiaf 2 rysáit!", alert_need_type: "Teipia enw'n gyntaf!"
+    }
+  };
+
+  function t(key) {
+    const lang = settings.lang || 'en';
+    const src = translations[lang] || translations.en;
+    if (src[key] !== undefined) return src[key];
+    if (translations.en[key] !== undefined) return translations.en[key];
+    return key;
+  }
+
+  function applyLanguage() {
+    const lang = settings.lang || 'en';
+    document.documentElement.lang = lang;
+    // RTL for Arabic
+    document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+    // Walk all [data-i18n] elements and update their text/placeholder
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const val = t(key);
+      if (Array.isArray(val)) return; // array values are for mascot
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = val;
+      } else {
+        el.textContent = val;
+      }
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+    });
+    // Re-render dynamic bits
+    if (typeof renderCategoryBar === 'function') renderCategoryBar();
+    if (typeof renderRecipes === 'function') renderRecipes();
+    // Update mascot idle messages
+    mascotMessages = t('mascot_idle') || [];
+  }
+
+  function setLanguage(lang) {
+    settings.lang = lang;
+    save();
+    applyLanguage();
+    mascotSay(t('mascot_idle')[0] || "Hello!");
+  }
   let currentIngredients = [];
   let lastWinner = null;
   let spinMode = 'all';
@@ -1260,13 +1527,15 @@
 
   // ============ CATEGORIES ============
   const CATEGORIES = [
-    { id: 'all', label: 'All', emoji: '\u{1F37D}\uFE0F' },
-    { id: 'breakfast', label: 'Breakfast', emoji: '\u{1F373}' },
-    { id: 'lunch', label: 'Lunch', emoji: '\u{1F96A}' },
-    { id: 'dinner', label: 'Dinner', emoji: '\u{1F35D}' },
-    { id: 'snacks', label: 'Snacks', emoji: '\u{1F37F}' },
-    { id: 'sweet', label: 'Sweet Stuff', emoji: '\u{1F370}' }
+    { id: 'all', key: 'cat_all', emoji: '\u{1F37D}\uFE0F' },
+    { id: 'breakfast', key: 'cat_breakfast', emoji: '\u{1F373}' },
+    { id: 'lunch', key: 'cat_lunch', emoji: '\u{1F96A}' },
+    { id: 'dinner', key: 'cat_dinner', emoji: '\u{1F35D}' },
+    { id: 'snacks', key: 'cat_snacks', emoji: '\u{1F37F}' },
+    { id: 'sweet', key: 'cat_sweet', emoji: '\u{1F370}' }
   ];
+  // Helper: get translated label for a category
+  function catLabel(c) { return t(c.key); }
   let activeCategory = 'all';
 
   // Auto-guess a category from recipe name + ingredients (best effort)
@@ -1310,7 +1579,7 @@
 
   function categoryLabel(id) {
     const c = CATEGORIES.find(c => c.id === id);
-    return c ? c.emoji + ' ' + c.label : '';
+    return c ? c.emoji + ' ' + t(c.key) : '';
   }
 
   function guessEmoji(name) {
@@ -1558,12 +1827,12 @@
   async function doWebSearch() {
     const input = document.getElementById('recipe-name');
     const term = input.value.trim();
-    if (term.length < 3) { alert('Type a recipe name first!'); return; }
+    if (term.length < 3) { alert(t('alert_need_type')); return; }
     const btn = document.getElementById('web-search-btn');
     btn.disabled = true;
     btn.textContent = '\u{1F50D} Searching...';
     mascotSetMood('thinking');
-    mascotSay('Looking it up... \u{1F50D}');
+    mascotSay(t('mascot_thinking'));
 
     let results = [];
     try {
@@ -1592,16 +1861,16 @@
     }
 
     if (!results || results.length === 0) {
-      mascotSay("Couldn't find it \u{1F615}");
+      mascotSay(t('mascot_notfound'));
       mascotSetMood('idle', 2000);
     } else {
       const hasRealHits = results.some(r => !r.isGuess);
       if (hasRealHits) {
         const count = results.filter(r => !r.isGuess).length;
-        mascotSay(`Found ${count}! \u2728`);
+        mascotSay(t('mascot_found'));
         mascotSetMood('excited', 2500);
       } else {
-        mascotSay("Made a guess for you! \u{1F914}");
+        mascotSay(t('mascot_guess'));
         mascotSetMood('thinking', 2500);
       }
       activeRecipeMatch = results[0].key;
@@ -1751,8 +2020,8 @@
 
   function saveRecipe() {
     const name = document.getElementById('recipe-name').value.trim();
-    if (!name) { alert('Give your recipe a name!'); return; }
-    if (currentIngredients.length === 0) { alert('Add at least one ingredient!'); return; }
+    if (!name) { alert(t('alert_need_name')); return; }
+    if (currentIngredients.length === 0) { alert(t('alert_need_ing')); return; }
 
     const ingsObj = {};
     currentIngredients.forEach(i => { ingsObj[i.name] = [i.amount, i.unit]; });
@@ -1779,7 +2048,7 @@
     const catInputs = document.querySelectorAll('input[name="new-cat"]');
     catInputs.forEach(i => i.checked = false);
     renderRecipes();
-    mascotSay("Yum! Saved \u2728");
+    mascotSay(t('mascot_saved'));
   }
 
   function deleteRecipe(id) {
@@ -1832,7 +2101,7 @@
     for (const c of CATEGORIES) {
       const chip = document.createElement('div');
       chip.className = 'chip' + (activeCategory === c.id ? ' selected' : '');
-      chip.textContent = c.emoji + ' ' + c.label;
+      chip.textContent = c.emoji + ' ' + t(c.key);
       chip.onclick = () => setCategory(c.id);
       bar.appendChild(chip);
     }
@@ -1857,7 +2126,7 @@
         (recipes.length === 0 ? 'No recipes yet! Add your first one above.' :
          recipeFilter === 'fav' ? 'No favorites yet. Tap the heart on a recipe!' :
          recipeFilter === 'top' ? 'No rated recipes yet. Give them some stars!' :
-         activeCategory !== 'all' ? `No ${catLabel ? catLabel.label.toLowerCase() : 'recipes'} yet!` :
+         activeCategory !== 'all' ? `No ${catLabel ? t(catLabel.key).toLowerCase() : 'recipes'} yet!` :
          'No recipes found.') + '</p></div>';
       return;
     }
@@ -1880,7 +2149,7 @@
         <div class="recipe-card-header">
           <span class="recipe-emoji">${r.emoji || '\u{1F37D}\uFE0F'}</span>
           <h3>${escHtml(r.name)}</h3>
-          ${catChip ? `<span class="cat-tag">${catChip.emoji} ${catChip.label}</span>` : ''}
+          ${catChip ? `<span class="cat-tag">${catChip.emoji} ${t(catChip.key)}</span>` : ''}
         </div>
         <div class="ingredients">${ingHtml}</div>
         <div class="card-actions">
@@ -1961,7 +2230,7 @@
     overlay.classList.add('active');
     spawnConfetti();
     playSound('win');
-    mascotSay("Six seven! \u{1F64C}");
+    mascotSay(t('mascot_sixseven'));
   }
 
   function closeCelebration() {
@@ -2433,38 +2702,12 @@
     } catch (e) {}
   }
 
-  // Time-of-day aware idle messages
+  // Idle messages come from translations (so they switch language too!)
   function getIdleMessages() {
-    const hr = new Date().getHours();
-    const tod = hr < 5 ? 'late' : hr < 11 ? 'morning' : hr < 14 ? 'lunch' : hr < 17 ? 'afternoon' : hr < 21 ? 'dinner' : 'night';
-    const base = [
-      "What's cooking?",
-      "Hungry yet?",
-      "Let's eat!",
-      "Spin to win!",
-      "Yummy yum!",
-      "What shall we make?",
-      "I'm Spinny \u{1F37D}\uFE0F",
-      "Ready, chef?",
-      "Roulette time!",
-      "Pick a meal!",
-      "Let's get cookin'!",
-      "Tummy rumbling?",
-      "Feed me recipes!",
-      "Whip up something tasty",
-      "Mmm... I smell something",
-      "Chef mode: ON \u{1F469}\u200D\u{1F373}",
-      "Tap me if you're bored!"
-    ];
-    const todMsgs = {
-      morning: ["Morning! Pancakes?", "Breakfast thoughts?", "Rise and dine!", "Eggs or porridge?"],
-      lunch: ["Lunch o'clock!", "What's for lunch?", "Sandwich time?"],
-      afternoon: ["Snack attack?", "Afternoon munchies?", "Planning dinner?"],
-      dinner: ["Dinner time!", "What's for tea?", "Spin that wheel!", "Feed the family!"],
-      night: ["Late night snack?", "Tomorrow's dinner?", "Don't forget to eat!"],
-      late: ["Still up?!", "Midnight chef vibes", "Zzz... wait, food?"]
-    };
-    return [...base, ...(todMsgs[tod] || [])];
+    const fromT = t('mascot_idle');
+    if (Array.isArray(fromT) && fromT.length) return fromT;
+    // Fallback English extras if translation missing
+    return ["What's cooking?","Hungry?","Let's eat!","Yummy yum!","Ready, chef?"];
   }
 
   // Tiny jokes the mascot tells when tapped
@@ -2534,7 +2777,7 @@
     }
   }, 5000);
 
-  const mascotMessages = getIdleMessages();
+  let mascotMessages = getIdleMessages();
   function mascotSay(msg) {
     const el = document.getElementById('mascot-speech');
     el.textContent = msg;
@@ -2582,6 +2825,10 @@
   setFilter('all');
   renderCategoryBar();
   renderRecipes();
+  applyLanguage();
+  // Sync language picker dropdown to current language
+  const langSel = document.getElementById('lang-select');
+  if (langSel) langSel.value = settings.lang || 'en';
 </script>
 </body>
 </html>
