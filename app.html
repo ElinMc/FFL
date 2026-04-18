@@ -521,27 +521,57 @@
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     z-index: 1000;
-    background: var(--bg);
+    background: linear-gradient(180deg, #FFF5F7 0%, #F8E8F2 100%);
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    overflow: hidden;
   }
   .celebration-overlay.active { display: flex; }
+
+  .celebration-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: pop-in 0.6s ease-out;
+  }
+  /* Gentle pop-in - slow, non-flashing */
+  @keyframes pop-in {
+    0% { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
   .winner-emoji {
-    font-size: 80px;
-    animation: winnerBounce 0.4s ease-in-out infinite alternate;
+    font-size: 110px;
+    animation: winnerBounce 1.2s ease-in-out infinite alternate;
   }
+  /* Slow, gentle bob - no flashing */
   @keyframes winnerBounce {
-    0% { transform: translateY(0) scale(1) rotate(-5deg); }
-    100% { transform: translateY(-20px) scale(1.15) rotate(5deg); }
+    0% { transform: translateY(0) rotate(-4deg); }
+    100% { transform: translateY(-15px) rotate(4deg); }
   }
+
+  .winner-banner {
+    font-size: 18px;
+    font-weight: 900;
+    color: white;
+    background: linear-gradient(135deg, #FFB5C2, #C5B9F2);
+    padding: 8px 24px;
+    border-radius: 50px;
+    margin-bottom: 14px;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 15px rgba(197,185,242,0.3);
+  }
+
   .winner-text {
-    font-size: 42px;
+    font-size: 46px;
     font-weight: 900;
     text-align: center;
-    margin-top: 10px;
-    animation: sixSeven 0.4s ease-in-out infinite alternate;
+    margin-top: 14px;
+    line-height: 1.1;
     background: linear-gradient(135deg, var(--pink), var(--lavender));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -550,34 +580,37 @@
   .winner-sub {
     font-size: 18px;
     color: var(--text-light);
-    margin-top: 10px;
-  }
-  @keyframes sixSeven {
-    0% { transform: translateY(0) scale(1); }
-    100% { transform: translateY(-10px) scale(1.08); }
+    margin-top: 14px;
+    font-weight: 700;
   }
   .six-seven-hands {
     font-size: 50px;
-    animation: handsUp 0.3s ease-in-out infinite alternate;
-    margin-top: 16px;
+    animation: handsUp 1.4s ease-in-out infinite alternate;
+    margin-top: 20px;
   }
+  /* Slow sway - gentle -8 to +8 degrees */
   @keyframes handsUp {
-    0% { transform: translateY(0) rotate(-10deg); }
-    100% { transform: translateY(-15px) rotate(10deg); }
+    0% { transform: translateY(0) rotate(-8deg); }
+    100% { transform: translateY(-10px) rotate(8deg); }
   }
   .close-celebration {
     margin-top: 30px;
-    padding: 14px 40px;
-    border-radius: 20px;
+    padding: 16px 50px;
+    border-radius: 50px;
     border: none;
-    background: var(--pink);
+    background: linear-gradient(135deg, var(--pink), var(--lavender));
     color: white;
     font-family: inherit;
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 900;
     cursor: pointer;
+    box-shadow: 0 8px 25px rgba(197,185,242,0.4);
+    transition: transform 0.2s;
+    letter-spacing: 1px;
   }
+  .close-celebration:hover { transform: scale(1.05); }
 
+  /* ========== CONFETTI (slow, gentle fall - epilepsy safe) ========== */
   .confetti-piece {
     position: fixed;
     width: 10px;
@@ -587,8 +620,47 @@
     pointer-events: none;
   }
   @keyframes confettiFall {
-    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0.9; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ========== FLOATING EMOJI (slow rise) ========== */
+  .float-emoji {
+    position: fixed;
+    font-size: 40px;
+    z-index: 1001;
+    pointer-events: none;
+    animation: emoji-float-up 5s ease-out forwards;
+  }
+  @keyframes emoji-float-up {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-110vh) rotate(180deg); opacity: 0; }
+  }
+
+  /* ========== BALLOONS (slow rise) ========== */
+  .balloon {
+    position: fixed;
+    bottom: -100px;
+    width: 50px;
+    height: 62px;
+    border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%;
+    z-index: 1001;
+    pointer-events: none;
+    animation: balloon-rise 7s ease-out forwards;
+  }
+  .balloon::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    width: 1px;
+    height: 40px;
+    background: rgba(100,80,120,0.4);
+  }
+  @keyframes balloon-rise {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    15% { opacity: 1; }
+    100% { transform: translateY(-120vh) translateX(var(--balloon-drift, 20px)); opacity: 0.5; }
   }
 
   .grocery-item {
@@ -1055,11 +1127,14 @@
 </div>
 
 <div class="celebration-overlay" id="celebration">
-  <div class="winner-emoji" id="winner-emoji">&#x1F37D;&#xFE0F;</div>
-  <div class="winner-text" id="winner-text"></div>
-  <div class="winner-sub">Tonight's dinner!</div>
-  <div class="six-seven-hands">&#x1F64C; &#x1F64C;</div>
-  <button class="close-celebration" onclick="closeCelebration()">Let's go!</button>
+  <div class="celebration-content">
+    <div class="winner-banner">🎉 WINNER! 🎉</div>
+    <div class="winner-emoji" id="winner-emoji">&#x1F37D;&#xFE0F;</div>
+    <div class="winner-text" id="winner-text"></div>
+    <div class="winner-sub">Tonight's dinner is served! ✨</div>
+    <div class="six-seven-hands">&#x1F64C; &#x1F389; &#x1F64C;</div>
+    <button class="close-celebration" onclick="closeCelebration()">LET'S EAT! 🍽️</button>
+  </div>
 </div>
 
 <div class="modal-overlay" id="day-modal">
@@ -2239,20 +2314,54 @@
   }
 
   function spawnConfetti() {
+    // Epilepsy-safe celebration: slow falling confetti, gentle rising balloons,
+    // slow-floating emojis. No rapid flashes, no strobing, no high-contrast flicker.
     const colors = ['#FFB5C2', '#B8E8D0', '#C5B9F2', '#FFDAB3', '#B3D9FF', '#FFF2B3'];
-    for (let i = 0; i < 70; i++) {
+
+    // Slower falling confetti (3-5 seconds each)
+    for (let i = 0; i < 60; i++) {
       const piece = document.createElement('div');
       piece.className = 'confetti-piece';
       piece.style.left = Math.random() * 100 + 'vw';
       piece.style.top = '-10px';
       piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-      piece.style.width = (6 + Math.random() * 8) + 'px';
-      piece.style.height = (6 + Math.random() * 8) + 'px';
-      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-      piece.style.animation = `confettiFall ${1.5 + Math.random() * 2}s ease-out ${Math.random() * 0.5}s forwards`;
+      piece.style.width = (8 + Math.random() * 6) + 'px';
+      piece.style.height = (8 + Math.random() * 6) + 'px';
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '3px';
+      // Slower animation (3-5s) + staggered delay up to 1.5s for natural feel
+      piece.style.animation = `confettiFall ${3 + Math.random() * 2}s linear ${Math.random() * 1.5}s forwards`;
       document.body.appendChild(piece);
     }
-    setTimeout(() => document.querySelectorAll('.confetti-piece').forEach(el => el.remove()), 4500);
+
+    // Gentle rising balloons (7s, staggered)
+    for (let i = 0; i < 8; i++) {
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon';
+      balloon.style.left = (10 + Math.random() * 80) + 'vw';
+      balloon.style.background = colors[Math.floor(Math.random() * colors.length)];
+      balloon.style.setProperty('--balloon-drift', (Math.random() * 80 - 40) + 'px');
+      balloon.style.animationDelay = (Math.random() * 2) + 's';
+      document.body.appendChild(balloon);
+    }
+
+    // Slow-floating celebration emojis
+    const partyEmojis = ['\u{1F389}', '\u{1F38A}', '\u2728', '\u{1F496}', '\u2B50', '\u{1F338}', '\u{1F33C}'];
+    for (let i = 0; i < 14; i++) {
+      const emoji = document.createElement('div');
+      emoji.className = 'float-emoji';
+      emoji.textContent = partyEmojis[Math.floor(Math.random() * partyEmojis.length)];
+      emoji.style.left = Math.random() * 100 + 'vw';
+      emoji.style.bottom = '-50px';
+      emoji.style.fontSize = (30 + Math.random() * 20) + 'px';
+      emoji.style.animationDelay = (Math.random() * 2) + 's';
+      emoji.style.animationDuration = (4 + Math.random() * 3) + 's';
+      document.body.appendChild(emoji);
+    }
+
+    // Clean up after animations finish
+    setTimeout(() => {
+      document.querySelectorAll('.confetti-piece, .balloon, .float-emoji').forEach(el => el.remove());
+    }, 9000);
   }
 
   function logToHistory() {
