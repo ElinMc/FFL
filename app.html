@@ -787,6 +787,188 @@
     100% { transform: translateY(-120vh) translateX(var(--balloon-drift, 20px)); opacity: 0.5; }
   }
 
+  /* ======================= FOCUS PAGE ======================= */
+  .focus-card {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 22px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    border: 2px solid var(--border);
+  }
+  .focus-title {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .focus-desc {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+  .focus-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 900;
+    cursor: pointer;
+    color: white;
+    transition: transform 0.15s;
+  }
+  .focus-btn:hover { transform: scale(1.02); }
+  .focus-btn:active { transform: scale(0.98); }
+  .btn-pink-big { background: linear-gradient(135deg, #FFB5C2, #FF9BB0); box-shadow: 0 6px 20px rgba(255,155,176,0.4); }
+  .btn-mint-big { background: linear-gradient(135deg, #B8E8D0, #8FD6B0); color: #2E5F44; box-shadow: 0 6px 20px rgba(143,214,176,0.4); }
+  .btn-peach-big { background: linear-gradient(135deg, #FFDAB3, #FFB988); color: #7A4A20; box-shadow: 0 6px 20px rgba(255,185,136,0.4); }
+  .btn-lavender-big { background: linear-gradient(135deg, #C5B9F2, #A89AD6); box-shadow: 0 6px 20px rgba(168,154,214,0.4); }
+
+  /* Fidget wheel - ADHD satisfying spin */
+  .fidget-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+  }
+  .fidget-wheel {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: conic-gradient(
+      #FFB5C2 0deg 60deg,
+      #FFDAB3 60deg 120deg,
+      #FFF2B3 120deg 180deg,
+      #B8E8D0 180deg 240deg,
+      #B3D9FF 240deg 300deg,
+      #C5B9F2 300deg 360deg
+    );
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 8px 25px rgba(197,185,242,0.35), inset 0 0 0 8px white, inset 0 0 0 10px #FFE4EA;
+    position: relative;
+    transition: transform 2.5s cubic-bezier(0.17, 0.67, 0.3, 1);
+  }
+  .fidget-wheel::after {
+    content: '✨';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  }
+  .fidget-wheel:active { transform: scale(0.95) rotate(var(--fid-rot, 0deg)); }
+
+  /* Timer */
+  .timer-display {
+    text-align: center;
+    font-size: 60px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    padding: 16px;
+    background: linear-gradient(135deg, #FFF0F5, #F3ECFF);
+    border-radius: 20px;
+    margin-bottom: 14px;
+    letter-spacing: 2px;
+  }
+  [data-theme="dark"] .timer-display {
+    background: linear-gradient(135deg, #3D3450, #4A3F5E);
+  }
+  .timer-presets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .timer-presets button {
+    padding: 10px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    background: var(--card-bg);
+    color: var(--text);
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .timer-presets button:hover {
+    border-color: var(--pink);
+    background: #FFF5F7;
+  }
+  [data-theme="dark"] .timer-presets button:hover { background: #4A3F5E; }
+  .timer-custom {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .timer-custom input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 15px;
+    text-align: center;
+    background: var(--card-bg);
+    color: var(--text);
+  }
+  .timer-custom .focus-btn { flex: 1; padding: 12px; font-size: 15px; }
+
+  /* Buddy cook-along */
+  .buddy-step {
+    background: linear-gradient(135deg, #FFF0F5, #F3ECFF);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  [data-theme="dark"] .buddy-step {
+    background: linear-gradient(135deg, #3D3450, #4A3F5E);
+  }
+  .buddy-step .step-count {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-light);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .buddy-step .step-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .buddy-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .buddy-controls .focus-btn { flex: 1; }
+
+  .buddy-recipe-chip {
+    display: inline-block;
+    padding: 10px 16px;
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    margin: 4px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .buddy-recipe-chip:hover {
+    border-color: var(--lavender);
+    background: #F3ECFF;
+  }
+  [data-theme="dark"] .buddy-recipe-chip:hover { background: #4A3F5E; }
+
   .grocery-item {
     display: flex;
     align-items: center;
@@ -987,6 +1169,7 @@
 <nav class="nav">
   <button class="active" onclick="showPage('recipes')" data-i18n="nav_recipes">Recipes</button>
   <button onclick="showPage('spin')" data-i18n="nav_spin">Spin!</button>
+  <button onclick="showPage('focus')" data-i18n="nav_focus">🧠 Focus</button>
   <button onclick="showPage('calendar')" data-i18n="nav_week">Week</button>
   <button onclick="showPage('grocery')" data-i18n="nav_groceries">Shop</button>
   <button onclick="showPage('settings')" data-i18n="nav_settings">Settings</button>
@@ -1129,9 +1312,6 @@
   <div class="form-group">
     <label data-i18n="form_recipe_name">Recipe Name</label>
     <input type="text" id="recipe-name" data-i18n-placeholder="form_recipe_placeholder" placeholder="e.g. Pasta Bolognese" oninput="activeRecipeMatch = null; suggestIngredients()">
-    <button type="button" id="web-search-btn" onclick="doWebSearch()" data-i18n="btn_search_web" style="margin-top: 8px; padding: 10px 16px; border-radius: 14px; border: 2px solid var(--blue); background: var(--card-bg); color: var(--text); font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; width: 100%;">
-      &#x1F30D; Search the web
-    </button>
   </div>
 
   <div id="match-bar" class="suggested-ingredients" style="display:none; margin-bottom: 12px;"></div>
@@ -1214,6 +1394,65 @@
   </p>
   <button class="btn btn-lavender" onclick="generateGroceryList()" data-i18n="btn_make_list">Make Grocery List</button>
   <div id="grocery-list" style="margin-top: 18px;"></div>
+</div>
+
+<!-- ======================= FOCUS PAGE (ADHD-friendly) ======================= -->
+<div id="page-focus" class="page">
+  <div style="text-align: center; margin-bottom: 20px;">
+    <h2 style="font-size: 26px; font-weight: 900; background: linear-gradient(135deg, var(--pink), var(--lavender)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🧠 Focus Mode</h2>
+    <p style="color: var(--text-light); font-size: 14px; margin-top: 4px;" data-i18n="focus_sub">Made for ADHD brains 💕</p>
+  </div>
+
+  <!-- QUICK PICK: one big button -->
+  <div class="focus-card">
+    <div class="focus-title">🎯 <span data-i18n="focus_decide">Can't decide?</span></div>
+    <p class="focus-desc" data-i18n="focus_decide_desc">One tap picks a meal AND shows all the ingredients. No thinking required.</p>
+    <button class="focus-btn btn-pink-big" onclick="quickPick()">
+      <span data-i18n="btn_pick_for_me">Pick for me!</span> ✨
+    </button>
+    <div id="quick-pick-result" style="display:none; margin-top: 20px; padding: 20px; background: var(--card-bg); border-radius: 20px; text-align: center;"></div>
+  </div>
+
+  <!-- FIDGET SPIN WHEEL -->
+  <div class="focus-card">
+    <div class="focus-title">🌀 <span data-i18n="focus_fidget">Fidget Wheel</span></div>
+    <p class="focus-desc" data-i18n="focus_fidget_desc">Spin it whenever. No reason needed. Just vibes.</p>
+    <div class="fidget-wrap">
+      <div id="fidget-wheel" class="fidget-wheel" onclick="spinFidget(event)"></div>
+    </div>
+    <p style="text-align: center; font-size: 13px; color: var(--text-light); margin-top: 10px;" data-i18n="focus_fidget_hint">Tap or flick it ↑</p>
+  </div>
+
+  <!-- COOKING TIMER -->
+  <div class="focus-card">
+    <div class="focus-title">⏱️ <span data-i18n="focus_timer">Cooking Timer</span></div>
+    <p class="focus-desc" data-i18n="focus_timer_desc">With encouragement from Whiskers along the way.</p>
+    <div class="timer-display" id="timer-display">00:00</div>
+    <div class="timer-presets">
+      <button onclick="startTimer(5)">5 min</button>
+      <button onclick="startTimer(10)">10 min</button>
+      <button onclick="startTimer(15)">15 min</button>
+      <button onclick="startTimer(20)">20 min</button>
+      <button onclick="startTimer(30)">30 min</button>
+      <button onclick="startTimer(45)">45 min</button>
+    </div>
+    <div class="timer-custom">
+      <input type="number" id="timer-custom-mins" placeholder="min" min="1" max="180">
+      <button class="focus-btn btn-mint-big" onclick="startCustomTimer()" data-i18n="btn_start">Start</button>
+      <button class="focus-btn btn-peach-big" id="timer-pause" onclick="pauseTimer()" style="display:none;" data-i18n="btn_pause">Pause</button>
+      <button class="focus-btn btn-peach-big" id="timer-stop" onclick="stopTimer()" style="display:none;" data-i18n="btn_stop">Stop</button>
+    </div>
+    <div id="timer-encouragement" style="text-align: center; font-size: 15px; font-weight: 700; color: var(--text); margin-top: 12px; min-height: 22px;"></div>
+  </div>
+
+  <!-- BODY-DOUBLE MODE -->
+  <div class="focus-card">
+    <div class="focus-title">👥 <span data-i18n="focus_buddy">Cook-Along Buddy</span></div>
+    <p class="focus-desc" data-i18n="focus_buddy_desc">Whiskers cooks with you step-by-step so you're never alone.</p>
+    <button class="focus-btn btn-lavender-big" onclick="openBuddyPicker()" data-i18n="btn_start_cookalong">Start Cook-Along</button>
+    <div id="buddy-picker" style="display:none; margin-top: 16px;"></div>
+    <div id="buddy-session" style="display:none; margin-top: 20px;"></div>
+  </div>
 </div>
 
 <div id="page-settings" class="page">
@@ -1313,7 +1552,33 @@
       mascot_found: "Found it! \u2728", mascot_guess: "Made a guess for you!",
       mascot_notfound: "Couldn't find it \u{1F615}", mascot_sixseven: "Six seven! \u{1F64C}",
       alert_need_name: "Give your recipe a name!", alert_need_ing: "Add at least one ingredient!",
-      alert_need_recipes: "Add at least 2 recipes first!", alert_need_type: "Type a recipe name first!"
+      alert_need_recipes: "Add at least 2 recipes first!", alert_need_type: "Type a recipe name first!",
+      nav_focus: "🧠 Focus", focus_sub: "Made for ADHD brains 💕",
+      focus_decide: "Can't decide?", focus_decide_desc: "One tap picks a meal AND shows all the ingredients. No thinking required.",
+      btn_pick_for_me: "Pick for me!", focus_decided: "Decision made! Here are your ingredients:",
+      mascot_decided: "Decision made! ✨",
+      focus_fidget: "Fidget Wheel", focus_fidget_desc: "Spin it whenever. No reason needed. Just vibes.",
+      focus_fidget_hint: "Tap or flick it ↑",
+      focus_timer: "Cooking Timer", focus_timer_desc: "With encouragement from Whiskers along the way.",
+      btn_start: "Start", btn_pause: "Pause", btn_stop: "Stop", btn_resume: "Resume",
+      timer_started: "Timer started!", timer_done: "Time's up! Great job!",
+      focus_buddy: "Cook-Along Buddy", focus_buddy_desc: "Whiskers cooks with you step-by-step so you're never alone.",
+      btn_start_cookalong: "Start Cook-Along", focus_buddy_pick: "Pick a recipe to cook together:",
+      focus_buddy_empty: "Add some recipes first!",
+      buddy_lets_go: "Let's cook ", step_label: "STEP", btn_back: "Back", btn_next: "Next", btn_finish: "Finish!",
+      buddy_finished: "You did it! Enjoy your meal 💖", mascot_buddy_done: "So proud of you! 💖",
+      buddy_step_gather: "Gather everything: ",
+      buddy_step_wash: "Wash your hands and clean your cooking space ✨",
+      buddy_step_prep: "Prep: chop, dice, measure. No rush! 🔪",
+      buddy_step_heat: "Heat a pan with oil or butter 🔥",
+      buddy_step_onion: "Cook the onion/garlic until soft and smelly-good",
+      buddy_step_meat: "Add the meat/fish. Cook until done. No peeking every 5s!",
+      buddy_step_carb: "Boil your pasta/rice separately. Follow the packet.",
+      buddy_step_sauce: "Add sauces & liquids. Let it simmer 💕",
+      buddy_step_season: "Season to taste — salt, pepper, whatever feels right",
+      buddy_step_taste: "Taste it! Adjust if needed. You're the chef.",
+      buddy_step_plate: "Plate it up like you're on MasterChef 🍽️",
+      buddy_step_done: "Done! Eat it warm. Proud of you! 💕"
     },
     nl: {
       app_title: "Eten Roulette", app_subtitle: "Wat eten we vanavond?",
@@ -1359,7 +1624,16 @@
       mascot_found: "Trouvé ! \u2728", mascot_guess: "J'ai fait une supposition !",
       mascot_notfound: "Pas trouvé \u{1F615}", mascot_sixseven: "Six sept ! \u{1F64C}",
       alert_need_name: "Donne un nom à ta recette !", alert_need_ing: "Ajoute au moins un ingrédient !",
-      alert_need_recipes: "Ajoute au moins 2 recettes !", alert_need_type: "Tape un nom de recette !"
+      alert_need_recipes: "Ajoute au moins 2 recettes !", alert_need_type: "Tape un nom de recette !",
+      nav_focus: "🧠 Focus", focus_sub: "Pensé pour les cerveaux TDAH 💕",
+      focus_decide: "Tu hésites ?", focus_decide_desc: "Un clic choisit un repas ET affiche les ingrédients. Zéro réflexion.",
+      btn_pick_for_me: "Choisis pour moi !", focus_decided: "Décision prise ! Voici les ingrédients :",
+      focus_fidget: "Roue Anti-stress", focus_fidget_desc: "Fais-la tourner quand tu veux. Sans raison. Juste pour le plaisir.",
+      focus_timer: "Minuteur Cuisine", focus_timer_desc: "Avec les encouragements de Whiskers.",
+      btn_start: "Démarrer", btn_pause: "Pause", btn_stop: "Stop", btn_resume: "Reprendre",
+      focus_buddy: "Cuisine Ensemble", focus_buddy_desc: "Whiskers cuisine avec toi étape par étape.",
+      btn_start_cookalong: "Commencer", focus_buddy_pick: "Choisis une recette :",
+      step_label: "ÉTAPE", btn_back: "Retour", btn_next: "Suivant", btn_finish: "Fini !"
     },
     it: {
       app_title: "Roulette del Cibo", app_subtitle: "Cosa si mangia stasera?",
@@ -3062,6 +3336,257 @@
     });
   }
 
+  // ==================== FOCUS MODE / ADHD features ====================
+
+  // 1) QUICK PICK - pick a meal + show ingredients instantly
+  function quickPick() {
+    if (recipes.length === 0) {
+      alert(t('alert_need_recipes') || 'Add at least 2 recipes first!');
+      return;
+    }
+    const pool = recipes;
+    const winner = pool[Math.floor(Math.random() * pool.length)];
+    const box = document.getElementById('quick-pick-result');
+    const ingHtml = (winner.ingredients || []).map(ing => {
+      const name = typeof ing === 'string' ? ing : ing.name;
+      return `<span style="display:inline-block;background:var(--bg);padding:6px 12px;border-radius:14px;margin:3px;font-size:13px;font-weight:700;color:var(--text);">${escHtml(translateIngredient(name))}</span>`;
+    }).join('');
+    box.style.display = 'block';
+    box.innerHTML = `
+      <div style="font-size:60px; margin-bottom:8px;">${winner.emoji || '\u{1F37D}\uFE0F'}</div>
+      <div style="font-size:24px; font-weight:900; margin-bottom:6px; color: var(--text);">${escHtml(winner.name)}</div>
+      <div style="font-size:13px; color:var(--text-light); margin-bottom:12px;">${t('focus_decided') || 'Decision made! Here are your ingredients:'}</div>
+      <div>${ingHtml}</div>
+    `;
+    mascotSetMood('excited', 2500);
+    mascotSay(t('mascot_decided') || 'Decision made! \u2728');
+    playSound('win');
+  }
+
+  // 2) FIDGET WHEEL - satisfying spin with physics
+  let fidgetRot = 0;
+  function spinFidget(e) {
+    const wheel = document.getElementById('fidget-wheel');
+    if (!wheel) return;
+    // Random spin between 3 and 8 full rotations, plus a random final angle for variety
+    const spins = 3 + Math.floor(Math.random() * 6);
+    fidgetRot += spins * 360 + Math.floor(Math.random() * 360);
+    wheel.style.transform = `rotate(${fidgetRot}deg)`;
+    playSound('spin');
+    // Tiny haptic feedback on supported devices
+    if (navigator.vibrate) navigator.vibrate(25);
+  }
+
+  // 3) COOKING TIMER with Whiskers encouragement
+  let timerInterval = null;
+  let timerSecondsLeft = 0;
+  let timerTotalSeconds = 0;
+  let timerPaused = false;
+
+  const timerEncouragements = {
+    90: ["Nice start!", "You got this!", "Keep going chef!"],
+    66: ["Halfway-ish!", "Smells good already!", "You're doing great!"],
+    50: ["Halfway there!", "Keep it up!", "So close!"],
+    25: ["Final stretch!", "Almost done!", "You nailed it!"],
+    10: ["Plating soon!", "Look at you go!", "Nearly there!"]
+  };
+
+  function startTimer(mins) {
+    clearInterval(timerInterval);
+    timerTotalSeconds = mins * 60;
+    timerSecondsLeft = mins * 60;
+    timerPaused = false;
+    updateTimerDisplay();
+    document.getElementById('timer-stop').style.display = 'block';
+    document.getElementById('timer-pause').style.display = 'block';
+    document.getElementById('timer-pause').textContent = t('btn_pause') || 'Pause';
+    document.getElementById('timer-encouragement').textContent = '';
+    mascotSay(t('timer_started') || `Timer started! ${mins} min \u23F1\uFE0F`);
+    mascotSetMood('happy', 2000);
+    tickTimer();
+    timerInterval = setInterval(tickTimer, 1000);
+  }
+
+  function startCustomTimer() {
+    const val = parseInt(document.getElementById('timer-custom-mins').value);
+    if (!val || val < 1 || val > 180) { alert('Enter 1-180 min'); return; }
+    startTimer(val);
+  }
+
+  function tickTimer() {
+    if (timerPaused) return;
+    if (timerSecondsLeft <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      document.getElementById('timer-display').textContent = 'DONE!';
+      document.getElementById('timer-encouragement').textContent = '\u{1F389} ' + (t('timer_done') || 'Time\'s up! You did it!') + ' \u{1F389}';
+      document.getElementById('timer-stop').style.display = 'none';
+      document.getElementById('timer-pause').style.display = 'none';
+      mascotSay(t('timer_done') || "Time's up! Great job! \u{1F389}");
+      mascotSetMood('excited', 5000);
+      playSound('win');
+      spawnConfetti();
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+      return;
+    }
+    updateTimerDisplay();
+    // Show encouragement at milestones (percentage-based)
+    const pct = Math.round((timerSecondsLeft / timerTotalSeconds) * 100);
+    const keys = [90, 66, 50, 25, 10];
+    for (const k of keys) {
+      if (pct === k) {
+        const pool = timerEncouragements[k];
+        const msg = pool[Math.floor(Math.random() * pool.length)];
+        document.getElementById('timer-encouragement').textContent = '\u{1F4AB} ' + msg;
+        mascotSay(msg);
+        break;
+      }
+    }
+    timerSecondsLeft--;
+  }
+
+  function updateTimerDisplay() {
+    const m = Math.floor(timerSecondsLeft / 60);
+    const s = timerSecondsLeft % 60;
+    document.getElementById('timer-display').textContent =
+      String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  function pauseTimer() {
+    timerPaused = !timerPaused;
+    document.getElementById('timer-pause').textContent = timerPaused
+      ? (t('btn_resume') || 'Resume')
+      : (t('btn_pause') || 'Pause');
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timerSecondsLeft = 0;
+    timerPaused = false;
+    document.getElementById('timer-display').textContent = '00:00';
+    document.getElementById('timer-stop').style.display = 'none';
+    document.getElementById('timer-pause').style.display = 'none';
+    document.getElementById('timer-encouragement').textContent = '';
+  }
+
+  // 4) BODY-DOUBLE COOK-ALONG MODE
+  let buddyRecipe = null;
+  let buddyStep = 0;
+  let buddySteps = [];
+
+  function openBuddyPicker() {
+    const picker = document.getElementById('buddy-picker');
+    const session = document.getElementById('buddy-session');
+    session.style.display = 'none';
+    if (recipes.length === 0) {
+      picker.style.display = 'block';
+      picker.innerHTML = '<p style="text-align:center;color:var(--text-light);">' + (t('focus_buddy_empty') || 'Add some recipes first!') + '</p>';
+      return;
+    }
+    picker.style.display = 'block';
+    let html = '<p style="font-size:13px;color:var(--text-light);text-align:center;margin-bottom:10px;">' + (t('focus_buddy_pick') || 'Pick a recipe to cook together:') + '</p><div style="text-align:center;">';
+    for (const r of recipes) {
+      html += `<span class="buddy-recipe-chip" onclick="startBuddyMode(${r.id})">${r.emoji || '\u{1F37D}\uFE0F'} ${escHtml(r.name)}</span>`;
+    }
+    html += '</div>';
+    picker.innerHTML = html;
+  }
+
+  // Generate simple step-by-step based on ingredients (no full recipe text needed)
+  function generateBuddySteps(recipe) {
+    const ings = (recipe.ingredients || []).map(i => {
+      const name = typeof i === 'string' ? i : i.name;
+      return translateIngredient(name);
+    });
+    const steps = [];
+    steps.push((t('buddy_step_gather') || 'Gather everything: ') + ings.join(', '));
+    steps.push(t('buddy_step_wash') || 'Wash your hands and clean your cooking space ✨');
+    steps.push((t('buddy_step_prep') || 'Prep: chop, dice, measure. No rush! ') + '🔪');
+    if (ings.some(i => /oil|butter|onion|garlic/i.test(i))) {
+      steps.push(t('buddy_step_heat') || 'Heat a pan with oil or butter 🔥');
+    }
+    if (ings.some(i => /onion|garlic/i.test(i))) {
+      steps.push(t('buddy_step_onion') || 'Cook the onion/garlic until soft and smelly-good');
+    }
+    if (ings.some(i => /chicken|beef|pork|lamb|fish|salmon|tuna|prawn|meat/i.test(i))) {
+      steps.push(t('buddy_step_meat') || 'Add the meat/fish. Cook until done. No peeking every 5s!');
+    }
+    if (ings.some(i => /pasta|rice|noodle|quinoa/i.test(i))) {
+      steps.push(t('buddy_step_carb') || 'Boil your pasta/rice separately. Follow the packet.');
+    }
+    if (ings.some(i => /tomato|sauce|stock|coconut/i.test(i))) {
+      steps.push(t('buddy_step_sauce') || 'Add sauces & liquids. Let it simmer 💕');
+    }
+    if (ings.some(i => /salt|pepper|spice|cumin|paprika/i.test(i))) {
+      steps.push(t('buddy_step_season') || 'Season to taste — salt, pepper, whatever feels right');
+    }
+    steps.push(t('buddy_step_taste') || 'Taste it! Adjust if needed. You\'re the chef.');
+    steps.push(t('buddy_step_plate') || 'Plate it up like you\'re on MasterChef 🍽️');
+    steps.push(t('buddy_step_done') || 'Done! Eat it warm. Proud of you! 💕');
+    return steps;
+  }
+
+  function startBuddyMode(id) {
+    buddyRecipe = recipes.find(r => r.id === id);
+    if (!buddyRecipe) return;
+    buddyStep = 0;
+    buddySteps = generateBuddySteps(buddyRecipe);
+    document.getElementById('buddy-picker').style.display = 'none';
+    document.getElementById('buddy-session').style.display = 'block';
+    renderBuddyStep();
+    mascotSay((t('buddy_lets_go') || "Let's cook ") + buddyRecipe.name + '! 👨‍🍳');
+    mascotSetMood('excited', 2500);
+  }
+
+  function renderBuddyStep() {
+    const el = document.getElementById('buddy-session');
+    const total = buddySteps.length;
+    const current = buddySteps[buddyStep];
+    const isLast = buddyStep === total - 1;
+    el.innerHTML = `
+      <div class="buddy-step">
+        <div class="step-count">${(t('step_label') || 'STEP')} ${buddyStep + 1} / ${total}</div>
+        <div class="step-text">${escHtml(current)}</div>
+      </div>
+      <div class="buddy-controls">
+        ${buddyStep > 0 ? `<button class="focus-btn btn-peach-big" onclick="buddyPrev()">\u2190 ${t('btn_back') || 'Back'}</button>` : ''}
+        ${isLast
+          ? `<button class="focus-btn btn-mint-big" onclick="buddyFinish()">\u{1F389} ${t('btn_finish') || 'Finish!'}</button>`
+          : `<button class="focus-btn btn-lavender-big" onclick="buddyNext()">${t('btn_next') || 'Next'} \u2192</button>`}
+      </div>
+    `;
+  }
+
+  function buddyNext() {
+    if (buddyStep < buddySteps.length - 1) {
+      buddyStep++;
+      renderBuddyStep();
+      // Gentle encouragement every few steps
+      if (buddyStep % 3 === 0) {
+        const cheers = ["You got this!", "Doing great!", "Keep going \u2728", "Looking good chef!"];
+        mascotSay(cheers[Math.floor(Math.random() * cheers.length)]);
+      }
+    }
+  }
+
+  function buddyPrev() {
+    if (buddyStep > 0) { buddyStep--; renderBuddyStep(); }
+  }
+
+  function buddyFinish() {
+    document.getElementById('buddy-session').innerHTML = `
+      <div class="buddy-step">
+        <div style="font-size:60px;margin-bottom:10px;">\u{1F389}</div>
+        <div class="step-text">${t('buddy_finished') || "You did it! Enjoy your meal \u{1F496}"}</div>
+      </div>
+    `;
+    mascotSay(t('mascot_buddy_done') || "So proud of you! \u{1F496}");
+    mascotSetMood('excited', 4000);
+    spawnConfetti();
+    playSound('win');
+  }
+
   function clearAllData() {
     if (!confirm('This will delete ALL your recipes, history, and settings. Are you sure?')) return;
     if (!confirm('Really sure? This cannot be undone!')) return;
@@ -3192,7 +3717,7 @@
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + name).classList.add('active');
     const btns = document.querySelectorAll('.nav button');
-    const pages = ['recipes', 'spin', 'calendar', 'grocery', 'settings'];
+    const pages = ['recipes', 'spin', 'focus', 'calendar', 'grocery', 'settings'];
     btns.forEach((b, i) => b.classList.toggle('active', pages[i] === name));
     if (name === 'calendar') renderCalendar();
     if (name === 'grocery') generateGroceryList();
