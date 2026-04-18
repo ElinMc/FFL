@@ -1531,8 +1531,12 @@
     // Re-render dynamic bits
     if (typeof renderCategoryBar === 'function') renderCategoryBar();
     if (typeof renderRecipes === 'function') renderRecipes();
-    // Update mascot idle messages
+    // Update mascot idle messages and show one right now in new language
     mascotMessages = t('mascot_idle') || [];
+    const speech = document.getElementById('mascot-speech');
+    if (speech && mascotMessages.length) {
+      speech.textContent = mascotMessages[Math.floor(Math.random() * mascotMessages.length)];
+    }
   }
 
   function setLanguage(lang) {
@@ -2183,7 +2187,8 @@
       const chip = document.createElement('div');
       const sel = currentIngredients.find(i => i.name === ing);
       chip.className = 'chip' + (sel ? ' selected' : '');
-      chip.textContent = ing;
+      // Show translated name but keep English as the underlying data
+      chip.textContent = translateIngredient(ing);
       chip.onclick = () => toggleIngredient(ing, active.data.ingredients[ing]);
       chips.appendChild(chip);
     }
@@ -2216,7 +2221,7 @@
     for (const ing of currentIngredients) {
       const chip = document.createElement('div');
       chip.className = 'chip selected';
-      chip.textContent = ing.name + ' \u2715';
+      chip.textContent = translateIngredient(ing.name) + ' \u2715';
       chip.onclick = () => toggleIngredient(ing.name);
       container.appendChild(chip);
     }
@@ -2345,7 +2350,7 @@
       ).join('');
       const ingHtml = r.ingredients.map(ing => {
         const name = typeof ing === 'string' ? ing : ing.name;
-        return `<span class="ingredient-tag">${escHtml(name)}</span>`;
+        return `<span class="ingredient-tag">${escHtml(translateIngredient(name))}</span>`;
       }).join('');
       const cat = recipeCategory(r);
       const catChip = CATEGORIES.find(c => c.id === cat);
@@ -2731,6 +2736,141 @@
     return n;
   }
 
+  // ============ INGREDIENT TRANSLATIONS ============
+  // Maps English ingredient name -> translations in each supported language.
+  // If the ingredient isn't in this map, we just show the English name.
+  const ingredientTranslations = {
+    // Basics
+    'salt':        { nl: 'zout', fr: 'sel', it: 'sale', de: 'Salz', es: 'sal', zh: '盐', ar: 'ملح', cy: 'halen' },
+    'pepper':      { nl: 'peper', fr: 'poivre', it: 'pepe', de: 'Pfeffer', es: 'pimienta', zh: '胡椒', ar: 'فلفل', cy: 'pupur' },
+    'black pepper':{ nl: 'zwarte peper', fr: 'poivre noir', it: 'pepe nero', de: 'schwarzer Pfeffer', es: 'pimienta negra', zh: '黑胡椒', ar: 'فلفل أسود', cy: 'pupur du' },
+    'sugar':       { nl: 'suiker', fr: 'sucre', it: 'zucchero', de: 'Zucker', es: 'azúcar', zh: '糖', ar: 'سكر', cy: 'siwgr' },
+    'flour':       { nl: 'bloem', fr: 'farine', it: 'farina', de: 'Mehl', es: 'harina', zh: '面粉', ar: 'دقيق', cy: 'blawd' },
+    'butter':      { nl: 'boter', fr: 'beurre', it: 'burro', de: 'Butter', es: 'mantequilla', zh: '黄油', ar: 'زبدة', cy: 'menyn' },
+    'oil':         { nl: 'olie', fr: 'huile', it: 'olio', de: 'Öl', es: 'aceite', zh: '油', ar: 'زيت', cy: 'olew' },
+    'olive oil':   { nl: 'olijfolie', fr: 'huile d\'olive', it: 'olio d\'oliva', de: 'Olivenöl', es: 'aceite de oliva', zh: '橄榄油', ar: 'زيت زيتون', cy: 'olew olewydd' },
+    'sesame oil':  { nl: 'sesamolie', fr: 'huile de sésame', it: 'olio di sesamo', de: 'Sesamöl', es: 'aceite de sésamo', zh: '芝麻油', ar: 'زيت السمسم', cy: 'olew sesame' },
+    'milk':        { nl: 'melk', fr: 'lait', it: 'latte', de: 'Milch', es: 'leche', zh: '牛奶', ar: 'حليب', cy: 'llaeth' },
+    'water':       { nl: 'water', fr: 'eau', it: 'acqua', de: 'Wasser', es: 'agua', zh: '水', ar: 'ماء', cy: 'dŵr' },
+    'cream':       { nl: 'room', fr: 'crème', it: 'panna', de: 'Sahne', es: 'nata', zh: '奶油', ar: 'قشدة', cy: 'hufen' },
+    'coconut milk':{ nl: 'kokosmelk', fr: 'lait de coco', it: 'latte di cocco', de: 'Kokosmilch', es: 'leche de coco', zh: '椰奶', ar: 'حليب جوز الهند', cy: 'llaeth coconyt' },
+    'egg':         { nl: 'ei', fr: 'œuf', it: 'uovo', de: 'Ei', es: 'huevo', zh: '鸡蛋', ar: 'بيضة', cy: 'wy' },
+    'eggs':        { nl: 'eieren', fr: 'œufs', it: 'uova', de: 'Eier', es: 'huevos', zh: '鸡蛋', ar: 'بيض', cy: 'wyau' },
+    'honey':       { nl: 'honing', fr: 'miel', it: 'miele', de: 'Honig', es: 'miel', zh: '蜂蜜', ar: 'عسل', cy: 'mêl' },
+    'vanilla':     { nl: 'vanille', fr: 'vanille', it: 'vaniglia', de: 'Vanille', es: 'vainilla', zh: '香草', ar: 'فانيليا', cy: 'fanila' },
+
+    // Veg
+    'tomato':      { nl: 'tomaat', fr: 'tomate', it: 'pomodoro', de: 'Tomate', es: 'tomate', zh: '番茄', ar: 'طماطم', cy: 'tomato' },
+    'tomatoes':    { nl: 'tomaten', fr: 'tomates', it: 'pomodori', de: 'Tomaten', es: 'tomates', zh: '番茄', ar: 'طماطم', cy: 'tomatos' },
+    'tomato sauce':{ nl: 'tomatensaus', fr: 'sauce tomate', it: 'sugo di pomodoro', de: 'Tomatensoße', es: 'salsa de tomate', zh: '番茄酱', ar: 'صلصة طماطم', cy: 'saws tomato' },
+    'onion':       { nl: 'ui', fr: 'oignon', it: 'cipolla', de: 'Zwiebel', es: 'cebolla', zh: '洋葱', ar: 'بصل', cy: 'nionyn' },
+    'red onion':   { nl: 'rode ui', fr: 'oignon rouge', it: 'cipolla rossa', de: 'rote Zwiebel', es: 'cebolla roja', zh: '红洋葱', ar: 'بصل أحمر', cy: 'nionyn coch' },
+    'garlic':      { nl: 'knoflook', fr: 'ail', it: 'aglio', de: 'Knoblauch', es: 'ajo', zh: '大蒜', ar: 'ثوم', cy: 'garlleg' },
+    'ginger':      { nl: 'gember', fr: 'gingembre', it: 'zenzero', de: 'Ingwer', es: 'jengibre', zh: '姜', ar: 'زنجبيل', cy: 'sinsir' },
+    'carrot':      { nl: 'wortel', fr: 'carotte', it: 'carota', de: 'Karotte', es: 'zanahoria', zh: '胡萝卜', ar: 'جزرة', cy: 'moronen' },
+    'carrots':     { nl: 'wortels', fr: 'carottes', it: 'carote', de: 'Karotten', es: 'zanahorias', zh: '胡萝卜', ar: 'جزر', cy: 'moron' },
+    'potato':      { nl: 'aardappel', fr: 'pomme de terre', it: 'patata', de: 'Kartoffel', es: 'patata', zh: '土豆', ar: 'بطاطا', cy: 'taten' },
+    'potatoes':    { nl: 'aardappelen', fr: 'pommes de terre', it: 'patate', de: 'Kartoffeln', es: 'patatas', zh: '土豆', ar: 'بطاطا', cy: 'tatws' },
+    'lettuce':     { nl: 'sla', fr: 'laitue', it: 'lattuga', de: 'Salat', es: 'lechuga', zh: '生菜', ar: 'خس', cy: 'letys' },
+    'cucumber':    { nl: 'komkommer', fr: 'concombre', it: 'cetriolo', de: 'Gurke', es: 'pepino', zh: '黄瓜', ar: 'خيار', cy: 'cucumer' },
+    'mushroom':    { nl: 'champignon', fr: 'champignon', it: 'fungo', de: 'Pilz', es: 'champiñón', zh: '蘑菇', ar: 'فطر', cy: 'madarch' },
+    'mushrooms':   { nl: 'champignons', fr: 'champignons', it: 'funghi', de: 'Pilze', es: 'champiñones', zh: '蘑菇', ar: 'فطر', cy: 'madarch' },
+    'bell pepper': { nl: 'paprika', fr: 'poivron', it: 'peperone', de: 'Paprika', es: 'pimiento', zh: '甜椒', ar: 'فلفل حلو', cy: 'pupur melys' },
+    'spring onion':{ nl: 'lente-ui', fr: 'oignon vert', it: 'cipollotto', de: 'Frühlingszwiebel', es: 'cebolleta', zh: '葱', ar: 'بصل أخضر', cy: 'nionyn gwanwyn' },
+    'peas':        { nl: 'erwten', fr: 'petits pois', it: 'piselli', de: 'Erbsen', es: 'guisantes', zh: '豌豆', ar: 'بازلاء', cy: 'pys' },
+    'beans':       { nl: 'bonen', fr: 'haricots', it: 'fagioli', de: 'Bohnen', es: 'judías', zh: '豆子', ar: 'فاصوليا', cy: 'ffa' },
+    'kidney beans':{ nl: 'kidneybonen', fr: 'haricots rouges', it: 'fagioli rossi', de: 'Kidneybohnen', es: 'judías rojas', zh: '红芸豆', ar: 'فاصوليا حمراء', cy: 'ffa cochion' },
+    'broccoli':    { nl: 'broccoli', fr: 'brocoli', it: 'broccoli', de: 'Brokkoli', es: 'brócoli', zh: '西兰花', ar: 'بروكلي', cy: 'brocoli' },
+    'spinach':     { nl: 'spinazie', fr: 'épinards', it: 'spinaci', de: 'Spinat', es: 'espinacas', zh: '菠菜', ar: 'سبانخ', cy: 'sbigoglys' },
+    'celery':      { nl: 'selderij', fr: 'céleri', it: 'sedano', de: 'Sellerie', es: 'apio', zh: '芹菜', ar: 'كرفس', cy: 'seleri' },
+    'cabbage':     { nl: 'kool', fr: 'chou', it: 'cavolo', de: 'Kohl', es: 'col', zh: '卷心菜', ar: 'ملفوف', cy: 'bresych' },
+    'avocado':     { nl: 'avocado', fr: 'avocat', it: 'avocado', de: 'Avocado', es: 'aguacate', zh: '牛油果', ar: 'أفوكادو', cy: 'afocado' },
+    'lemon':       { nl: 'citroen', fr: 'citron', it: 'limone', de: 'Zitrone', es: 'limón', zh: '柠檬', ar: 'ليمون', cy: 'lemon' },
+    'lime':        { nl: 'limoen', fr: 'citron vert', it: 'lime', de: 'Limette', es: 'lima', zh: '青柠', ar: 'ليم', cy: 'leim' },
+    'apple':       { nl: 'appel', fr: 'pomme', it: 'mela', de: 'Apfel', es: 'manzana', zh: '苹果', ar: 'تفاحة', cy: 'afal' },
+    'banana':      { nl: 'banaan', fr: 'banane', it: 'banana', de: 'Banane', es: 'plátano', zh: '香蕉', ar: 'موزة', cy: 'banana' },
+    'berries':     { nl: 'bessen', fr: 'baies', it: 'frutti di bosco', de: 'Beeren', es: 'bayas', zh: '浆果', ar: 'توت', cy: 'aeron' },
+
+    // Meat & fish
+    'chicken':        { nl: 'kip', fr: 'poulet', it: 'pollo', de: 'Huhn', es: 'pollo', zh: '鸡肉', ar: 'دجاج', cy: 'cyw iâr' },
+    'chicken breast': { nl: 'kipfilet', fr: 'blanc de poulet', it: 'petto di pollo', de: 'Hähnchenbrust', es: 'pechuga de pollo', zh: '鸡胸肉', ar: 'صدر دجاج', cy: 'brest cyw iâr' },
+    'chicken thigh':  { nl: 'kippendij', fr: 'cuisse de poulet', it: 'coscia di pollo', de: 'Hähnchenschenkel', es: 'muslo de pollo', zh: '鸡腿', ar: 'فخذ دجاج', cy: 'coes cyw iâr' },
+    'whole chicken':  { nl: 'hele kip', fr: 'poulet entier', it: 'pollo intero', de: 'ganzes Huhn', es: 'pollo entero', zh: '整鸡', ar: 'دجاجة كاملة', cy: 'cyw iâr cyfan' },
+    'beef':           { nl: 'rundvlees', fr: 'bœuf', it: 'manzo', de: 'Rindfleisch', es: 'ternera', zh: '牛肉', ar: 'لحم بقر', cy: 'cig eidion' },
+    'minced beef':    { nl: 'gehakt', fr: 'bœuf haché', it: 'macinato di manzo', de: 'Hackfleisch', es: 'carne picada', zh: '牛肉末', ar: 'لحم بقر مفروم', cy: 'briwgig eidion' },
+    'steak':          { nl: 'biefstuk', fr: 'steak', it: 'bistecca', de: 'Steak', es: 'filete', zh: '牛排', ar: 'ستيك', cy: 'stecen' },
+    'lamb':           { nl: 'lamsvlees', fr: 'agneau', it: 'agnello', de: 'Lamm', es: 'cordero', zh: '羊肉', ar: 'لحم ضأن', cy: 'cig oen' },
+    'minced lamb':    { nl: 'lamsgehakt', fr: 'agneau haché', it: 'macinato di agnello', de: 'Lammhack', es: 'cordero picado', zh: '羊肉末', ar: 'لحم ضأن مفروم', cy: 'briwgig oen' },
+    'pork':           { nl: 'varkensvlees', fr: 'porc', it: 'maiale', de: 'Schweinefleisch', es: 'cerdo', zh: '猪肉', ar: 'لحم خنزير', cy: 'cig moch' },
+    'minced pork':    { nl: 'varkensgehakt', fr: 'porc haché', it: 'macinato di maiale', de: 'Schweinehack', es: 'cerdo picado', zh: '猪肉末', ar: 'لحم خنزير مفروم', cy: 'briwgig moch' },
+    'bacon':          { nl: 'spek', fr: 'bacon', it: 'pancetta', de: 'Speck', es: 'beicon', zh: '培根', ar: 'لحم مقدد', cy: 'cig moch brith' },
+    'ham':            { nl: 'ham', fr: 'jambon', it: 'prosciutto', de: 'Schinken', es: 'jamón', zh: '火腿', ar: 'لحم مدخن', cy: 'ham' },
+    'sausages':       { nl: 'worstjes', fr: 'saucisses', it: 'salsicce', de: 'Würstchen', es: 'salchichas', zh: '香肠', ar: 'نقانق', cy: 'selsig' },
+    'salmon':         { nl: 'zalm', fr: 'saumon', it: 'salmone', de: 'Lachs', es: 'salmón', zh: '三文鱼', ar: 'سلمون', cy: 'eog' },
+    'tuna':           { nl: 'tonijn', fr: 'thon', it: 'tonno', de: 'Thunfisch', es: 'atún', zh: '金枪鱼', ar: 'تونة', cy: 'tiwna' },
+    'fish fillets':   { nl: 'visfilets', fr: 'filets de poisson', it: 'filetti di pesce', de: 'Fischfilets', es: 'filetes de pescado', zh: '鱼片', ar: 'شرائح سمك', cy: 'ffiledi pysgod' },
+    'prawns':         { nl: 'garnalen', fr: 'crevettes', it: 'gamberi', de: 'Garnelen', es: 'gambas', zh: '虾', ar: 'روبيان', cy: 'corgimychiaid' },
+
+    // Cheese & dairy
+    'cheese':         { nl: 'kaas', fr: 'fromage', it: 'formaggio', de: 'Käse', es: 'queso', zh: '奶酪', ar: 'جبن', cy: 'caws' },
+    'cheddar cheese': { nl: 'cheddar', fr: 'cheddar', it: 'cheddar', de: 'Cheddar', es: 'queso cheddar', zh: '切达奶酪', ar: 'جبنة شيدر', cy: 'caws cheddar' },
+    'mozzarella':     { nl: 'mozzarella', fr: 'mozzarella', it: 'mozzarella', de: 'Mozzarella', es: 'mozzarella', zh: '马苏里拉', ar: 'موتزاريلا', cy: 'mozzarella' },
+    'parmesan':       { nl: 'parmezaan', fr: 'parmesan', it: 'parmigiano', de: 'Parmesan', es: 'parmesano', zh: '帕马森', ar: 'بارميزان', cy: 'parmesan' },
+    'ricotta':        { nl: 'ricotta', fr: 'ricotta', it: 'ricotta', de: 'Ricotta', es: 'ricota', zh: '乳清干酪', ar: 'ريكوتا', cy: 'ricotta' },
+    'yogurt':         { nl: 'yoghurt', fr: 'yaourt', it: 'yogurt', de: 'Joghurt', es: 'yogur', zh: '酸奶', ar: 'زبادي', cy: 'iogwrt' },
+    'sour cream':     { nl: 'zure room', fr: 'crème aigre', it: 'panna acida', de: 'saure Sahne', es: 'crema agria', zh: '酸奶油', ar: 'قشدة حامضة', cy: 'hufen sur' },
+
+    // Carbs
+    'pasta':          { nl: 'pasta', fr: 'pâtes', it: 'pasta', de: 'Nudeln', es: 'pasta', zh: '意面', ar: 'معكرونة', cy: 'pasta' },
+    'spaghetti':      { nl: 'spaghetti', fr: 'spaghettis', it: 'spaghetti', de: 'Spaghetti', es: 'espaguetis', zh: '意大利面', ar: 'سباغيتي', cy: 'spageti' },
+    'rice':           { nl: 'rijst', fr: 'riz', it: 'riso', de: 'Reis', es: 'arroz', zh: '米饭', ar: 'أرز', cy: 'reis' },
+    'noodles':        { nl: 'noedels', fr: 'nouilles', it: 'noodles', de: 'Nudeln', es: 'fideos', zh: '面条', ar: 'نودلز', cy: 'nwdls' },
+    'bread':          { nl: 'brood', fr: 'pain', it: 'pane', de: 'Brot', es: 'pan', zh: '面包', ar: 'خبز', cy: 'bara' },
+    'tortilla':       { nl: 'tortilla', fr: 'tortilla', it: 'tortilla', de: 'Tortilla', es: 'tortilla', zh: '玉米饼', ar: 'تورتيلا', cy: 'tortilla' },
+    'oats':           { nl: 'havermout', fr: 'avoine', it: 'avena', de: 'Haferflocken', es: 'avena', zh: '燕麦', ar: 'شوفان', cy: 'ceirch' },
+
+    // Herbs & spices
+    'basil':          { nl: 'basilicum', fr: 'basilic', it: 'basilico', de: 'Basilikum', es: 'albahaca', zh: '罗勒', ar: 'ريحان', cy: 'basil' },
+    'parsley':        { nl: 'peterselie', fr: 'persil', it: 'prezzemolo', de: 'Petersilie', es: 'perejil', zh: '欧芹', ar: 'بقدونس', cy: 'persli' },
+    'rosemary':       { nl: 'rozemarijn', fr: 'romarin', it: 'rosmarino', de: 'Rosmarin', es: 'romero', zh: '迷迭香', ar: 'إكليل الجبل', cy: 'rhosmari' },
+    'thyme':          { nl: 'tijm', fr: 'thym', it: 'timo', de: 'Thymian', es: 'tomillo', zh: '百里香', ar: 'زعتر', cy: 'teim' },
+    'oregano':        { nl: 'oregano', fr: 'origan', it: 'origano', de: 'Oregano', es: 'orégano', zh: '牛至', ar: 'أوريغانو', cy: 'oregano' },
+    'cinnamon':       { nl: 'kaneel', fr: 'cannelle', it: 'cannella', de: 'Zimt', es: 'canela', zh: '肉桂', ar: 'قرفة', cy: 'sinamon' },
+    'cumin':          { nl: 'komijn', fr: 'cumin', it: 'cumino', de: 'Kreuzkümmel', es: 'comino', zh: '孜然', ar: 'كمون', cy: 'cwmin' },
+    'chili powder':   { nl: 'chilipoeder', fr: 'piment en poudre', it: 'peperoncino in polvere', de: 'Chilipulver', es: 'chile en polvo', zh: '辣椒粉', ar: 'مسحوق الفلفل الحار', cy: 'powdr chili' },
+    'paprika':        { nl: 'paprikapoeder', fr: 'paprika', it: 'paprika', de: 'Paprikapulver', es: 'pimentón', zh: '红椒粉', ar: 'بابريكا', cy: 'paprica' },
+    'curry paste':    { nl: 'currypasta', fr: 'pâte de curry', it: 'pasta di curry', de: 'Currypaste', es: 'pasta de curry', zh: '咖喱酱', ar: 'معجون الكاري', cy: 'past cyri' },
+    'soy sauce':      { nl: 'sojasaus', fr: 'sauce soja', it: 'salsa di soia', de: 'Sojasoße', es: 'salsa de soja', zh: '酱油', ar: 'صلصة الصويا', cy: 'saws soia' },
+
+    // Sauces/pantry
+    'breadcrumbs':    { nl: 'paneermeel', fr: 'chapelure', it: 'pangrattato', de: 'Paniermehl', es: 'pan rallado', zh: '面包糠', ar: 'بقسماط', cy: 'briwsion bara' },
+    'baking powder':  { nl: 'bakpoeder', fr: 'levure chimique', it: 'lievito', de: 'Backpulver', es: 'levadura', zh: '发酵粉', ar: 'بيكنج باودر', cy: 'powdr pobi' },
+    'baking soda':    { nl: 'baksoda', fr: 'bicarbonate', it: 'bicarbonato', de: 'Natron', es: 'bicarbonato', zh: '小苏打', ar: 'بيكربونات الصودا', cy: 'soda pobi' },
+    'mayo':           { nl: 'mayonaise', fr: 'mayonnaise', it: 'maionese', de: 'Mayonnaise', es: 'mayonesa', zh: '蛋黄酱', ar: 'مايونيز', cy: 'mayonnaise' },
+    'ketchup':        { nl: 'ketchup', fr: 'ketchup', it: 'ketchup', de: 'Ketchup', es: 'kétchup', zh: '番茄酱', ar: 'كاتشب', cy: 'ketshp' },
+    'salsa':          { nl: 'salsa', fr: 'salsa', it: 'salsa', de: 'Salsa', es: 'salsa', zh: '莎莎酱', ar: 'صلصة', cy: 'salsa' },
+    'chocolate':      { nl: 'chocolade', fr: 'chocolat', it: 'cioccolato', de: 'Schokolade', es: 'chocolate', zh: '巧克力', ar: 'شوكولاتة', cy: 'siocled' },
+    'chocolate chips':{ nl: 'chocoladestukjes', fr: 'pépites de chocolat', it: 'gocce di cioccolato', de: 'Schokoladenstückchen', es: 'chispas de chocolate', zh: '巧克力豆', ar: 'رقائق الشوكولاتة', cy: 'sglodion siocled' },
+    'stock':          { nl: 'bouillon', fr: 'bouillon', it: 'brodo', de: 'Brühe', es: 'caldo', zh: '高汤', ar: 'مرق', cy: 'stoc' },
+    'chicken stock':  { nl: 'kippenbouillon', fr: 'bouillon de poulet', it: 'brodo di pollo', de: 'Hühnerbrühe', es: 'caldo de pollo', zh: '鸡汤', ar: 'مرق دجاج', cy: 'stoc cyw iâr' },
+    'beef stock':     { nl: 'rundsbouillon', fr: 'bouillon de bœuf', it: 'brodo di manzo', de: 'Rinderbrühe', es: 'caldo de ternera', zh: '牛肉汤', ar: 'مرق لحم', cy: 'stoc eidion' },
+    'burger buns':    { nl: 'hamburgerbroodjes', fr: 'pains à burger', it: 'panini per hamburger', de: 'Burgerbrötchen', es: 'panes de hamburguesa', zh: '汉堡包', ar: 'خبز برجر', cy: 'byns byrger' },
+    'pizza dough':    { nl: 'pizzadeeg', fr: 'pâte à pizza', it: 'impasto per pizza', de: 'Pizzateig', es: 'masa de pizza', zh: '披萨面团', ar: 'عجينة بيتزا', cy: 'toes pizza' },
+    'taco shells':    { nl: 'tacoschelpjes', fr: 'coquilles à tacos', it: 'gusci per tacos', de: 'Taco-Schalen', es: 'tortillas para tacos', zh: '塔可饼', ar: 'قشرة تاكو', cy: 'cregyn taco' },
+    'baked beans':    { nl: 'witte bonen in tomatensaus', fr: 'haricots à la tomate', it: 'fagioli al sugo', de: 'Baked Beans', es: 'alubias cocidas', zh: '焗豆', ar: 'فاصوليا مطبوخة', cy: 'ffa pob' }
+  };
+
+  // Translate an ingredient name to the active language (returns English if no translation exists)
+  function translateIngredient(name) {
+    const lang = settings.lang || 'en';
+    if (lang === 'en') return name;
+    if (!name) return name;
+    const lower = name.toLowerCase().trim();
+    const entry = ingredientTranslations[lower];
+    if (entry && entry[lang]) return entry[lang];
+    return name; // no translation available, fall back to English
+  }
+
   // ============ SMART UNIT CONVERSIONS ============
   // Convert every unit to a "base unit" so we can add them up.
   // Returns [amountInBase, baseUnit] or null if we can't convert.
@@ -2846,7 +2986,7 @@
 
       div.innerHTML = `
         <div class="grocery-check">${groceryChecked.includes(key) ? '\u2713' : ''}</div>
-        <span>${escHtml(item.name)}</span>
+        <span>${escHtml(translateIngredient(item.name))}</span>
         ${amountStr ? `<span class="grocery-amount">${amountStr}</span>` : ''}
       `;
       div.onclick = () => {
@@ -3035,11 +3175,16 @@
   }, 5000);
 
   let mascotMessages = getIdleMessages();
+  let mascotSayTimer = null;
   function mascotSay(msg) {
     const el = document.getElementById('mascot-speech');
+    if (!el) return;
     el.textContent = msg;
-    setTimeout(() => {
-      el.textContent = mascotMessages[Math.floor(Math.random() * mascotMessages.length)];
+    if (mascotSayTimer) clearTimeout(mascotSayTimer);
+    mascotSayTimer = setTimeout(() => {
+      // Always pull fresh idle messages so language changes take effect instantly
+      const list = getIdleMessages();
+      el.textContent = list[Math.floor(Math.random() * list.length)];
     }, 3000);
   }
 
